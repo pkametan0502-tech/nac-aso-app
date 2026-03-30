@@ -3,191 +3,615 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NAC ASO System V7</title>
+<title>NAC ASO System V8</title>
 
 <style>
-body { font-family: Arial; margin:0; background:#eef3f8; }
-.topbar {
-  background: linear-gradient(rgba(0,43,82,0.9), rgba(0,95,163,0.85)),
-  url('https://images.unsplash.com/photo-1504196606672-aef5c9cefc92');
-  background-size: cover;
-  color:white;
-  padding:20px;
-  text-align:center;
-}
-.container { padding:15px; }
-.card {
-  background:white;
-  padding:15px;
-  margin-bottom:15px;
-  border-radius:10px;
-}
-input, select, textarea { width:100%; padding:8px; margin:5px 0; }
-button { padding:10px; background:#005fa3; color:white; border:none; border-radius:5px; }
-.hidden { display:none; }
+  :root{
+    --navy:#002b52;
+    --blue:#005fa3;
+    --gold:#f4b400;
+    --bg:#eef3f8;
+    --card:#ffffff;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --danger:#c62828;
+    --border:#d7e0ea;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    font-family: Arial, sans-serif;
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+  }
+
+  .topbar{
+    background:
+      linear-gradient(rgba(0,43,82,0.88), rgba(0,95,163,0.82)),
+      url('https://images.unsplash.com/photo-1504196606672-aef5c9cefc92');
+    background-size:cover;
+    background-position:center;
+    color:white;
+    padding:20px;
+    text-align:center;
+    border-bottom:4px solid var(--gold);
+  }
+
+  .topbar h2{
+    margin:0;
+    font-size:28px;
+  }
+
+  .topbar p{
+    margin:6px 0 0;
+    font-size:13px;
+  }
+
+  .container{
+    max-width:1200px;
+    margin:auto;
+    padding:16px;
+  }
+
+  .card{
+    background:white;
+    padding:16px;
+    margin-bottom:16px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .hidden{ display:none; }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .userBadge{
+    background:#eaf2fb;
+    color:var(--navy);
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:700;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap:16px;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    margin:8px 0 6px;
+    color:#22384f;
+  }
+
+  input, select, textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #cdd8e5;
+    border-radius:8px;
+    font-size:14px;
+    background:#fff;
+  }
+
+  textarea{
+    min-height:100px;
+    resize:vertical;
+  }
+
+  button{
+    padding:10px 14px;
+    background:var(--blue);
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+  }
+
+  button:hover{
+    background:var(--navy);
+  }
+
+  .btnLight{
+    background:#e7eef6;
+    color:var(--navy);
+  }
+
+  .btnDanger{
+    background:var(--danger);
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:16px;
+  }
+
+  .stat{
+    background:linear-gradient(135deg, var(--navy), var(--blue));
+    color:white;
+    padding:18px;
+    border-radius:12px;
+  }
+
+  .stat h3{
+    margin:0 0 6px;
+    font-size:28px;
+  }
+
+  .stat p{
+    margin:0;
+    font-size:13px;
+  }
+
+  .status{
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:13px;
+    display:none;
+  }
+
+  .status.show{ display:block; }
+  .status.success{ background:#e8f7ee; color:#126c39; }
+  .status.error{ background:#fdecec; color:#a32020; }
+
+  .logItem{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:10px;
+    background:#fbfdff;
+  }
+
+  .logItem img{
+    width:100%;
+    max-height:220px;
+    object-fit:cover;
+    border-radius:8px;
+    margin-top:8px;
+  }
+
+  .pill{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    background:#edf4fb;
+    color:var(--navy);
+    margin-right:6px;
+    margin-top:6px;
+  }
+
+  .small{
+    color:var(--muted);
+    font-size:12px;
+  }
+
+  @media(max-width: 980px){
+    .grid, .stats, .row{
+      grid-template-columns:1fr;
+    }
+  }
 </style>
 </head>
-
 <body>
 
 <div class="topbar">
-<h2>NAC ASO SYSTEM - PMIA</h2>
-<p>Airport Safety Operations System</p>
+  <h2>NAC ASO SYSTEM - PMIA</h2>
+  <p>Version 8 • Live Logs • Optional Camera • Optional Location • Permanent Image Storage</p>
 </div>
 
 <div class="container">
 
-<!-- LOGIN -->
-<div id="authSection" class="card">
-<h3>Login</h3>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<button onclick="signup()">Create Account</button>
-</div>
+  <!-- AUTH -->
+  <div id="authSection" class="card">
+    <h3>Secure Access</h3>
+    <p class="small">Login or create account to use the Airport Safety Operations System.</p>
 
-<!-- APP -->
-<div id="appSection" class="hidden">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Enter email">
 
-<div class="card">
-<button onclick="logout()">Logout</button>
-</div>
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter password">
 
-<div class="card">
-<h3>ASO Live Log Entry</h3>
+    <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+      <button onclick="login()">Login</button>
+      <button class="btnLight" onclick="signup()">Create Account</button>
+    </div>
 
-<input type="text" id="asoName" placeholder="ASO Name">
+    <div id="authStatus" class="status"></div>
+  </div>
 
-<select id="shift">
-<option>A Shift (0300–1100)</option>
-<option>B Shift (1200–2000)</option>
-<option>C Shift (0800–1700)</option>
-</select>
+  <!-- APP -->
+  <div id="appSection" class="hidden">
 
-<select id="reportType">
-<option>Daily Patrol</option>
-<option>Bird Strike</option>
-<option>Incident</option>
-<option>Emergency</option>
-</select>
+    <div class="card">
+      <div class="toolbar">
+        <div>
+          <h3 style="margin:0;">Operations Dashboard</h3>
+          <div class="small">National Airports Corporation – Airport Safety Operations</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div id="userBadge" class="userBadge">Logged in</div>
+          <button class="btnDanger" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
 
-<textarea id="details" placeholder="Enter log details"></textarea>
+    <div class="stats">
+      <div class="stat">
+        <h3 id="totalLogs">0</h3>
+        <p>Total Logs</p>
+      </div>
+      <div class="stat">
+        <h3 id="birdStrikeCount">0</h3>
+        <p>Bird Strike Logs</p>
+      </div>
+      <div class="stat">
+        <h3 id="incidentCount">0</h3>
+        <p>Incident / Emergency</p>
+      </div>
+      <div class="stat">
+        <h3 id="locationCount">0</h3>
+        <p>Logs With Location</p>
+      </div>
+    </div>
 
-<input type="time" id="time">
+    <div class="grid">
+      <!-- FORM -->
+      <div class="card">
+        <h3>ASO Live Log Entry</h3>
 
-<!-- IMAGE -->
-<label>Photo (Optional)</label>
-<input type="file" id="photoInput" accept="image/*" capture="environment">
+        <label>ASO Name</label>
+        <input type="text" id="asoName" placeholder="ASO Name">
 
-<!-- LOCATION -->
-<button onclick="getLocation()">Capture Location</button>
-<p id="locationDisplay">No location</p>
-<input type="hidden" id="lat">
-<input type="hidden" id="lng">
+        <div class="row">
+          <div>
+            <label>Shift</label>
+            <select id="shift">
+              <option>A Shift (0300–1100)</option>
+              <option>B Shift (1200–2000)</option>
+              <option>C Shift (0800–1700)</option>
+            </select>
+          </div>
+          <div>
+            <label>Time</label>
+            <input type="time" id="time">
+          </div>
+        </div>
 
-<br><br>
-<button onclick="submitLog()">Submit Log</button>
-</div>
+        <div class="row">
+          <div>
+            <label>Report Type</label>
+            <select id="reportType">
+              <option>Daily Patrol</option>
+              <option>Bird Strike</option>
+              <option>Incident</option>
+              <option>Emergency</option>
+              <option>Wildlife Activity</option>
+              <option>Vehicle Movement</option>
+              <option>Weather Update</option>
+            </select>
+          </div>
+          <div>
+            <label>Airport</label>
+            <input type="text" id="airport" value="PMIA">
+          </div>
+        </div>
 
-<div class="card">
-<h3>Logs</h3>
-<div id="logList"></div>
-</div>
+        <label>Log Details</label>
+        <textarea id="details" placeholder="Enter log details"></textarea>
 
-</div>
+        <h4 style="margin-top:18px;">Optional Evidence</h4>
+
+        <label>Photo Evidence (Optional)</label>
+        <input type="file" id="photoInput" accept="image/*" capture="environment">
+
+        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+          <button type="button" onclick="getLocation()">Capture Location</button>
+          <button type="button" class="btnLight" onclick="clearEvidence()">Clear Evidence</button>
+        </div>
+
+        <p id="locationDisplay" class="small" style="margin-top:10px;">Location: Not captured</p>
+        <input type="hidden" id="lat">
+        <input type="hidden" id="lng">
+
+        <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+          <button onclick="submitLog()">Submit Log</button>
+        </div>
+
+        <div id="appStatus" class="status"></div>
+      </div>
+
+      <!-- LOGS -->
+      <div class="card">
+        <h3>Submitted Logs</h3>
+        <div id="logList" class="small">No logs yet.</div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
-import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  serverTimestamp,
+  query,
+  orderBy
+} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js';
 
 const firebaseConfig = {
-apiKey: "AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc",
-authDomain: "nac-aso-system.firebaseapp.com",
-projectId: "nac-aso-system",
-storageBucket: "nac-aso-system.firebasestorage.app",
-messagingSenderId: "852433876255",
-appId: "1:852433876255:web:c59a0a757ee4f7466dac2a"
+  apiKey: "AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc",
+  authDomain: "nac-aso-system.firebaseapp.com",
+  projectId: "nac-aso-system",
+  storageBucket: "nac-aso-system.firebasestorage.app",
+  messagingSenderId: "852433876255",
+  appId: "1:852433876255:web:c59a0a757ee4f7466dac2a"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
+
+const authSection = document.getElementById("authSection");
+const appSection = document.getElementById("appSection");
+const userBadge = document.getElementById("userBadge");
+const authStatus = document.getElementById("authStatus");
+const appStatus = document.getElementById("appStatus");
+
+let logsUnsubscribe = null;
+
+function showStatus(el, msg, type="success"){
+  el.textContent = msg;
+  el.className = `status show ${type}`;
+  setTimeout(() => {
+    el.className = "status";
+    el.textContent = "";
+  }, 4000);
+}
 
 window.login = async () => {
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
-await signInWithEmailAndPassword(auth,email,password);
+  try{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    await signInWithEmailAndPassword(auth, email, password);
+    showStatus(authStatus, "Login successful.", "success");
+  }catch(err){
+    showStatus(authStatus, err.message, "error");
+  }
 };
 
 window.signup = async () => {
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
-await createUserWithEmailAndPassword(auth,email,password);
+  try{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    await createUserWithEmailAndPassword(auth, email, password);
+    showStatus(authStatus, "Account created successfully.", "success");
+  }catch(err){
+    showStatus(authStatus, err.message, "error");
+  }
 };
 
 window.logout = async () => {
-await signOut(auth);
+  await signOut(auth);
 };
-
-onAuthStateChanged(auth,user=>{
-if(user){
-document.getElementById("authSection").classList.add("hidden");
-document.getElementById("appSection").classList.remove("hidden");
-loadLogs();
-}else{
-document.getElementById("authSection").classList.remove("hidden");
-document.getElementById("appSection").classList.add("hidden");
-}
-});
 
 window.getLocation = () => {
-navigator.geolocation.getCurrentPosition(pos=>{
-const lat = pos.coords.latitude;
-const lng = pos.coords.longitude;
-document.getElementById("lat").value = lat;
-document.getElementById("lng").value = lng;
-document.getElementById("locationDisplay").innerText = `Lat:${lat}, Lng:${lng}`;
-});
+  if (!navigator.geolocation) {
+    showStatus(appStatus, "Geolocation is not supported on this device.", "error");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      document.getElementById("lat").value = lat;
+      document.getElementById("lng").value = lng;
+      document.getElementById("locationDisplay").innerText =
+        `Location captured: Lat ${lat.toFixed(5)}, Lng ${lng.toFixed(5)}`;
+    },
+    () => {
+      showStatus(appStatus, "Unable to capture location.", "error");
+    }
+  );
 };
+
+window.clearEvidence = () => {
+  document.getElementById("photoInput").value = "";
+  document.getElementById("lat").value = "";
+  document.getElementById("lng").value = "";
+  document.getElementById("locationDisplay").innerText = "Location: Not captured";
+};
+
+async function uploadPhotoIfAny(user){
+  const file = document.getElementById("photoInput").files[0];
+  if (!file) return "";
+
+  const safeName = `${Date.now()}_${file.name.replace(/\\s+/g, "_")}`;
+  const storageRef = ref(storage, `incident_photos/${user.uid}/${safeName}`);
+  await uploadBytes(storageRef, file);
+  return await getDownloadURL(storageRef);
+}
 
 window.submitLog = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    showStatus(appStatus, "You must be logged in.", "error");
+    return;
+  }
 
-const file = document.getElementById("photoInput").files[0];
-let imageURL = file ? URL.createObjectURL(file) : "";
+  const name = document.getElementById("asoName").value.trim();
+  const shift = document.getElementById("shift").value;
+  const type = document.getElementById("reportType").value;
+  const details = document.getElementById("details").value.trim();
+  const time = document.getElementById("time").value;
+  const airport = document.getElementById("airport").value.trim();
+  const lat = document.getElementById("lat").value;
+  const lng = document.getElementById("lng").value;
 
-await addDoc(collection(db,"logs"),{
-name: document.getElementById("asoName").value,
-shift: document.getElementById("shift").value,
-type: document.getElementById("reportType").value,
-details: document.getElementById("details").value,
-time: document.getElementById("time").value,
-imageURL,
-lat: document.getElementById("lat").value,
-lng: document.getElementById("lng").value,
-created: serverTimestamp()
-});
+  if (!name || !details || !time) {
+    showStatus(appStatus, "Enter ASO name, time, and details.", "error");
+    return;
+  }
 
-alert("Saved");
+  try {
+    showStatus(appStatus, "Saving log...", "success");
+
+    const imageURL = await uploadPhotoIfAny(user);
+    const mapLink = (lat && lng)
+      ? `https://www.google.com/maps?q=${lat},${lng}`
+      : "";
+
+    await addDoc(collection(db, "logs"), {
+      name,
+      shift,
+      type,
+      details,
+      time,
+      airport,
+      imageURL,
+      lat,
+      lng,
+      mapLink,
+      created: serverTimestamp(),
+      userEmail: user.email || "",
+      userUid: user.uid
+    });
+
+    document.getElementById("details").value = "";
+    document.getElementById("time").value = "";
+    document.getElementById("photoInput").value = "";
+    document.getElementById("lat").value = "";
+    document.getElementById("lng").value = "";
+    document.getElementById("locationDisplay").innerText = "Location: Not captured";
+
+    showStatus(appStatus, "Log saved successfully.", "success");
+  } catch (err) {
+    console.error(err);
+    showStatus(appStatus, err.message, "error");
+  }
 };
 
-function loadLogs(){
-onSnapshot(collection(db,"logs"),snap=>{
-let html="";
-snap.forEach(doc=>{
-const d = doc.data();
-html += `
-<div style="border-bottom:1px solid #ccc; padding:10px;">
-<b>${d.time}</b> - ${d.type}<br>
-${d.details}<br>
-${d.imageURL ? `<img src="${d.imageURL}" style="width:100%;">` : ""}
-${d.lat ? `<br>📍 ${d.lat}, ${d.lng}` : ""}
-</div>`;
-});
-document.getElementById("logList").innerHTML = html;
-});
+function renderLogs(snapshot){
+  let html = "";
+  let total = 0;
+  let bird = 0;
+  let incidents = 0;
+  let withLocation = 0;
+
+  snapshot.forEach(doc => {
+    total++;
+    const d = doc.data();
+
+    if (d.type === "Bird Strike") bird++;
+    if (d.type === "Incident" || d.type === "Emergency") incidents++;
+    if (d.lat && d.lng) withLocation++;
+
+    const createdText = d.created?.toDate ? d.created.toDate().toLocaleString() : "";
+
+    html += `
+      <div class="logItem">
+        <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+          <div>
+            <strong>${d.time || ""}</strong> - ${d.type || ""}<br>
+            <span class="small">${d.name || ""} • ${d.shift || ""} • ${d.airport || ""}</span>
+          </div>
+          <div class="small">${createdText}</div>
+        </div>
+
+        <div>
+          <span class="pill">${d.type || ""}</span>
+          ${d.lat ? `<span class="pill">Location Captured</span>` : ""}
+          ${d.imageURL ? `<span class="pill">Photo Attached</span>` : ""}
+        </div>
+
+        <p style="margin:10px 0 6px;">${d.details || ""}</p>
+
+        ${d.imageURL ? `<img src="${d.imageURL}" alt="Evidence Photo">` : ""}
+
+        ${d.mapLink ? `<p style="margin-top:8px;"><a href="${d.mapLink}" target="_blank">Open Location in Google Maps</a></p>` : ""}
+
+        <div class="small">Submitted by: ${d.userEmail || ""}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById("logList").innerHTML = html || "No logs yet.";
+  document.getElementById("totalLogs").textContent = total;
+  document.getElementById("birdStrikeCount").textContent = bird;
+  document.getElementById("incidentCount").textContent = incidents;
+  document.getElementById("locationCount").textContent = withLocation;
 }
+
+function loadLogs(){
+  if (logsUnsubscribe) logsUnsubscribe();
+
+  const q = query(collection(db, "logs"), orderBy("created", "desc"));
+  logsUnsubscribe = onSnapshot(q, (snapshot) => {
+    renderLogs(snapshot);
+  }, (err) => {
+    console.error(err);
+    showStatus(appStatus, "Unable to load logs. Check Firestore rules.", "error");
+  });
+}
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    authSection.classList.add("hidden");
+    appSection.classList.remove("hidden");
+    userBadge.textContent = `Logged in: ${user.email}`;
+    loadLogs();
+  }else{
+    authSection.classList.remove("hidden");
+    appSection.classList.add("hidden");
+    userBadge.textContent = "Logged out";
+    if (logsUnsubscribe) logsUnsubscribe();
+  }
+});
 </script>
 
 </body>
