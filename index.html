@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NAC ASO System V13 Operational</title>
+  <title>NAC ASO System V14 Operational</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+
   <style>
     :root{
       --bg:#0f172a;
@@ -37,7 +41,7 @@
     }
     .topbar h1{margin:0;font-size:24px}
     .topbar p{margin:6px 0 0;color:var(--muted);font-size:14px}
-    .wrap{max-width:1350px;margin:0 auto;padding:18px}
+    .wrap{max-width:1400px;margin:0 auto;padding:18px}
     .status{
       display:none;
       padding:12px 14px;
@@ -98,6 +102,7 @@
     .btn-danger{background:var(--danger)}
     .btn-warning{background:var(--warning); color:#111827}
     .btn-muted{background:#475569}
+    .btn-success{background:#16a34a}
     .hidden{display:none !important}
     .tabs{
       display:flex;
@@ -140,7 +145,7 @@
       border:1px solid var(--line);
       color:#cbd5e1;
     }
-    .report-item,.contact-item,.alert-item,.log-item{
+    .report-item,.contact-item,.alert-item,.log-item,.summary-item{
       padding:14px;
       border:1px solid var(--line);
       border-radius:12px;
@@ -187,7 +192,7 @@
     }
     .bar-row{
       display:grid;
-      grid-template-columns:120px 1fr 50px;
+      grid-template-columns:150px 1fr 55px;
       gap:10px;
       align-items:center;
       font-size:14px;
@@ -229,6 +234,12 @@
       gap:10px;
       margin-bottom:12px;
     }
+    .filters-monthly{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+      margin-bottom:12px;
+    }
     .inline{
       display:flex;
       gap:8px;
@@ -256,8 +267,31 @@
     .popup h2{color:#fecaca;margin-bottom:8px}
     .popup .meta{color:#cbd5e1;font-size:14px;line-height:1.6}
     .right{margin-left:auto}
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:12px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    th, td{
+      border-bottom:1px solid var(--line);
+      padding:10px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{
+      background:#111827;
+      color:#dbeafe;
+    }
+    td{
+      background:#0b1220;
+    }
     @media (max-width: 1100px){
-      .grid-5,.grid-4,.grid-3,.grid-2,.filters,.filters-logs{grid-template-columns:1fr}
+      .grid-5,.grid-4,.grid-3,.grid-2,.filters,.filters-logs,.filters-monthly{grid-template-columns:1fr}
     }
     @media (max-width: 640px){
       .topbar h1{font-size:20px}
@@ -267,8 +301,8 @@
 </head>
 <body>
   <div class="topbar">
-    <h1>NAC ASO System V13 Operational</h1>
-    <p>National Airports Corporation – Airport Safety, Wildlife, Incident, Daily Log & Emergency Reporting</p>
+    <h1>NAC ASO System V14 Operational</h1>
+    <p>National Airports Corporation – Airport Safety, Wildlife, Incident, Daily Log, Monthly Summary & Emergency Reporting</p>
   </div>
 
   <div class="wrap">
@@ -346,6 +380,7 @@
       <div class="tabs">
         <button class="tab-btn active" data-tab="dashboardTab">Dashboard</button>
         <button class="tab-btn" data-tab="dailyLogTab">Daily Log</button>
+        <button class="tab-btn" data-tab="monthlySummaryTab">Monthly Summary</button>
         <button class="tab-btn" data-tab="reportsTab">Reports</button>
         <button class="tab-btn" data-tab="profileTab">Profile</button>
         <button class="tab-btn" data-tab="wildlifeTab">Wildlife</button>
@@ -497,6 +532,116 @@
             </div>
 
             <div id="allDailyLogsList" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="monthlySummaryTab" class="tab-panel">
+        <div class="grid grid-2">
+          <div class="card">
+            <h2>Monthly Summary Controls</h2>
+
+            <div class="filters-monthly">
+              <div>
+                <label>Select Month</label>
+                <input type="month" id="monthlySummaryMonth" />
+              </div>
+              <div>
+                <label>Officer Filter</label>
+                <input type="text" id="monthlyOfficerFilter" placeholder="Optional officer name filter" />
+              </div>
+              <div>
+                <label>Action</label>
+                <div class="actions" style="margin-top:0;">
+                  <button class="btn-primary" id="loadMonthlySummaryBtn">Load Summary</button>
+                  <button class="btn-success" id="exportMonthlyPdfBtn">Export Monthly PDF</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="small">
+              This monthly summary is based on the <strong>Daily Log</strong> records for the selected month and airport.
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Monthly KPI Summary</h2>
+            <div class="grid grid-4">
+              <div class="kpi">
+                <div class="num" id="monthlyTotalLogs">0</div>
+                <div class="lbl">Total Logs</div>
+              </div>
+              <div class="kpi">
+                <div class="num" id="monthlyOfficerCount">0</div>
+                <div class="lbl">Officers</div>
+              </div>
+              <div class="kpi">
+                <div class="num" id="monthlyShiftCount">0</div>
+                <div class="lbl">Shift Types Used</div>
+              </div>
+              <div class="kpi">
+                <div class="num" id="monthlyWeatherCount">0</div>
+                <div class="lbl">Weather Types</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">Logs by Officer</h2>
+              <span class="pill" id="monthlyOfficerPill">0 Items</span>
+            </div>
+            <div id="monthlyOfficerChart" class="chart-wrap"></div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">Logs by Shift</h2>
+              <span class="pill" id="monthlyShiftPill">0 Items</span>
+            </div>
+            <div id="monthlyShiftChart" class="chart-wrap"></div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">Logs by Weather</h2>
+              <span class="pill" id="monthlyWeatherPill">0 Items</span>
+            </div>
+            <div id="monthlyWeatherChart" class="chart-wrap"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="section-title">
+            <h2 style="margin-bottom:0;">Monthly Daily Logs</h2>
+            <span class="pill" id="monthlyLogsPill">0 Items</span>
+          </div>
+          <div id="monthlyLogsList"></div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="section-title">
+            <h2 style="margin-bottom:0;">Monthly Summary Table</h2>
+            <span class="pill">Management View</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Officer</th>
+                  <th>Role</th>
+                  <th>Shift</th>
+                  <th>Start Time</th>
+                  <th>Weather</th>
+                  <th>Area</th>
+                  <th>Findings</th>
+                </tr>
+              </thead>
+              <tbody id="monthlySummaryTableBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -749,6 +894,7 @@
     let allReports = [];
     let allAlerts = [];
     let allDailyLogs = [];
+    let monthlyFilteredLogs = [];
     let emergencyUnsubscribe = null;
     let currentEmergencyAudio = null;
     let activePopupAlertId = null;
@@ -765,7 +911,9 @@
     const authSection = document.getElementById("authSection");
     const appSection = document.getElementById("appSection");
 
-    document.getElementById("logDate").value = new Date().toISOString().split("T")[0];
+    const today = new Date();
+    document.getElementById("logDate").value = today.toISOString().split("T")[0];
+    document.getElementById("monthlySummaryMonth").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
 
     function showStatus(message, type = "ok") {
       statusBox.className = `status ${type}`;
@@ -815,6 +963,20 @@
       return `${y}-${m}-${day}`;
     }
 
+    function currentMonthKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function countBy(list, selector) {
+      const obj = {};
+      list.forEach(item => {
+        const key = selector(item) || "Unknown";
+        obj[key] = (obj[key] || 0) + 1;
+      });
+      return obj;
+    }
+
     async function uploadFileIfAny(file, path) {
       if (!file) return "";
       const storageRef = ref(storage, path);
@@ -860,9 +1022,7 @@
     async function ensureUserNameCorrect() {
       if (!auth.currentUser || !currentUserData) return;
       if ((currentUserData.name || "").trim() === "pkametan0502") {
-        await updateDoc(doc(db, "users", auth.currentUser.uid), {
-          name: "Casper Kametan"
-        });
+        await updateDoc(doc(db, "users", auth.currentUser.uid), { name: "Casper Kametan" });
         currentUserData.name = "Casper Kametan";
       }
     }
@@ -889,13 +1049,8 @@
           continue;
         }
 
-        if (data.name === "Airport Rescue Fire Fighter (RFF)" || data.role === "RFF") {
-          hasRFF = true;
-        }
-
-        if (data.name === "ATC Contact" || data.role === "Air Traffic Control") {
-          hasATC = true;
-        }
+        if (data.name === "Airport Rescue Fire Fighter (RFF)" || data.role === "RFF") hasRFF = true;
+        if (data.name === "ATC Contact" || data.role === "Air Traffic Control") hasATC = true;
       }
 
       if (!hasRFF) {
@@ -917,12 +1072,224 @@
       }
     }
 
+    function renderBarChart(targetId, countsObj, pillId = null) {
+      const box = document.getElementById(targetId);
+      box.innerHTML = "";
+
+      const entries = Object.entries(countsObj).sort((a, b) => b[1] - a[1]);
+      if (pillId) document.getElementById(pillId).textContent = `${entries.length} Items`;
+
+      if (entries.length === 0) {
+        box.innerHTML = '<div class="small">No data.</div>';
+        return;
+      }
+
+      const max = Math.max(...entries.map(x => x[1]), 1);
+
+      entries.forEach(([label, count]) => {
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div>${safeText(label)}</div>
+          <div class="bar"><span style="width:${(count / max) * 100}%"></span></div>
+          <div>${count}</div>
+        `;
+        box.appendChild(row);
+      });
+    }
+
+    function exportSingleDailyLogPdf(log) {
+      const { jsPDF } = window.jspdf;
+      const docPdf = new jsPDF();
+
+      docPdf.setFontSize(16);
+      docPdf.text("NAC ASO System - Daily Log Report", 14, 18);
+
+      docPdf.setFontSize(11);
+      docPdf.text(`Airport: ${log.airport || "-"}`, 14, 28);
+      docPdf.text(`Officer: ${log.userName || "-"}`, 14, 35);
+      docPdf.text(`Role: ${log.userRole || "-"}`, 14, 42);
+      docPdf.text(`Log Date: ${log.logDate || "-"}`, 14, 49);
+      docPdf.text(`Shift: ${log.shift || "-"}`, 14, 56);
+      docPdf.text(`Shift Start Time: ${log.startTime || "-"}`, 14, 63);
+      docPdf.text(`Weather: ${log.weather || "-"}`, 14, 70);
+      docPdf.text(`Area: ${log.area || "-"}`, 14, 77);
+
+      docPdf.autoTable({
+        startY: 85,
+        head: [["Section", "Details"]],
+        body: [
+          ["Inspection Findings", log.findings || "-"],
+          ["Action Taken", log.actionTaken || "-"],
+          ["Handover Notes", log.handoverNotes || "-"],
+          ["Submitted", formatDate(fromFirestoreDate(log.createdAt))]
+        ],
+        styles: { fontSize: 10, cellPadding: 3 },
+        headStyles: { fillColor: [37, 99, 235] }
+      });
+
+      const fileName = `daily-log-${(log.userName || "officer").replace(/\s+/g, "-")}-${log.logDate || "date"}.pdf`;
+      docPdf.save(fileName);
+    }
+
+    function exportMonthlySummaryPdf() {
+      const { jsPDF } = window.jspdf;
+      const docPdf = new jsPDF("l", "mm", "a4");
+
+      const month = document.getElementById("monthlySummaryMonth").value || currentMonthKey();
+      const officerFilter = document.getElementById("monthlyOfficerFilter").value.trim() || "All";
+
+      const officerCounts = countBy(monthlyFilteredLogs, x => x.userName || "Unknown");
+      const shiftCounts = countBy(monthlyFilteredLogs, x => x.shift || "Unknown");
+      const weatherCounts = countBy(monthlyFilteredLogs, x => x.weather || "Unknown");
+
+      docPdf.setFontSize(16);
+      docPdf.text("NAC ASO System - Monthly Daily Log Summary", 14, 16);
+      docPdf.setFontSize(10);
+      docPdf.text(`Airport: ${currentUserData?.airport || "-"}`, 14, 24);
+      docPdf.text(`Month: ${month}`, 14, 30);
+      docPdf.text(`Officer Filter: ${officerFilter}`, 14, 36);
+      docPdf.text(`Generated By: ${currentUserData?.name || "-"}`, 14, 42);
+      docPdf.text(`Generated At: ${new Date().toLocaleString()}`, 14, 48);
+
+      docPdf.autoTable({
+        startY: 55,
+        head: [["Metric", "Value"]],
+        body: [
+          ["Total Logs", String(monthlyFilteredLogs.length)],
+          ["Officers", String(Object.keys(officerCounts).length)],
+          ["Shift Types Used", String(Object.keys(shiftCounts).length)],
+          ["Weather Types Used", String(Object.keys(weatherCounts).length)]
+        ],
+        theme: "grid",
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [37, 99, 235] }
+      });
+
+      let currentY = docPdf.lastAutoTable.finalY + 8;
+
+      docPdf.autoTable({
+        startY: currentY,
+        head: [["Officer", "Logs"]],
+        body: Object.entries(officerCounts).sort((a, b) => b[1] - a[1]),
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [22, 163, 74] }
+      });
+
+      currentY = docPdf.lastAutoTable.finalY + 8;
+
+      docPdf.autoTable({
+        startY: currentY,
+        head: [["Shift", "Logs"]],
+        body: Object.entries(shiftCounts).sort((a, b) => b[1] - a[1]),
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [245, 158, 11] }
+      });
+
+      currentY = docPdf.lastAutoTable.finalY + 8;
+
+      docPdf.autoTable({
+        startY: currentY,
+        head: [["Weather", "Logs"]],
+        body: Object.entries(weatherCounts).sort((a, b) => b[1] - a[1]),
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [239, 68, 68] }
+      });
+
+      docPdf.addPage();
+
+      docPdf.setFontSize(14);
+      docPdf.text("Monthly Daily Log Details", 14, 16);
+
+      docPdf.autoTable({
+        startY: 22,
+        head: [["Date", "Officer", "Role", "Shift", "Start", "Weather", "Area", "Findings"]],
+        body: monthlyFilteredLogs.map(log => [
+          log.logDate || "-",
+          log.userName || "-",
+          log.userRole || "-",
+          log.shift || "-",
+          log.startTime || "-",
+          log.weather || "-",
+          log.area || "-",
+          (log.findings || "-").slice(0, 90)
+        ]),
+        styles: { fontSize: 8, cellPadding: 2 },
+        headStyles: { fillColor: [37, 99, 235] }
+      });
+
+      docPdf.save(`monthly-daily-log-summary-${month}.pdf`);
+    }
+
+    function filterLogsForMonth() {
+      const month = document.getElementById("monthlySummaryMonth").value || currentMonthKey();
+      const officerFilter = document.getElementById("monthlyOfficerFilter").value.trim().toLowerCase();
+
+      let filtered = allDailyLogs.filter(log => (log.logDate || "").startsWith(month));
+
+      if (officerFilter) {
+        filtered = filtered.filter(log => (log.userName || "").toLowerCase().includes(officerFilter));
+      }
+
+      monthlyFilteredLogs = filtered.sort((a, b) => {
+        const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
+        const bd = fromFirestoreDate(b.createdAt)?.getTime() || 0;
+        return bd - ad;
+      });
+    }
+
+    function renderMonthlySummary() {
+      filterLogsForMonth();
+
+      const officerCounts = countBy(monthlyFilteredLogs, x => x.userName || "Unknown");
+      const shiftCounts = countBy(monthlyFilteredLogs, x => x.shift || "Unknown");
+      const weatherCounts = countBy(monthlyFilteredLogs, x => x.weather || "Unknown");
+
+      document.getElementById("monthlyTotalLogs").textContent = monthlyFilteredLogs.length;
+      document.getElementById("monthlyOfficerCount").textContent = Object.keys(officerCounts).length;
+      document.getElementById("monthlyShiftCount").textContent = Object.keys(shiftCounts).length;
+      document.getElementById("monthlyWeatherCount").textContent = Object.keys(weatherCounts).length;
+
+      renderBarChart("monthlyOfficerChart", officerCounts, "monthlyOfficerPill");
+      renderBarChart("monthlyShiftChart", shiftCounts, "monthlyShiftPill");
+      renderBarChart("monthlyWeatherChart", weatherCounts, "monthlyWeatherPill");
+
+      renderDailyLogs(monthlyFilteredLogs, "monthlyLogsList", "monthlyLogsPill", true);
+
+      const tbody = document.getElementById("monthlySummaryTableBody");
+      tbody.innerHTML = "";
+
+      if (monthlyFilteredLogs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="small">No daily logs for selected month.</td></tr>`;
+        return;
+      }
+
+      monthlyFilteredLogs.forEach(log => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${safeText(log.logDate || "-")}</td>
+          <td>${safeText(log.userName || "-")}</td>
+          <td>${safeText(log.userRole || "-")}</td>
+          <td>${safeText(log.shift || "-")}</td>
+          <td>${safeText(log.startTime || "-")}</td>
+          <td>${safeText(log.weather || "-")}</td>
+          <td>${safeText(log.area || "-")}</td>
+          <td>${safeText(log.findings || "-")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
         document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
         btn.classList.add("active");
         document.getElementById(btn.dataset.tab).classList.add("active");
+
+        if (btn.dataset.tab === "monthlySummaryTab") {
+          renderMonthlySummary();
+        }
       });
     });
 
@@ -932,6 +1299,16 @@
 
     document.getElementById("showSignupPassword").addEventListener("change", e => {
       document.getElementById("signupPassword").type = e.target.checked ? "text" : "password";
+    });
+
+    document.getElementById("loadMonthlySummaryBtn").addEventListener("click", () => {
+      renderMonthlySummary();
+      showStatus("Monthly summary loaded.");
+    });
+
+    document.getElementById("exportMonthlyPdfBtn").addEventListener("click", () => {
+      renderMonthlySummary();
+      exportMonthlySummaryPdf();
     });
 
     document.getElementById("signupBtn").addEventListener("click", async () => {
@@ -1027,6 +1404,7 @@
         allReports = [];
         allAlerts = [];
         allDailyLogs = [];
+        monthlyFilteredLogs = [];
         authSection.classList.remove("hidden");
         appSection.classList.add("hidden");
         updateTopPills();
@@ -1054,6 +1432,7 @@
         await loadReports();
         await loadDailyLogs();
         await loadAlerts();
+        renderMonthlySummary();
         startEmergencyListener();
 
       } catch (err) {
@@ -1269,6 +1648,7 @@
         document.getElementById("logHandoverNotes").value = "";
 
         await loadDailyLogs();
+        renderMonthlySummary();
         showStatus("Daily log submitted.");
       } catch (err) {
         console.error(err);
@@ -1288,7 +1668,7 @@
             orderBy("createdAt", "desc")
           );
           snap = await getDocs(q);
-        } catch (indexErr) {
+        } catch {
           const q = query(
             reportsRef,
             where("airport", "==", currentUserData.airport || "PMIA")
@@ -1297,9 +1677,7 @@
         }
 
         allReports = [];
-        snap.forEach(docSnap => {
-          allReports.push({ id: docSnap.id, ...docSnap.data() });
-        });
+        snap.forEach(docSnap => allReports.push({ id: docSnap.id, ...docSnap.data() }));
 
         allReports.sort((a, b) => {
           const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
@@ -1329,7 +1707,7 @@
             orderBy("createdAt", "desc")
           );
           snap = await getDocs(q);
-        } catch (indexErr) {
+        } catch {
           const q = query(
             logsRef,
             where("airport", "==", currentUserData.airport || "PMIA")
@@ -1338,9 +1716,7 @@
         }
 
         allDailyLogs = [];
-        snap.forEach(docSnap => {
-          allDailyLogs.push({ id: docSnap.id, ...docSnap.data() });
-        });
+        snap.forEach(docSnap => allDailyLogs.push({ id: docSnap.id, ...docSnap.data() }));
 
         allDailyLogs.sort((a, b) => {
           const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
@@ -1349,7 +1725,7 @@
         });
 
         renderKpis();
-        renderDailyLogs(allDailyLogs.slice(0, 5), "recentDailyLogsList", "recentDailyLogsPill");
+        renderDailyLogs(allDailyLogs.slice(0, 5), "recentDailyLogsList", "recentDailyLogsPill", true);
         applyDailyLogFilters();
       } catch (err) {
         console.error(err);
@@ -1427,7 +1803,7 @@
       });
     }
 
-    function renderDailyLogs(list, targetId, pillId = null) {
+    function renderDailyLogs(list, targetId, pillId = null, showPdfButton = false) {
       const box = document.getElementById(targetId);
       box.innerHTML = "";
 
@@ -1459,9 +1835,26 @@
             Handover Notes: ${safeText(log.handoverNotes || "-")}<br>
             Submitted: ${formatDate(fromFirestoreDate(log.createdAt))}
           </div>
+
+          ${
+            showPdfButton
+              ? `<div class="actions">
+                   <button class="btn-success export-log-pdf-btn" data-id="${log.id}">Export PDF</button>
+                 </div>`
+              : ""
+          }
         `;
         box.appendChild(div);
       });
+
+      if (showPdfButton) {
+        box.querySelectorAll(".export-log-pdf-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const log = allDailyLogs.find(x => x.id === btn.dataset.id) || monthlyFilteredLogs.find(x => x.id === btn.dataset.id);
+            if (log) exportSingleDailyLogPdf(log);
+          });
+        });
+      }
     }
 
     async function updateReportStatus(reportId, status) {
@@ -1511,41 +1904,9 @@
       document.getElementById("kpiDailyLogs").textContent = todayLogs;
     }
 
-    function renderBarChart(targetId, countsObj) {
-      const box = document.getElementById(targetId);
-      box.innerHTML = "";
-
-      const entries = Object.entries(countsObj).sort((a, b) => b[1] - a[1]);
-      if (entries.length === 0) {
-        box.innerHTML = '<div class="small">No data.</div>';
-        return;
-      }
-
-      const max = Math.max(...entries.map(x => x[1]), 1);
-
-      entries.forEach(([label, count]) => {
-        const row = document.createElement("div");
-        row.className = "bar-row";
-        row.innerHTML = `
-          <div>${safeText(label)}</div>
-          <div class="bar"><span style="width:${(count / max) * 100}%"></span></div>
-          <div>${count}</div>
-        `;
-        box.appendChild(row);
-      });
-    }
-
     function renderCharts(reports) {
-      const typeCounts = {};
-      const severityCounts = {};
-
-      reports.forEach(r => {
-        const type = r.type || "Other";
-        const severity = r.severity || "Unknown";
-        typeCounts[type] = (typeCounts[type] || 0) + 1;
-        severityCounts[severity] = (severityCounts[severity] || 0) + 1;
-      });
-
+      const typeCounts = countBy(reports, r => r.type || "Other");
+      const severityCounts = countBy(reports, r => r.severity || "Unknown");
       renderBarChart("typeChart", typeCounts);
       renderBarChart("severityChart", severityCounts);
     }
@@ -1593,7 +1954,7 @@
         });
       }
 
-      renderDailyLogs(filtered, "allDailyLogsList", "allDailyLogsPill");
+      renderDailyLogs(filtered, "allDailyLogsList", "allDailyLogsPill", true);
     }
 
     document.getElementById("applyFiltersBtn").addEventListener("click", applyReportFilters);
