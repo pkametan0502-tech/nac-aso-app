@@ -628,9 +628,6 @@
       getDownloadURL
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-    // =========================
-    // FIREBASE CONFIG
-    // =========================
     const firebaseConfig = {
       apiKey: "AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc",
       authDomain: "nac-aso-system.firebaseapp.com",
@@ -646,9 +643,6 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    // =========================
-    // STATE
-    // =========================
     let currentUserData = null;
     let currentGps = "";
     let allReports = [];
@@ -658,9 +652,10 @@
     let activePopupAlertId = null;
 
     const defaultContacts = [
-      { name: "Airport Fire Service", role: "Fire", phone: "Emergency Line" },
+      { name: "Airport Rescue Fire Fighter (RFF)", role: "RFF", phone: "Emergency Line" },
       { name: "Airport Operations Manager", role: "AOM", phone: "Add number" },
       { name: "Senior Airport Safety Officer", role: "SASO", phone: "Add number" },
+      { name: "ATC Contact", role: "Air Traffic Control", phone: "Add number" },
       { name: "Medical Response", role: "Medical", phone: "Add number" }
     ];
 
@@ -668,9 +663,6 @@
     const authSection = document.getElementById("authSection");
     const appSection = document.getElementById("appSection");
 
-    // =========================
-    // HELPERS
-    // =========================
     function showStatus(message, type = "ok") {
       statusBox.className = `status ${type}`;
       statusBox.textContent = message;
@@ -761,9 +753,71 @@
       document.getElementById("airportInfoPill").textContent = currentUserData?.airport || "-";
     }
 
-    // =========================
-    // TAB SWITCHING
-    // =========================
+    async function ensureUserNameCorrect() {
+      if (!auth.currentUser) return;
+      if (!currentUserData) return;
+
+      if ((currentUserData.name || "").trim() === "pkametan0502") {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+          name: "Casper Kametan"
+        });
+        currentUserData.name = "Casper Kametan";
+      }
+    }
+
+    async function fixMyEmergencyContacts() {
+      if (!auth.currentUser) return;
+
+      const contactsRef = collection(db, "users", auth.currentUser.uid, "contacts");
+      const snap = await getDocs(contactsRef);
+
+      let hasRFF = false;
+      let hasATC = false;
+
+      for (const docSnap of snap.docs) {
+        const data = docSnap.data();
+
+        if (
+          data.name === "Airport Fire Service" ||
+          data.role === "Fire"
+        ) {
+          await updateDoc(doc(db, "users", auth.currentUser.uid, "contacts", docSnap.id), {
+            name: "Airport Rescue Fire Fighter (RFF)",
+            role: "RFF",
+            phone: data.phone || "Emergency Line"
+          });
+          hasRFF = true;
+          continue;
+        }
+
+        if (data.name === "Airport Rescue Fire Fighter (RFF)" || data.role === "RFF") {
+          hasRFF = true;
+        }
+
+        if (data.name === "ATC Contact" || data.role === "Air Traffic Control") {
+          hasATC = true;
+        }
+      }
+
+      if (!hasRFF) {
+        await addDoc(contactsRef, {
+          name: "Airport Rescue Fire Fighter (RFF)",
+          role: "RFF",
+          phone: "Emergency Line",
+          createdAt: serverTimestamp()
+        });
+      }
+
+      if (!hasATC) {
+        await addDoc(contactsRef, {
+          name: "ATC Contact",
+          role: "Air Traffic Control",
+          phone: "Add number",
+          createdAt: serverTimestamp()
+        });
+      }
+    }
+
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -773,9 +827,6 @@
       });
     });
 
-    // =========================
-    // PASSWORD TOGGLES
-    // =========================
     document.getElementById("showLoginPassword").addEventListener("change", e => {
       document.getElementById("loginPassword").type = e.target.checked ? "text" : "password";
     });
@@ -784,9 +835,6 @@
       document.getElementById("signupPassword").type = e.target.checked ? "text" : "password";
     });
 
-    // =========================
-    // AUTH
-    // =========================
     document.getElementById("signupBtn").addEventListener("click", async () => {
       clearStatus();
 
@@ -893,10 +941,14 @@
         }
 
         currentUserData = userSnap.data();
+
+        await ensureUserNameCorrect();
+
         authSection.classList.add("hidden");
         appSection.classList.remove("hidden");
         updateTopPills();
 
+        await fixMyEmergencyContacts();
         await loadUserProfile();
         await loadContacts(user.uid);
         await loadReports();
@@ -909,10 +961,12 @@
       }
     });
 
-    // =========================
-    // PROFILE
-    // =========================
     async function loadUserProfile() {
+      const freshUserSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+      if (freshUserSnap.exists()) {
+        currentUserData = freshUserSnap.data();
+      }
+
       const photoEl = document.getElementById("profilePhotoView");
       if (currentUserData?.photoURL) {
         photoEl.src = currentUserData.photoURL;
@@ -920,6 +974,8 @@
       } else {
         photoEl.classList.add("hidden");
       }
+
+      updateTopPills();
 
       document.getElementById("profileInfoBox").innerHTML = `
         <strong>Name:</strong> ${safeText(currentUserData?.name || "-")}<br>
@@ -940,8 +996,11 @@
         return;
       }
 
-      snap.forEach(docSnap => {
-        const c = docSnap.data();
+      const contacts = snap.docs.map(d => d.data());
+
+      contacts.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+
+      for (const c of contacts) {
         const div = document.createElement("div");
         div.className = "contact-item";
         div.innerHTML = `
@@ -950,7 +1009,7 @@
           <span class="small">${safeText(c.phone || "-")}</span>
         `;
         box.appendChild(div);
-      });
+      }
     }
 
     document.getElementById("addContactBtn").addEventListener("click", async () => {
@@ -982,9 +1041,6 @@
       }
     });
 
-    // =========================
-    // GPS
-    // =========================
     document.getElementById("getGpsBtn").addEventListener("click", () => {
       if (!navigator.geolocation) {
         showStatus("Geolocation not supported.", "warn");
@@ -1005,9 +1061,6 @@
       );
     });
 
-    // =========================
-    // REPORTS
-    // =========================
     document.getElementById("submitReportBtn").addEventListener("click", async () => {
       if (!auth.currentUser || !currentUserData) return;
 
@@ -1051,8 +1104,6 @@
           userRole: currentUserData.role || "",
           createdBy: auth.currentUser.uid,
           createdAt: serverTimestamp(),
-
-          // V12 fields
           status: "Open",
           assignedTo: null,
           closedAt: null,
@@ -1301,9 +1352,6 @@
       applyReportFilters();
     });
 
-    // =========================
-    // WILDLIFE
-    // =========================
     document.getElementById("wildlifeSearchBtn").addEventListener("click", () => {
       const q = document.getElementById("wildlifeSearch").value.trim();
       if (!q) {
@@ -1322,9 +1370,6 @@
       window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}`, "_blank");
     });
 
-    // =========================
-    // EMERGENCY ALERTS
-    // =========================
     document.getElementById("sendEmergencyAlertBtn").addEventListener("click", async () => {
       if (!auth.currentUser || !currentUserData) return;
 
@@ -1346,8 +1391,6 @@
           createdBy: currentUserData.name || auth.currentUser.uid,
           role: currentUserData.role || "",
           createdAt: serverTimestamp(),
-
-          // V12 fields
           acknowledgedBy: [],
           resolved: false,
           resolvedBy: null,
