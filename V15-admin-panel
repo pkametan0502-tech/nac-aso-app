@@ -1,0 +1,129 @@
+<button class="tab-btn" data-tab="adminTab">Admin Panel</button>
+<div id="adminTab" class="tab-panel">
+  <div class="grid grid-2">
+
+    <div class="card">
+      <h2>Admin User Creation Panel</h2>
+
+      <label>Full Name</label>
+      <input type="text" id="adminName" placeholder="Enter full name" />
+
+      <label>Email</label>
+      <input type="email" id="adminEmail" placeholder="Enter email" />
+
+      <label>Temporary Password</label>
+      <input type="text" id="adminPassword" placeholder="Set temporary password" />
+
+      <label>Role</label>
+      <select id="adminRole">
+        <option>Airport Operations Manager (AOM)</option>
+        <option>Senior Airport Safety Officer (SASO)</option>
+        <option selected>Airport Safety Officer (ASO)</option>
+        <option>Team Leader Grounds Staff</option>
+        <option>Grounds Staff</option>
+        <option>Chief Operations Officer</option>
+        <option>Wild Life Manager</option>
+        <option>Wildlife Officer</option>
+      </select>
+
+      <label>Airport</label>
+      <input type="text" id="adminAirport" value="PMIA" />
+
+      <label>Phone</label>
+      <input type="text" id="adminPhone" placeholder="Phone number" />
+
+      <div class="actions">
+        <button class="btn-accent" id="createUserBtn">Create User</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Admin Instructions</h2>
+      <div class="small">
+        ✔ Only AOM, SASO, COO can create users<br><br>
+        ✔ This will:<br>
+        - Create login account<br>
+        - Save user profile<br>
+        - Add emergency contacts<br><br>
+
+        ⚠ After creation, admin must log back in again.
+      </div>
+    </div>
+
+  </div>
+</div>
+function isAdminRole(role = "") {
+  return [
+    "Airport Operations Manager (AOM)",
+    "Senior Airport Safety Officer (SASO)",
+    "Chief Operations Officer"
+  ].includes(role);
+}
+if (!isAdminRole(currentUserData?.role)) {
+  document.querySelector('[data-tab="adminTab"]').style.display = "none";
+}
+document.getElementById("createUserBtn").addEventListener("click", async () => {
+
+  if (!isAdminRole(currentUserData?.role)) {
+    showStatus("Unauthorized access.", "error");
+    return;
+  }
+
+  const name = document.getElementById("adminName").value.trim();
+  const email = document.getElementById("adminEmail").value.trim();
+  const password = document.getElementById("adminPassword").value.trim();
+  const role = document.getElementById("adminRole").value;
+  const airport = document.getElementById("adminAirport").value.trim();
+  const phone = document.getElementById("adminPhone").value.trim();
+
+  if (!name || !email || !password) {
+    showStatus("Please fill all required fields.", "warn");
+    return;
+  }
+
+  try {
+    // Create new Firebase Auth user
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = cred.user.uid;
+
+    // Save profile
+    await setDoc(doc(db, "users", uid), {
+      uid,
+      name,
+      email,
+      role,
+      airport,
+      phone,
+      createdAt: serverTimestamp()
+    });
+
+    // Add default emergency contacts
+    const contactsRef = collection(db, "users", uid, "contacts");
+
+    const defaults = [
+      { name: "Airport Rescue Fire Fighter (RFF)", role: "RFF", phone: "Emergency Line" },
+      { name: "ATC Contact", role: "Air Traffic Control", phone: "Add number" },
+      { name: "Medical Response", role: "Medical", phone: "Add number" }
+    ];
+
+    for (const c of defaults) {
+      await addDoc(contactsRef, c);
+    }
+
+    showStatus("User created successfully. Please log back in.", "ok");
+
+    // Reset form
+    document.getElementById("adminName").value = "";
+    document.getElementById("adminEmail").value = "";
+    document.getElementById("adminPassword").value = "";
+    document.getElementById("adminPhone").value = "";
+
+    // Logout (required due to Firebase limitation)
+    await signOut(auth);
+
+  } catch (err) {
+    console.error(err);
+    showStatus(err.message, "error");
+  }
+
+});
