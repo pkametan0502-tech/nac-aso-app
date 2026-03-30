@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NAC ASO System V10</title>
+  <title>NAC ASO System V11</title>
   <style>
     * { box-sizing: border-box; }
 
@@ -365,6 +365,12 @@
       padding: 18px;
     }
 
+    @keyframes emergencyFlash {
+      0% { background: rgba(180, 0, 0, 0.96); }
+      50% { background: rgba(110, 0, 0, 0.96); }
+      100% { background: rgba(180, 0, 0, 0.96); }
+    }
+
     @media (max-width: 980px) {
       .grid-2, .grid-3, .grid-4 {
         grid-template-columns: 1fr;
@@ -378,7 +384,7 @@
 </head>
 <body>
   <div class="topbar">
-    <h1>NAC ASO System V10</h1>
+    <h1>NAC ASO System V11</h1>
     <p>National Airports Corporation – Airport Safety, Wildlife, Incident & Emergency Reporting</p>
   </div>
 
@@ -725,6 +731,23 @@
 
           <div class="card">
             <h2>Emergency Alert</h2>
+
+            <label>Target Airport</label>
+            <select id="emergencyAirport">
+              <option value="PMIA">PMIA</option>
+              <option value="NADZAB">Nadzab</option>
+              <option value="TOKUA">Tokua</option>
+              <option value="MT HAGEN">Mt Hagen</option>
+              <option value="WEWAK">Wewak</option>
+              <option value="KAVIENG">Kavieng</option>
+              <option value="VANIMO">Vanimo</option>
+              <option value="MADANG">Madang</option>
+              <option value="GOROKA">Goroka</option>
+              <option value="DARU">Daru</option>
+              <option value="KEREMA">Kerema</option>
+              <option value="ALL PNG AIRPORTS">ALL PNG AIRPORTS</option>
+            </select>
+
             <label>Alert Message</label>
             <textarea id="emergencyMessage" placeholder="Describe the emergency alert message"></textarea>
 
@@ -740,7 +763,54 @@
     </section>
 
     <div class="footer-note">
-      NAC ASO System V10 – Full operational web app build
+      NAC ASO System V11 – Emergency alert enabled for PNG airport operations
+    </div>
+  </div>
+
+  <!-- EMERGENCY POPUP -->
+  <div id="emergencyPopup" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(139,0,0,0.96);
+    color:white;
+    z-index:99999;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:24px;
+    animation: emergencyFlash 1s infinite;
+  ">
+    <div style="max-width:700px;background:rgba(0,0,0,0.18);padding:24px;border-radius:18px;border:2px solid rgba(255,255,255,0.25);">
+      <div style="font-size:42px;font-weight:bold;margin-bottom:10px;">🚨 EMERGENCY ALERT 🚨</div>
+      <div id="alertMessage" style="font-size:26px;font-weight:bold;margin-bottom:12px;">Emergency Message</div>
+      <div id="alertAirport" style="font-size:18px;margin-bottom:8px;">Airport</div>
+      <div id="alertTime" style="font-size:15px;opacity:0.92;margin-bottom:18px;">Time</div>
+      <div id="alertCreator" style="font-size:15px;opacity:0.92;margin-bottom:22px;">Created by</div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button id="acknowledgeAlertBtn" style="
+          width:auto;
+          min-width:180px;
+          padding:14px 18px;
+          background:white;
+          color:#b71c1c;
+          font-weight:bold;
+          border:none;
+          border-radius:12px;
+        ">Acknowledge</button>
+
+        <button id="silenceAlertBtn" style="
+          width:auto;
+          min-width:180px;
+          padding:14px 18px;
+          background:#111827;
+          color:white;
+          font-weight:bold;
+          border:none;
+          border-radius:12px;
+        ">Silence Alarm</button>
+      </div>
     </div>
   </div>
 
@@ -765,7 +835,8 @@
       getDocs,
       query,
       orderBy,
-      serverTimestamp
+      serverTimestamp,
+      onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     import {
@@ -793,6 +864,9 @@
     let currentUserData = null;
     let currentGps = "";
     let allReports = [];
+    let emergencyUnsubscribe = null;
+    let currentEmergencyAudio = null;
+    let lastEmergencyDocId = null;
 
     const defaultContacts = [
       { name: "Airport Fire Service", role: "Fire", phone: "Emergency Line" },
@@ -866,6 +940,95 @@
       document.body.style.backgroundColor = "#f3f6fb";
     }
 
+    function getAirportGroup(airportName = "") {
+      return (airportName || "").trim().toUpperCase();
+    }
+
+    function shouldShowEmergencyForUser(alertData) {
+      if (!currentUserData) return false;
+
+      const userAirport = getAirportGroup(currentUserData.airport);
+      const alertAirport = getAirportGroup(alertData.airport);
+
+      if (!alertAirport) return true;
+      if (alertAirport === userAirport) return true;
+
+      if (["PNG", "PAPUA NEW GUINEA", "NATIONAL", "ALL", "ALL AIRPORTS", "ALL PNG AIRPORTS"].includes(alertAirport)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    function playEmergencyAlarm() {
+      stopEmergencyAlarm();
+      currentEmergencyAudio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
+      currentEmergencyAudio.loop = true;
+      currentEmergencyAudio.play().catch(err => {
+        console.warn("Alarm autoplay blocked:", err);
+      });
+    }
+
+    function stopEmergencyAlarm() {
+      if (currentEmergencyAudio) {
+        currentEmergencyAudio.pause();
+        currentEmergencyAudio.currentTime = 0;
+        currentEmergencyAudio = null;
+      }
+    }
+
+    function vibrateEmergency() {
+      if (navigator.vibrate) {
+        navigator.vibrate([400, 150, 400, 150, 700, 200, 700]);
+      }
+    }
+
+    function showEmergencyPopup(alertDocId, data) {
+      lastEmergencyDocId = alertDocId;
+
+      document.getElementById("alertMessage").textContent = data.message || "Emergency Alert";
+      document.getElementById("alertAirport").textContent = `Airport: ${data.airport || "All Airports"}`;
+      document.getElementById("alertTime").textContent = `Time: ${formatDate(data.createdAt?.seconds ? data.createdAt.seconds * 1000 : data.createdAt)}`;
+      document.getElementById("alertCreator").textContent = `Created by: ${data.createdBy || "-"} (${data.role || "-"})`;
+
+      document.getElementById("emergencyPopup").style.display = "flex";
+
+      playEmergencyAlarm();
+      vibrateEmergency();
+    }
+
+    function closeEmergencyPopup() {
+      document.getElementById("emergencyPopup").style.display = "none";
+      stopEmergencyAlarm();
+    }
+
+    function startEmergencyListener() {
+      if (emergencyUnsubscribe) {
+        emergencyUnsubscribe();
+        emergencyUnsubscribe = null;
+      }
+
+      const q = query(collection(db, "emergency_alerts"), orderBy("createdAt", "desc"));
+
+      emergencyUnsubscribe = onSnapshot(q, snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if (change.type !== "added") return;
+
+          const docId = change.doc.id;
+          const data = change.doc.data();
+
+          if (lastEmergencyDocId === docId) return;
+          if (!data || data.status !== "active") return;
+
+          if (shouldShowEmergencyForUser(data)) {
+            showEmergencyPopup(docId, data);
+          }
+        });
+      }, err => {
+        console.error("Emergency listener error:", err);
+      });
+    }
+
     async function ensureUserProfile(user, extra = {}) {
       const userRef = doc(db, "users", user.uid);
       const snap = await getDoc(userRef);
@@ -925,6 +1088,13 @@
       document.getElementById("profileAirport").textContent = currentUserData.airport || "No Airport";
       document.getElementById("profilePhone").textContent = currentUserData.phone || "No phone";
       document.getElementById("profilePhoneInput").value = currentUserData.phone || "";
+
+      const emergencyAirportSelect = document.getElementById("emergencyAirport");
+      if (emergencyAirportSelect) {
+        const userAirport = currentUserData.airport || "PMIA";
+        const matchingOption = Array.from(emergencyAirportSelect.options).find(opt => opt.value === userAirport);
+        emergencyAirportSelect.value = matchingOption ? userAirport : "ALL PNG AIRPORTS";
+      }
 
       const avatar = document.getElementById("profileAvatar");
       avatar.src = currentUserData.photoURL && currentUserData.photoURL.trim()
@@ -1185,8 +1355,8 @@
         return;
       }
 
-      const query = encodeURIComponent(term + " wildlife animal airport hazard behavior species characteristics");
-      window.open(`https://www.google.com/search?q=${query}`, "_blank");
+      const queryText = encodeURIComponent(term + " wildlife animal airport hazard behavior species characteristics");
+      window.open(`https://www.google.com/search?q=${queryText}`, "_blank");
       renderWildlifeHint(term);
       showStatus(`Opened Google search for "${term}".`);
     }
@@ -1199,8 +1369,8 @@
         return;
       }
 
-      const query = encodeURIComponent(term + " wildlife animal");
-      window.open(`https://www.google.com/search?tbm=isch&q=${query}`, "_blank");
+      const queryText = encodeURIComponent(term + " wildlife animal");
+      window.open(`https://www.google.com/search?tbm=isch&q=${queryText}`, "_blank");
       renderWildlifeHint(term);
       showStatus(`Opened Google image search for "${term}".`);
     }
@@ -1213,12 +1383,13 @@
       document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add("active");
     }
 
-    // Tabs
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
     });
 
-    // Password toggle
+    document.getElementById("acknowledgeAlertBtn").addEventListener("click", closeEmergencyPopup);
+    document.getElementById("silenceAlertBtn").addEventListener("click", stopEmergencyAlarm);
+
     document.getElementById("showLoginPassword").addEventListener("change", function () {
       document.getElementById("loginPassword").type = this.checked ? "text" : "password";
     });
@@ -1227,7 +1398,6 @@
       document.getElementById("signupPassword").type = this.checked ? "text" : "password";
     });
 
-    // Wildlife
     document.getElementById("searchWildlifeBtn").addEventListener("click", openWildlifeGoogleSearch);
     document.getElementById("searchWildlifeImagesBtn").addEventListener("click", openWildlifeGoogleImages);
     document.getElementById("wildlifeSearch").addEventListener("input", e => renderWildlifeHint(e.target.value.trim()));
@@ -1238,11 +1408,9 @@
       }
     });
 
-    // Reports filter
     document.getElementById("applyReportFilterBtn").addEventListener("click", applyReportFilter);
     document.getElementById("clearReportFilterBtn").addEventListener("click", clearReportFilter);
 
-    // Login
     document.getElementById("loginBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1262,7 +1430,6 @@
       }
     });
 
-    // Signup
     document.getElementById("signupBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1311,7 +1478,6 @@
       }
     });
 
-    // Logout
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       try {
         await signOut(auth);
@@ -1322,7 +1488,6 @@
       }
     });
 
-    // Save profile
     document.getElementById("saveProfileBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1362,7 +1527,6 @@
       }
     });
 
-    // Quick backgrounds
     document.getElementById("bgDefaultBtn").addEventListener("click", async () => {
       try {
         const user = auth.currentUser;
@@ -1415,7 +1579,6 @@
       }
     });
 
-    // GPS
     document.getElementById("captureLocationBtn").addEventListener("click", () => {
       clearStatus();
 
@@ -1437,7 +1600,6 @@
       );
     });
 
-    // Submit report
     document.getElementById("submitReportBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1503,7 +1665,6 @@
       }
     });
 
-    // Add contact
     document.getElementById("addContactBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1541,7 +1702,6 @@
       }
     });
 
-    // Create emergency alert
     document.getElementById("sendEmergencyAlertBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1551,6 +1711,7 @@
           return;
         }
 
+        const targetAirport = document.getElementById("emergencyAirport").value.trim();
         const message = document.getElementById("emergencyMessage").value.trim() ||
           `Emergency alert issued by ${currentUserData?.name || user.email}`;
 
@@ -1558,7 +1719,8 @@
           createdAt: serverTimestamp(),
           createdBy: currentUserData?.name || user.email,
           role: currentUserData?.role || "",
-          airport: currentUserData?.airport || "",
+          airport: targetAirport || currentUserData?.airport || "ALL PNG AIRPORTS",
+          sourceAirport: currentUserData?.airport || "",
           message,
           status: "active"
         });
@@ -1583,6 +1745,7 @@
           await loadContacts(user.uid);
           await loadReports();
           await loadAlerts();
+          startEmergencyListener();
           renderWildlifeHint("");
           setActiveTab("dashboardTab");
         } catch (error) {
@@ -1594,6 +1757,12 @@
         appSection.classList.add("hidden");
         currentUserData = null;
         allReports = [];
+        lastEmergencyDocId = null;
+        if (emergencyUnsubscribe) {
+          emergencyUnsubscribe();
+          emergencyUnsubscribe = null;
+        }
+        closeEmergencyPopup();
         applyBackground("default");
       }
     });
