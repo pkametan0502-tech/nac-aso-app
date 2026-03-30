@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NAC ASO System V12 Operational</title>
+  <title>NAC ASO System V13 Operational</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -37,7 +37,7 @@
     }
     .topbar h1{margin:0;font-size:24px}
     .topbar p{margin:6px 0 0;color:var(--muted);font-size:14px}
-    .wrap{max-width:1300px;margin:0 auto;padding:18px}
+    .wrap{max-width:1350px;margin:0 auto;padding:18px}
     .status{
       display:none;
       padding:12px 14px;
@@ -53,6 +53,7 @@
     .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
     .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
     .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .grid-5{grid-template-columns:repeat(5,minmax(0,1fr))}
     .card{
       background:rgba(17,24,39,.92);
       border:1px solid var(--line);
@@ -139,7 +140,7 @@
       border:1px solid var(--line);
       color:#cbd5e1;
     }
-    .report-item,.contact-item,.alert-item{
+    .report-item,.contact-item,.alert-item,.log-item{
       padding:14px;
       border:1px solid var(--line);
       border-radius:12px;
@@ -222,6 +223,12 @@
       gap:10px;
       margin-bottom:12px;
     }
+    .filters-logs{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:10px;
+      margin-bottom:12px;
+    }
     .inline{
       display:flex;
       gap:8px;
@@ -249,8 +256,8 @@
     .popup h2{color:#fecaca;margin-bottom:8px}
     .popup .meta{color:#cbd5e1;font-size:14px;line-height:1.6}
     .right{margin-left:auto}
-    @media (max-width: 1000px){
-      .grid-4,.grid-3,.grid-2,.filters{grid-template-columns:1fr}
+    @media (max-width: 1100px){
+      .grid-5,.grid-4,.grid-3,.grid-2,.filters,.filters-logs{grid-template-columns:1fr}
     }
     @media (max-width: 640px){
       .topbar h1{font-size:20px}
@@ -260,18 +267,16 @@
 </head>
 <body>
   <div class="topbar">
-    <h1>NAC ASO System V12 Operational</h1>
-    <p>National Airports Corporation – Airport Safety, Wildlife, Incident & Emergency Reporting</p>
+    <h1>NAC ASO System V13 Operational</h1>
+    <p>National Airports Corporation – Airport Safety, Wildlife, Incident, Daily Log & Emergency Reporting</p>
   </div>
 
   <div class="wrap">
     <div id="statusBox" class="status"></div>
 
-    <!-- AUTH -->
     <section id="authSection" class="grid grid-2">
       <div class="card">
         <h2>Login</h2>
-
         <label>Email</label>
         <input type="email" id="loginEmail" placeholder="Enter your email" />
 
@@ -330,7 +335,6 @@
       </div>
     </section>
 
-    <!-- APP -->
     <section id="appSection" class="hidden">
       <div class="inline" style="margin-bottom:14px;">
         <span class="pill" id="userInfoPill">Not logged in</span>
@@ -341,22 +345,22 @@
 
       <div class="tabs">
         <button class="tab-btn active" data-tab="dashboardTab">Dashboard</button>
+        <button class="tab-btn" data-tab="dailyLogTab">Daily Log</button>
         <button class="tab-btn" data-tab="reportsTab">Reports</button>
         <button class="tab-btn" data-tab="profileTab">Profile</button>
         <button class="tab-btn" data-tab="wildlifeTab">Wildlife</button>
         <button class="tab-btn" data-tab="emergencyTab">Emergency</button>
       </div>
 
-      <!-- DASHBOARD -->
       <div id="dashboardTab" class="tab-panel active">
-        <div class="grid grid-4">
+        <div class="grid grid-5">
           <div class="kpi">
             <div class="num" id="kpiTotal">0</div>
             <div class="lbl">Total Reports</div>
           </div>
           <div class="kpi">
             <div class="num" id="kpiToday">0</div>
-            <div class="lbl">Today</div>
+            <div class="lbl">Today Reports</div>
           </div>
           <div class="kpi">
             <div class="num" id="kpiWildlife">0</div>
@@ -365,6 +369,10 @@
           <div class="kpi">
             <div class="num" id="kpiOpen">0</div>
             <div class="lbl">Open Reports</div>
+          </div>
+          <div class="kpi">
+            <div class="num" id="kpiDailyLogs">0</div>
+            <div class="lbl">Today Daily Logs</div>
           </div>
         </div>
 
@@ -386,16 +394,113 @@
           </div>
         </div>
 
-        <div class="card" style="margin-top:16px;">
-          <div class="section-title">
-            <h2 style="margin-bottom:0;">Recent Reports</h2>
-            <span class="pill" id="recentReportsPill">0 Items</span>
+        <div class="grid grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">Recent Reports</h2>
+              <span class="pill" id="recentReportsPill">0 Items</span>
+            </div>
+            <div id="recentReportsList"></div>
           </div>
-          <div id="recentReportsList"></div>
+
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">Recent Daily Logs</h2>
+              <span class="pill" id="recentDailyLogsPill">0 Items</span>
+            </div>
+            <div id="recentDailyLogsList"></div>
+          </div>
         </div>
       </div>
 
-      <!-- REPORTS -->
+      <div id="dailyLogTab" class="tab-panel">
+        <div class="grid grid-2">
+          <div class="card">
+            <h2>ASO Daily Log Entry</h2>
+
+            <label>Log Date</label>
+            <input type="date" id="logDate" />
+
+            <label>Shift</label>
+            <select id="logShift">
+              <option>A Shift</option>
+              <option>B Shift</option>
+              <option>C Shift</option>
+            </select>
+
+            <label>Shift Start Time</label>
+            <input type="time" id="logStartTime" />
+
+            <label>Weather Condition</label>
+            <select id="logWeather">
+              <option>Fine</option>
+              <option>Cloudy</option>
+              <option>Scattered Cloud</option>
+              <option>Broken Cloud</option>
+              <option>Rain</option>
+              <option>Heavy Rain</option>
+              <option>Storm</option>
+              <option>Windy</option>
+              <option>Fog / Reduced Visibility</option>
+            </select>
+
+            <label>Inspection Area</label>
+            <input type="text" id="logArea" placeholder="Runway / taxiway / apron / terminal / perimeter" />
+
+            <label>Inspection Findings</label>
+            <textarea id="logFindings" placeholder="Complete inspection findings"></textarea>
+
+            <label>Action Taken</label>
+            <textarea id="logActionTaken" placeholder="What action was taken during the shift"></textarea>
+
+            <label>Handover Notes</label>
+            <textarea id="logHandoverNotes" placeholder="Notes for next shift"></textarea>
+
+            <div class="actions">
+              <button class="btn-primary" id="submitDailyLogBtn">Submit Daily Log</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">All Daily Logs</h2>
+              <span class="pill" id="allDailyLogsPill">0 Items</span>
+            </div>
+
+            <div class="filters-logs">
+              <input type="date" id="filterLogDate" />
+              <select id="filterLogShift">
+                <option value="">All Shifts</option>
+                <option>A Shift</option>
+                <option>B Shift</option>
+                <option>C Shift</option>
+              </select>
+              <select id="filterLogWeather">
+                <option value="">All Weather</option>
+                <option>Fine</option>
+                <option>Cloudy</option>
+                <option>Scattered Cloud</option>
+                <option>Broken Cloud</option>
+                <option>Rain</option>
+                <option>Heavy Rain</option>
+                <option>Storm</option>
+                <option>Windy</option>
+                <option>Fog / Reduced Visibility</option>
+              </select>
+              <input type="text" id="filterLogOfficer" placeholder="Search officer name" />
+              <input type="text" id="filterLogSearch" placeholder="Search findings / area / handover" />
+            </div>
+
+            <div class="actions" style="margin-top:0;">
+              <button class="btn-muted" id="applyLogFiltersBtn">Apply Filters</button>
+              <button class="btn-warning" id="clearLogFiltersBtn">Clear Filters</button>
+            </div>
+
+            <div id="allDailyLogsList" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      </div>
+
       <div id="reportsTab" class="tab-panel">
         <div class="grid grid-2">
           <div class="card">
@@ -499,7 +604,6 @@
         </div>
       </div>
 
-      <!-- PROFILE -->
       <div id="profileTab" class="tab-panel">
         <div class="grid grid-2">
           <div class="card">
@@ -529,7 +633,6 @@
         </div>
       </div>
 
-      <!-- WILDLIFE -->
       <div id="wildlifeTab" class="tab-panel">
         <div class="grid grid-2">
           <div class="card">
@@ -551,7 +654,6 @@
         </div>
       </div>
 
-      <!-- EMERGENCY -->
       <div id="emergencyTab" class="tab-panel">
         <div class="grid grid-2">
           <div class="card">
@@ -580,7 +682,6 @@
     </section>
   </div>
 
-  <!-- POPUP -->
   <div class="popup-overlay" id="emergencyPopupOverlay">
     <div class="popup">
       <h2>Emergency Alert</h2>
@@ -647,6 +748,7 @@
     let currentGps = "";
     let allReports = [];
     let allAlerts = [];
+    let allDailyLogs = [];
     let emergencyUnsubscribe = null;
     let currentEmergencyAudio = null;
     let activePopupAlertId = null;
@@ -662,6 +764,8 @@
     const statusBox = document.getElementById("statusBox");
     const authSection = document.getElementById("authSection");
     const appSection = document.getElementById("appSection");
+
+    document.getElementById("logDate").value = new Date().toISOString().split("T")[0];
 
     function showStatus(message, type = "ok") {
       statusBox.className = `status ${type}`;
@@ -754,9 +858,7 @@
     }
 
     async function ensureUserNameCorrect() {
-      if (!auth.currentUser) return;
-      if (!currentUserData) return;
-
+      if (!auth.currentUser || !currentUserData) return;
       if ((currentUserData.name || "").trim() === "pkametan0502") {
         await updateDoc(doc(db, "users", auth.currentUser.uid), {
           name: "Casper Kametan"
@@ -777,10 +879,7 @@
       for (const docSnap of snap.docs) {
         const data = docSnap.data();
 
-        if (
-          data.name === "Airport Fire Service" ||
-          data.role === "Fire"
-        ) {
+        if (data.name === "Airport Fire Service" || data.role === "Fire") {
           await updateDoc(doc(db, "users", auth.currentUser.uid, "contacts", docSnap.id), {
             name: "Airport Rescue Fire Fighter (RFF)",
             role: "RFF",
@@ -927,6 +1026,7 @@
         currentUserData = null;
         allReports = [];
         allAlerts = [];
+        allDailyLogs = [];
         authSection.classList.remove("hidden");
         appSection.classList.add("hidden");
         updateTopPills();
@@ -952,6 +1052,7 @@
         await loadUserProfile();
         await loadContacts(user.uid);
         await loadReports();
+        await loadDailyLogs();
         await loadAlerts();
         startEmergencyListener();
 
@@ -997,7 +1098,6 @@
       }
 
       const contacts = snap.docs.map(d => d.data());
-
       contacts.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
       for (const c of contacts) {
@@ -1125,6 +1225,57 @@
       }
     });
 
+    document.getElementById("submitDailyLogBtn").addEventListener("click", async () => {
+      if (!auth.currentUser || !currentUserData) return;
+
+      const logDate = document.getElementById("logDate").value;
+      const shift = document.getElementById("logShift").value;
+      const startTime = document.getElementById("logStartTime").value;
+      const weather = document.getElementById("logWeather").value;
+      const area = document.getElementById("logArea").value.trim();
+      const findings = document.getElementById("logFindings").value.trim();
+      const actionTaken = document.getElementById("logActionTaken").value.trim();
+      const handoverNotes = document.getElementById("logHandoverNotes").value.trim();
+
+      if (!logDate || !startTime || !findings) {
+        showStatus("Enter log date, start time and inspection findings.", "warn");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "daily_logs"), {
+          logDate,
+          shift,
+          startTime,
+          weather,
+          area,
+          findings,
+          actionTaken,
+          handoverNotes,
+          airport: currentUserData.airport || "PMIA",
+          userId: auth.currentUser.uid,
+          userName: currentUserData.name || "",
+          userRole: currentUserData.role || "",
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById("logDate").value = new Date().toISOString().split("T")[0];
+        document.getElementById("logShift").value = "A Shift";
+        document.getElementById("logStartTime").value = "";
+        document.getElementById("logWeather").value = "Fine";
+        document.getElementById("logArea").value = "";
+        document.getElementById("logFindings").value = "";
+        document.getElementById("logActionTaken").value = "";
+        document.getElementById("logHandoverNotes").value = "";
+
+        await loadDailyLogs();
+        showStatus("Daily log submitted.");
+      } catch (err) {
+        console.error(err);
+        showStatus("Could not submit daily log.", "error");
+      }
+    });
+
     async function loadReports() {
       const reportsRef = collection(db, "reports");
       let snap;
@@ -1138,7 +1289,6 @@
           );
           snap = await getDocs(q);
         } catch (indexErr) {
-          console.warn("Falling back to simple airport query:", indexErr);
           const q = query(
             reportsRef,
             where("airport", "==", currentUserData.airport || "PMIA")
@@ -1157,13 +1307,53 @@
           return bd - ad;
         });
 
-        renderKpis(allReports);
+        renderKpis();
         renderCharts(allReports);
         renderReports(allReports.slice(0, 5), "recentReportsList", "recentReportsPill");
         applyReportFilters();
       } catch (err) {
         console.error(err);
         showStatus("Could not load reports.", "error");
+      }
+    }
+
+    async function loadDailyLogs() {
+      const logsRef = collection(db, "daily_logs");
+      let snap;
+
+      try {
+        try {
+          const q = query(
+            logsRef,
+            where("airport", "==", currentUserData.airport || "PMIA"),
+            orderBy("createdAt", "desc")
+          );
+          snap = await getDocs(q);
+        } catch (indexErr) {
+          const q = query(
+            logsRef,
+            where("airport", "==", currentUserData.airport || "PMIA")
+          );
+          snap = await getDocs(q);
+        }
+
+        allDailyLogs = [];
+        snap.forEach(docSnap => {
+          allDailyLogs.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        allDailyLogs.sort((a, b) => {
+          const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
+          const bd = fromFirestoreDate(b.createdAt)?.getTime() || 0;
+          return bd - ad;
+        });
+
+        renderKpis();
+        renderDailyLogs(allDailyLogs.slice(0, 5), "recentDailyLogsList", "recentDailyLogsPill");
+        applyDailyLogFilters();
+      } catch (err) {
+        console.error(err);
+        showStatus("Could not load daily logs.", "error");
       }
     }
 
@@ -1237,6 +1427,43 @@
       });
     }
 
+    function renderDailyLogs(list, targetId, pillId = null) {
+      const box = document.getElementById(targetId);
+      box.innerHTML = "";
+
+      if (pillId) {
+        document.getElementById(pillId).textContent = `${list.length} Items`;
+      }
+
+      if (list.length === 0) {
+        box.innerHTML = '<div class="small">No daily logs found.</div>';
+        return;
+      }
+
+      list.forEach(log => {
+        const div = document.createElement("div");
+        div.className = "log-item";
+        div.innerHTML = `
+          <strong>${safeText(log.userName || "-")}</strong><br>
+          <span class="badge">${safeText(log.shift || "-")}</span>
+          <span class="badge">${safeText(log.weather || "-")}</span>
+          <span class="badge">${safeText(log.logDate || "-")}</span>
+
+          <div style="margin-top:8px;"><strong>Findings:</strong> ${safeText(log.findings || "-")}</div>
+          <div class="report-meta">
+            Role: ${safeText(log.userRole || "-")}<br>
+            Airport: ${safeText(log.airport || "-")}<br>
+            Area: ${safeText(log.area || "-")}<br>
+            Start Time: ${safeText(log.startTime || "-")}<br>
+            Action Taken: ${safeText(log.actionTaken || "-")}<br>
+            Handover Notes: ${safeText(log.handoverNotes || "-")}<br>
+            Submitted: ${formatDate(fromFirestoreDate(log.createdAt))}
+          </div>
+        `;
+        box.appendChild(div);
+      });
+    }
+
     async function updateReportStatus(reportId, status) {
       if (!canManageReports(currentUserData?.role || "")) {
         showStatus("You are not authorized to manage reports.", "error");
@@ -1260,11 +1487,11 @@
       }
     }
 
-    function renderKpis(reports) {
+    function renderKpis() {
       const today = todayDateKey();
 
-      const total = reports.length;
-      const todayCount = reports.filter(r => {
+      const total = allReports.length;
+      const todayCount = allReports.filter(r => {
         const d = fromFirestoreDate(r.createdAt);
         if (!d) return false;
         const y = d.getFullYear();
@@ -1273,13 +1500,15 @@
         return `${y}-${m}-${day}` === today;
       }).length;
 
-      const wildlife = reports.filter(r => (r.type || "").toLowerCase().includes("wildlife")).length;
-      const openReports = reports.filter(r => (r.status || "Open") !== "Closed").length;
+      const wildlife = allReports.filter(r => (r.type || "").toLowerCase().includes("wildlife")).length;
+      const openReports = allReports.filter(r => (r.status || "Open") !== "Closed").length;
+      const todayLogs = allDailyLogs.filter(l => (l.logDate || "") === today).length;
 
       document.getElementById("kpiTotal").textContent = total;
       document.getElementById("kpiToday").textContent = todayCount;
       document.getElementById("kpiWildlife").textContent = wildlife;
       document.getElementById("kpiOpen").textContent = openReports;
+      document.getElementById("kpiDailyLogs").textContent = todayLogs;
     }
 
     function renderBarChart(targetId, countsObj) {
@@ -1343,6 +1572,30 @@
       renderReports(filtered, "allReportsList", "allReportsPill");
     }
 
+    function applyDailyLogFilters() {
+      const logDate = document.getElementById("filterLogDate").value;
+      const shift = document.getElementById("filterLogShift").value;
+      const weather = document.getElementById("filterLogWeather").value;
+      const officer = document.getElementById("filterLogOfficer").value.trim().toLowerCase();
+      const search = document.getElementById("filterLogSearch").value.trim().toLowerCase();
+
+      let filtered = [...allDailyLogs];
+
+      if (logDate) filtered = filtered.filter(l => (l.logDate || "") === logDate);
+      if (shift) filtered = filtered.filter(l => (l.shift || "") === shift);
+      if (weather) filtered = filtered.filter(l => (l.weather || "") === weather);
+      if (officer) filtered = filtered.filter(l => (l.userName || "").toLowerCase().includes(officer));
+
+      if (search) {
+        filtered = filtered.filter(l => {
+          const hay = `${l.findings || ""} ${l.area || ""} ${l.actionTaken || ""} ${l.handoverNotes || ""}`.toLowerCase();
+          return hay.includes(search);
+        });
+      }
+
+      renderDailyLogs(filtered, "allDailyLogsList", "allDailyLogsPill");
+    }
+
     document.getElementById("applyFiltersBtn").addEventListener("click", applyReportFilters);
     document.getElementById("clearFiltersBtn").addEventListener("click", () => {
       document.getElementById("filterType").value = "";
@@ -1350,6 +1603,16 @@
       document.getElementById("filterStatus").value = "";
       document.getElementById("filterSearch").value = "";
       applyReportFilters();
+    });
+
+    document.getElementById("applyLogFiltersBtn").addEventListener("click", applyDailyLogFilters);
+    document.getElementById("clearLogFiltersBtn").addEventListener("click", () => {
+      document.getElementById("filterLogDate").value = "";
+      document.getElementById("filterLogShift").value = "";
+      document.getElementById("filterLogWeather").value = "";
+      document.getElementById("filterLogOfficer").value = "";
+      document.getElementById("filterLogSearch").value = "";
+      applyDailyLogFilters();
     });
 
     document.getElementById("wildlifeSearchBtn").addEventListener("click", () => {
@@ -1418,8 +1681,7 @@
             where("airport", "==", currentUserData.airport || "PMIA"),
             orderBy("createdAt", "desc")
           ));
-        } catch (indexErr) {
-          console.warn("Falling back to simple airport query for alerts:", indexErr);
+        } catch {
           snap = await getDocs(query(
             collection(db, "emergency_alerts"),
             where("airport", "==", currentUserData.airport || "PMIA")
@@ -1481,7 +1743,7 @@
         });
       } catch (err) {
         console.error(err);
-        box.innerHTML = '<div class="small">Could not load alerts.</div>';
+        document.getElementById("alertList").innerHTML = '<div class="small">Could not load alerts.</div>';
       }
     }
 
@@ -1566,9 +1828,7 @@
         currentEmergencyAudio = new Audio("data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTAAAAAA/////wAAAP///wAAAP///wAAAP///wAA");
         currentEmergencyAudio.loop = true;
         currentEmergencyAudio.play().catch(() => {});
-      } catch (e) {
-        console.warn("Could not play emergency audio", e);
-      }
+      } catch {}
     }
 
     function stopEmergencySound() {
