@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NAC ASO System V9</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     :root {
       --primary: #002b52;
@@ -44,16 +42,8 @@
       z-index: 20;
     }
 
-    .topbar h1 {
-      margin: 0;
-      font-size: 26px;
-    }
-
-    .topbar p {
-      margin: 6px 0 0;
-      font-size: 13px;
-      opacity: 0.95;
-    }
+    .topbar h1 { margin: 0; font-size: 26px; }
+    .topbar p { margin: 6px 0 0; font-size: 13px; opacity: 0.95; }
 
     .wrap {
       max-width: 1400px;
@@ -61,26 +51,12 @@
       padding: 16px;
     }
 
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
 
-    .grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .grid-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .grid-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .grid-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
+    .grid { display: grid; gap: 16px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
     .card {
       background: rgba(255,255,255,0.96);
@@ -91,9 +67,7 @@
       backdrop-filter: blur(6px);
     }
 
-    .card h2, .card h3 {
-      margin-top: 0;
-    }
+    .card h2, .card h3 { margin-top: 0; }
 
     label {
       display: block;
@@ -155,9 +129,7 @@
       margin-top: 14px;
     }
 
-    .actions button {
-      flex: 1 1 180px;
-    }
+    .actions button { flex: 1 1 180px; }
 
     .kpi {
       text-align: center;
@@ -213,6 +185,7 @@
       border-radius: 10px;
       margin-top: 10px;
       border: 1px solid var(--border);
+      object-fit: cover;
     }
 
     .profile-box {
@@ -229,6 +202,7 @@
       object-fit: cover;
       border: 3px solid var(--accent);
       background: #eef3fa;
+      display: block;
     }
 
     .small {
@@ -332,14 +306,24 @@
       padding: 20px;
     }
 
-    @media (max-width: 980px) {
-      .grid-2, .grid-3, .grid-4 {
-        grid-template-columns: 1fr;
-      }
+    .password-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: normal;
+    }
 
-      .topbar h1 {
-        font-size: 22px;
-      }
+    .password-row input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    @media (max-width: 980px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .topbar h1 { font-size: 22px; }
     }
   </style>
 </head>
@@ -352,7 +336,6 @@
   <div class="wrap">
     <div id="statusBox" class="status"></div>
 
-    <!-- AUTH -->
     <section id="authSection" class="grid grid-2">
       <div class="card">
         <h2>Login</h2>
@@ -361,6 +344,10 @@
 
         <label>Password</label>
         <input type="password" id="loginPassword" placeholder="Enter your password" />
+        <label class="password-row">
+          <input type="checkbox" id="showLoginPassword" />
+          Show Password
+        </label>
 
         <div class="actions">
           <button class="btn-primary" id="loginBtn">Login</button>
@@ -377,6 +364,10 @@
 
         <label>Password</label>
         <input type="password" id="signupPassword" placeholder="Password" />
+        <label class="password-row">
+          <input type="checkbox" id="showSignupPassword" />
+          Show Password
+        </label>
 
         <label>Role</label>
         <select id="signupRole">
@@ -405,7 +396,6 @@
       </div>
     </section>
 
-    <!-- APP -->
     <section id="appSection" class="hidden">
       <div class="grid grid-4">
         <div class="kpi">
@@ -434,7 +424,7 @@
           </div>
 
           <div class="profile-box" style="margin-top:12px;">
-            <img id="profileAvatar" class="avatar" src="" alt="Profile Photo" />
+            <img id="profileAvatar" class="avatar" alt="Profile Photo" src="https://via.placeholder.com/100?text=User" />
             <div>
               <div style="font-size:20px;font-weight:bold;" id="profileName">-</div>
               <div class="small" id="profileEmail">-</div>
@@ -670,6 +660,14 @@
         appearance: "Patterned scales, brown/green/black depending on species."
       },
       {
+        name: "Python",
+        species: "Python",
+        behavior: "Usually found in grass, drains, warm edges and hidden areas.",
+        characteristics: "Large snake, slow but dangerous if threatened.",
+        posture: "Coiled, stretched, hiding.",
+        appearance: "Patterned scales, brown and dark markings."
+      },
+      {
         name: "Cattle",
         species: "Cow / cattle",
         behavior: "Large slow-moving hazard if perimeter is compromised.",
@@ -701,7 +699,7 @@
     }
 
     function sanitizeFileName(name = "file") {
-      return name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+      return name.replace(/[^a-zA-Z0-9._-]/g, "_");
     }
 
     function formatDate(dateValue) {
@@ -728,6 +726,39 @@
       const storageRef = ref(storage, path);
       await uploadBytes(storageRef, file);
       return await getDownloadURL(storageRef);
+    }
+
+    async function ensureUserProfile(user, extra = {}) {
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (!snap.exists()) {
+        const fallbackName =
+          extra.name ||
+          user.displayName ||
+          (user.email ? user.email.split("@")[0] : "User");
+
+        const fallbackEmail = extra.email || user.email || "";
+        const fallbackRole = extra.role || "Airport Safety Officer (ASO)";
+        const fallbackAirport = extra.airport || "PMIA";
+        const fallbackPhone = extra.phone || "";
+        const fallbackPhoto = extra.photoURL || "";
+
+        await setDoc(userRef, {
+          uid: user.uid,
+          name: fallbackName,
+          email: fallbackEmail,
+          role: fallbackRole,
+          airport: fallbackAirport,
+          phone: fallbackPhone,
+          photoURL: fallbackPhoto,
+          backgroundType: "default",
+          backgroundURL: "",
+          createdAt: serverTimestamp()
+        });
+
+        await createDefaultContacts(user.uid);
+      }
     }
 
     async function createDefaultContacts(uid) {
@@ -771,32 +802,30 @@
         document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.70), rgba(255,255,255,0.78)), url('${bgUrl}')`;
         return;
       }
-
       if (bgType === "blue") {
         document.body.style.backgroundImage = "linear-gradient(135deg, #dceeff, #f3f8ff)";
         return;
       }
-
       if (bgType === "sky") {
         document.body.style.backgroundImage = "linear-gradient(135deg, #dff6ff, #eefcff, #f5fbff)";
         return;
       }
-
       if (bgType === "dark") {
         document.body.style.backgroundImage = "linear-gradient(135deg, #1f2937, #334155)";
         return;
       }
-
       document.body.style.backgroundImage = "none";
       document.body.style.backgroundColor = "#f3f6fb";
     }
 
     async function loadUserProfile(user) {
+      await ensureUserProfile(user);
+
       const userRef = doc(db, "users", user.uid);
       const snap = await getDoc(userRef);
 
       if (!snap.exists()) {
-        showStatus("User profile not found.", "err");
+        showStatus("Profile still missing after auto-create.", "err");
         return;
       }
 
@@ -809,9 +838,10 @@
       document.getElementById("profilePhone").textContent = currentUserData.phone || "No phone";
       document.getElementById("profilePhoneInput").value = currentUserData.phone || "";
 
-      document.getElementById("profileAvatar").src =
-        currentUserData.photoURL ||
-        "https://via.placeholder.com/100?text=User";
+      const avatar = document.getElementById("profileAvatar");
+      avatar.src = currentUserData.photoURL && currentUserData.photoURL.trim()
+        ? currentUserData.photoURL
+        : "https://via.placeholder.com/100?text=User";
 
       applyBackground(currentUserData.backgroundType || "default", currentUserData.backgroundURL || "");
     }
@@ -929,15 +959,7 @@
     }
 
     function searchWildlife(term) {
-      const q = term.trim().toLowerCase();
-      const results = wildlifeDatabase.filter(w =>
-        w.name.toLowerCase().includes(q) ||
-        w.species.toLowerCase().includes(q) ||
-        w.behavior.toLowerCase().includes(q) ||
-        w.characteristics.toLowerCase().includes(q) ||
-        w.appearance.toLowerCase().includes(q)
-      );
-
+      const q = (term || "").trim().toLowerCase();
       const box = document.getElementById("wildlifeResults");
       box.innerHTML = "";
 
@@ -946,8 +968,17 @@
         return;
       }
 
+      const results = wildlifeDatabase.filter(w =>
+        w.name.toLowerCase().includes(q) ||
+        w.species.toLowerCase().includes(q) ||
+        w.behavior.toLowerCase().includes(q) ||
+        w.characteristics.toLowerCase().includes(q) ||
+        w.posture.toLowerCase().includes(q) ||
+        w.appearance.toLowerCase().includes(q)
+      );
+
       if (results.length === 0) {
-        box.innerHTML = '<div class="small">No wildlife match found. Try bird, dog, pig, bat, snake, cattle.</div>';
+        box.innerHTML = '<div class="small">No wildlife match found. Try bird, dog, pig, bat, snake, python, cattle.</div>';
         return;
       }
 
@@ -968,8 +999,27 @@
       });
     }
 
+    document.getElementById("showLoginPassword").addEventListener("change", function () {
+      document.getElementById("loginPassword").type = this.checked ? "text" : "password";
+    });
+
+    document.getElementById("showSignupPassword").addEventListener("change", function () {
+      document.getElementById("signupPassword").type = this.checked ? "text" : "password";
+    });
+
     document.getElementById("searchWildlifeBtn").addEventListener("click", () => {
       searchWildlife(document.getElementById("wildlifeSearch").value);
+    });
+
+    document.getElementById("wildlifeSearch").addEventListener("input", (e) => {
+      searchWildlife(e.target.value);
+    });
+
+    document.getElementById("wildlifeSearch").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        searchWildlife(e.target.value);
+      }
     });
 
     document.getElementById("loginBtn").addEventListener("click", async () => {
@@ -1031,7 +1081,6 @@
         });
 
         await createDefaultContacts(uid);
-
         showStatus("Account created successfully.");
       } catch (error) {
         showStatus(error.message, "err");
@@ -1060,9 +1109,7 @@
         const photoFile = document.getElementById("profilePhotoInput").files[0];
         const bgFile = document.getElementById("bgImageInput").files[0];
 
-        const updates = {
-          phone
-        };
+        const updates = { phone };
 
         if (photoFile) {
           updates.photoURL = await uploadFileIfAny(
@@ -1267,9 +1314,10 @@
         appSection.classList.remove("hidden");
 
         try {
-          await createDefaultContacts(user.uid);
+          await ensureUserProfile(user);
           await loadUserProfile(user);
           await refreshDashboard(user);
+          searchWildlife("");
         } catch (error) {
           showStatus(error.message, "err");
         }
