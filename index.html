@@ -3,347 +3,250 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NAC ASO System V14 Operational</title>
+  <title>NAC ASO System V15</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     :root{
-      --bg:#0f172a;
-      --panel:#111827;
-      --card:#1f2937;
-      --muted:#94a3b8;
-      --line:#334155;
-      --text:#f8fafc;
-      --primary:#2563eb;
-      --accent:#10b981;
-      --danger:#ef4444;
-      --warning:#f59e0b;
-      --ok:#22c55e;
-      --soft:#0b1220;
+      --bg:#06122b;
+      --bg2:#091833;
+      --card:#08152d;
+      --line:#28466f;
+      --text:#ffffff;
+      --muted:#a7b8d6;
+      --green:#10b981;
+      --blue:#2563eb;
+      --red:#dc2626;
+      --amber:#f59e0b;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:linear-gradient(135deg,#0f172a,#111827);
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(135deg,var(--bg),#021020);
       color:var(--text);
     }
     .topbar{
-      padding:18px 20px;
+      background:#020b1f;
       border-bottom:1px solid var(--line);
-      background:rgba(0,0,0,.22);
-      position:sticky;
-      top:0;
-      z-index:10;
-      backdrop-filter: blur(10px);
-    }
-    .topbar h1{margin:0;font-size:24px}
-    .topbar p{margin:6px 0 0;color:var(--muted);font-size:14px}
-    .wrap{max-width:1400px;margin:0 auto;padding:18px}
-    .status{
-      display:none;
-      padding:12px 14px;
-      border-radius:10px;
-      margin-bottom:16px;
-      font-size:14px;
-      border:1px solid transparent;
-    }
-    .status.ok{display:block;background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.35)}
-    .status.error{display:block;background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35)}
-    .status.warn{display:block;background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35)}
-    .grid{display:grid;gap:16px}
-    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .grid-5{grid-template-columns:repeat(5,minmax(0,1fr))}
-    .card{
-      background:rgba(17,24,39,.92);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
-      box-shadow:0 12px 30px rgba(0,0,0,.18);
-    }
-    h2,h3{margin-top:0}
-    label{
-      display:block;
-      margin:10px 0 6px;
-      color:#dbeafe;
-      font-size:14px;
-      font-weight:600;
-    }
-    input,select,textarea{
-      width:100%;
-      padding:12px;
-      border-radius:10px;
-      border:1px solid #475569;
-      background:#0b1220;
-      color:var(--text);
-      outline:none;
-    }
-    textarea{min-height:100px;resize:vertical}
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:14px;
-    }
-    button{
-      border:none;
-      border-radius:10px;
-      padding:11px 14px;
-      font-weight:700;
-      cursor:pointer;
-      color:white;
-    }
-    .btn-primary{background:var(--primary)}
-    .btn-accent{background:var(--accent)}
-    .btn-danger{background:var(--danger)}
-    .btn-warning{background:var(--warning); color:#111827}
-    .btn-muted{background:#475569}
-    .btn-success{background:#16a34a}
-    .hidden{display:none !important}
-    .tabs{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:16px;
-    }
-    .tab-btn{
-      background:#0b1220;
-      border:1px solid var(--line);
-      color:var(--text);
-    }
-    .tab-btn.active{
-      background:var(--primary);
-      border-color:var(--primary);
-    }
-    .tab-panel{display:none}
-    .tab-panel.active{display:block}
-    .kpi{
-      background:linear-gradient(180deg, rgba(37,99,235,.18), rgba(16,185,129,.10));
-      border:1px solid var(--line);
-      border-radius:16px;
       padding:18px;
     }
-    .kpi .num{font-size:30px;font-weight:800}
-    .kpi .lbl{color:var(--muted);margin-top:6px}
-    .section-title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
+    .topbar h1{
+      margin:0;
+      font-size:20px;
+      font-weight:800;
     }
-    .pill{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      background:#0b1220;
-      border:1px solid var(--line);
-      color:#cbd5e1;
-    }
-    .report-item,.contact-item,.alert-item,.log-item,.summary-item{
-      padding:14px;
-      border:1px solid var(--line);
-      border-radius:12px;
-      background:#0b1220;
-      margin-bottom:12px;
-    }
-    .report-meta,.small{color:var(--muted);font-size:13px;line-height:1.5}
-    .badge{
-      display:inline-block;
-      padding:4px 8px;
-      margin:4px 6px 0 0;
-      font-size:12px;
-      border-radius:999px;
-      background:#1e293b;
-      border:1px solid var(--line);
-    }
-    .badge.open{background:rgba(245,158,11,.18)}
-    .badge.closed{background:rgba(34,197,94,.18)}
-    .badge.medium{background:rgba(245,158,11,.18)}
-    .badge.high{background:rgba(239,68,68,.18)}
-    .badge.low{background:rgba(34,197,94,.18)}
-    .thumb{
-      display:block;
-      max-width:220px;
-      width:100%;
-      border-radius:10px;
-      margin-top:10px;
-      border:1px solid var(--line);
-    }
-    .profile-photo{
-      width:110px;
-      height:110px;
-      object-fit:cover;
-      border-radius:50%;
-      border:3px solid #334155;
-      margin-bottom:12px;
-    }
-    .chart-wrap{
-      min-height:230px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      justify-content:center;
-    }
-    .bar-row{
-      display:grid;
-      grid-template-columns:150px 1fr 55px;
-      gap:10px;
-      align-items:center;
-      font-size:14px;
-    }
-    .bar{
-      height:14px;
-      border-radius:999px;
-      background:#0f172a;
-      overflow:hidden;
-      border:1px solid #334155;
-    }
-    .bar > span{
-      display:block;
-      height:100%;
-      background:linear-gradient(90deg,var(--primary),var(--accent));
-    }
-    .password-row{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-top:8px;
+    .subtitle{
+      margin-top:4px;
       color:var(--muted);
       font-size:13px;
     }
-    .password-row input{
-      width:auto;
-      padding:0;
-      margin:0;
+    .container{
+      max-width:1400px;
+      margin:0 auto;
+      padding:18px;
     }
-    .filters{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:10px;
-      margin-bottom:12px;
-    }
-    .filters-logs{
-      display:grid;
-      grid-template-columns:repeat(5,minmax(0,1fr));
-      gap:10px;
-      margin-bottom:12px;
-    }
-    .filters-monthly{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:10px;
-      margin-bottom:12px;
-    }
-    .inline{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .popup-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.65);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
-      padding:20px;
-    }
-    .popup{
-      width:min(620px,100%);
-      background:#111827;
-      border:1px solid rgba(239,68,68,.45);
-      border-radius:18px;
-      padding:20px;
-      box-shadow:0 20px 50px rgba(0,0,0,.35);
-    }
-    .popup h2{color:#fecaca;margin-bottom:8px}
-    .popup .meta{color:#cbd5e1;font-size:14px;line-height:1.6}
-    .right{margin-left:auto}
-    .table-wrap{
-      overflow:auto;
-      border:1px solid var(--line);
+    .status{
+      padding:12px 14px;
+      border:1px solid #1f7a59;
+      background:#093729;
+      color:#d7fff0;
       border-radius:12px;
+      margin-bottom:16px;
+      font-size:14px;
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+    .card{
+      background:rgba(5,16,38,0.92);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 10px 28px rgba(0,0,0,0.25);
+    }
+    .card h2{
+      margin:0 0 14px;
+      font-size:20px;
+    }
+    .card h3{
+      margin:0 0 12px;
+      font-size:17px;
+    }
+    label{
+      display:block;
+      font-size:14px;
+      font-weight:700;
+      margin:10px 0 6px;
+    }
+    input,select,textarea,button{
+      width:100%;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#031124;
+      color:#fff;
+      padding:12px;
+      font-size:14px;
+    }
+    textarea{min-height:110px;resize:vertical}
+    button{
+      cursor:pointer;
+      font-weight:700;
+      border:none;
+    }
+    .btn-blue{background:var(--blue)}
+    .btn-green{background:var(--green)}
+    .btn-red{background:var(--red)}
+    .btn-amber{background:var(--amber); color:#111;}
+    .btn-inline{
+      width:auto;
+      padding:10px 14px;
+      display:inline-block;
+      margin-right:8px;
+      margin-top:10px;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .row > *{
+      flex:1;
+      min-width:180px;
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .hidden{display:none !important;}
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .nav button{
+      width:auto;
+      padding:10px 16px;
+      border-radius:999px;
+      background:#102445;
+      border:1px solid var(--line);
+    }
+    .nav button.active{
+      background:var(--blue);
+    }
+    .welcome{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .metric{
+      background:#071630;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+    }
+    .metric .big{
+      font-size:28px;
+      font-weight:800;
+      margin-top:6px;
     }
     table{
       width:100%;
       border-collapse:collapse;
-      font-size:14px;
+      margin-top:12px;
+      font-size:13px;
     }
-    th, td{
-      border-bottom:1px solid var(--line);
+    th,td{
+      border:1px solid var(--line);
       padding:10px;
       text-align:left;
       vertical-align:top;
     }
     th{
-      background:#111827;
-      color:#dbeafe;
+      background:#0c2143;
     }
-    td{
-      background:#0b1220;
+    .section{
+      display:none;
     }
-    @media (max-width: 1100px){
-      .grid-5,.grid-4,.grid-3,.grid-2,.filters,.filters-logs,.filters-monthly{grid-template-columns:1fr}
+    .section.active{
+      display:block;
     }
-    @media (max-width: 640px){
-      .topbar h1{font-size:20px}
-      .wrap{padding:12px}
+    .danger{
+      color:#ffb4b4;
+    }
+    .success{
+      color:#9ef0c1;
+    }
+    @media (max-width: 980px){
+      .grid-2,.grid-3{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
 <body>
   <div class="topbar">
-    <h1>NAC ASO System V14 Operational</h1>
-    <p>National Airports Corporation – Airport Safety, Wildlife, Incident, Daily Log, Monthly Summary & Emergency Reporting</p>
+    <h1>NAC ASO System V15 Operational</h1>
+    <div class="subtitle">National Airports Corporation — Airport Safety, Wildlife, Incident, Daily Log, Monthly Summary, Emergency Reporting & Admin Panel</div>
   </div>
 
-  <div class="wrap">
-    <div id="statusBox" class="status"></div>
+  <div class="container">
+    <div id="statusBox" class="status">System ready.</div>
 
-    <section id="authSection" class="grid grid-2">
+    <!-- AUTH AREA -->
+    <div id="authArea" class="grid-2">
       <div class="card">
         <h2>Login</h2>
         <label>Email</label>
-        <input type="email" id="loginEmail" placeholder="Enter your email" />
+        <input id="loginEmail" type="email" placeholder="Enter email" />
 
         <label>Password</label>
-        <input type="password" id="loginPassword" placeholder="Enter your password" />
-        <label class="password-row">
-          <input type="checkbox" id="showLoginPassword" />
-          Show Password
-        </label>
+        <input id="loginPassword" type="password" placeholder="Enter password" />
 
-        <div class="actions">
-          <button class="btn-primary" id="loginBtn">Login</button>
+        <div style="margin-top:8px;">
+          <input type="checkbox" id="showLoginPassword" style="width:auto;" />
+          <label for="showLoginPassword" style="display:inline; font-weight:500;"> Show Password</label>
         </div>
+
+        <button class="btn-blue btn-inline" onclick="loginUser()">Login</button>
       </div>
 
       <div class="card">
         <h2>Create Account</h2>
 
         <label>Full Name</label>
-        <input type="text" id="signupName" placeholder="Full name" />
+        <input id="regFullName" type="text" placeholder="Full name" />
 
         <label>Email</label>
-        <input type="email" id="signupEmail" placeholder="Email" />
+        <input id="regEmail" type="email" placeholder="Email" />
 
         <label>Password</label>
-        <input type="password" id="signupPassword" placeholder="Password" />
-        <label class="password-row">
-          <input type="checkbox" id="showSignupPassword" />
-          Show Password
-        </label>
+        <input id="regPassword" type="password" placeholder="Password" />
+
+        <div style="margin-top:8px;">
+          <input type="checkbox" id="showRegPassword" style="width:auto;" />
+          <label for="showRegPassword" style="display:inline; font-weight:500;"> Show Password</label>
+        </div>
 
         <label>Role</label>
-        <select id="signupRole">
+        <select id="regRole">
           <option>Airport Operations Manager (AOM)</option>
           <option>Senior Airport Safety Officer (SASO)</option>
           <option selected>Airport Safety Officer (ASO)</option>
@@ -352,585 +255,1075 @@
           <option>Chief Operations Officer</option>
           <option>Wild Life Manager</option>
           <option>Wildlife Officer</option>
+          <option>Airport Rescue Fire Fighter (RFF)</option>
+          <option>ATC</option>
         </select>
 
         <label>Primary Airport</label>
-        <input type="text" id="signupAirport" value="PMIA" />
+        <input id="regAirport" type="text" value="PMIA" />
 
         <label>Phone</label>
-        <input type="text" id="signupPhone" placeholder="Mobile / work number" />
+        <input id="regPhone" type="text" placeholder="Mobile / work number" />
 
-        <label>Profile Photo (optional)</label>
-        <input type="file" id="signupPhoto" accept="image/*" />
+        <button class="btn-green btn-inline" onclick="registerUser()">Create Account</button>
+      </div>
+    </div>
 
-        <div class="actions">
-          <button class="btn-accent" id="signupBtn">Create Account</button>
+    <!-- APP AREA -->
+    <div id="appArea" class="hidden">
+      <div class="welcome">
+        <div>
+          <h2 style="margin:0;">Welcome, <span id="userNameDisplay">User</span></h2>
+          <div class="small">
+            Role: <span id="userRoleDisplay"></span> |
+            Airport: <span id="userAirportDisplay"></span> |
+            Email: <span id="userEmailDisplay"></span>
+          </div>
+        </div>
+        <div>
+          <button class="btn-red btn-inline" onclick="logoutUser()">Logout</button>
         </div>
       </div>
-    </section>
 
-    <section id="appSection" class="hidden">
-      <div class="inline" style="margin-bottom:14px;">
-        <span class="pill" id="userInfoPill">Not logged in</span>
-        <span class="pill" id="roleInfoPill">-</span>
-        <span class="pill" id="airportInfoPill">-</span>
-        <button class="btn-muted right" id="logoutBtn">Logout</button>
+      <div class="nav">
+        <button id="tabDashboard" class="active" onclick="showSection('dashboardSection', this)">Dashboard</button>
+        <button id="tabDailyLog" onclick="showSection('dailyLogSection', this)">Daily Log</button>
+        <button id="tabIncidents" onclick="showSection('incidentSection', this)">Incident Report</button>
+        <button id="tabWildlife" onclick="showSection('wildlifeSection', this)">Wildlife Report</button>
+        <button id="tabMonthly" onclick="showSection('monthlySection', this)">Monthly Summary</button>
+        <button id="tabEmergency" onclick="showSection('emergencySection', this)">Emergency Contacts</button>
+        <button id="tabAdmin" class="hidden" onclick="showSection('adminSection', this)">Admin Panel</button>
       </div>
 
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="dashboardTab">Dashboard</button>
-        <button class="tab-btn" data-tab="dailyLogTab">Daily Log</button>
-        <button class="tab-btn" data-tab="monthlySummaryTab">Monthly Summary</button>
-        <button class="tab-btn" data-tab="reportsTab">Reports</button>
-        <button class="tab-btn" data-tab="profileTab">Profile</button>
-        <button class="tab-btn" data-tab="wildlifeTab">Wildlife</button>
-        <button class="tab-btn" data-tab="emergencyTab">Emergency</button>
-      </div>
-
-      <div id="dashboardTab" class="tab-panel active">
-        <div class="grid grid-5">
-          <div class="kpi">
-            <div class="num" id="kpiTotal">0</div>
-            <div class="lbl">Total Reports</div>
+      <!-- DASHBOARD -->
+      <div id="dashboardSection" class="section active">
+        <div class="grid-3">
+          <div class="metric">
+            <div>Total Daily Logs</div>
+            <div class="big" id="metricLogs">0</div>
           </div>
-          <div class="kpi">
-            <div class="num" id="kpiToday">0</div>
-            <div class="lbl">Today Reports</div>
+          <div class="metric">
+            <div>Total Incidents</div>
+            <div class="big" id="metricIncidents">0</div>
           </div>
-          <div class="kpi">
-            <div class="num" id="kpiWildlife">0</div>
-            <div class="lbl">Wildlife Reports</div>
-          </div>
-          <div class="kpi">
-            <div class="num" id="kpiOpen">0</div>
-            <div class="lbl">Open Reports</div>
-          </div>
-          <div class="kpi">
-            <div class="num" id="kpiDailyLogs">0</div>
-            <div class="lbl">Today Daily Logs</div>
+          <div class="metric">
+            <div>Total Wildlife Reports</div>
+            <div class="big" id="metricWildlife">0</div>
           </div>
         </div>
 
-        <div class="grid grid-2" style="margin-top:16px;">
+        <div class="grid-2" style="margin-top:16px;">
           <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">Reports by Type</h2>
-              <span class="pill">Live</span>
-            </div>
-            <div id="typeChart" class="chart-wrap"></div>
+            <h3>System Notes</h3>
+            <p class="small">
+              V15 combines main system and admin panel into one file.
+              Admin Panel is visible only to approved roles:
+              Airport Operations Manager (AOM), Senior Airport Safety Officer (SASO), Chief Operations Officer.
+            </p>
+            <p class="small">
+              Daily Log can be saved, viewed, exported to PDF, and included in monthly summary.
+            </p>
           </div>
-
           <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">Reports by Severity</h2>
-              <span class="pill">Live</span>
-            </div>
-            <div id="severityChart" class="chart-wrap"></div>
-          </div>
-        </div>
-
-        <div class="grid grid-2" style="margin-top:16px;">
-          <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">Recent Reports</h2>
-              <span class="pill" id="recentReportsPill">0 Items</span>
-            </div>
-            <div id="recentReportsList"></div>
-          </div>
-
-          <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">Recent Daily Logs</h2>
-              <span class="pill" id="recentDailyLogsPill">0 Items</span>
-            </div>
-            <div id="recentDailyLogsList"></div>
+            <h3>Recent Activity</h3>
+            <div id="recentActivity" class="small">No recent records yet.</div>
           </div>
         </div>
       </div>
 
-      <div id="dailyLogTab" class="tab-panel">
-        <div class="grid grid-2">
-          <div class="card">
-            <h2>ASO Daily Log Entry</h2>
+      <!-- DAILY LOG -->
+      <div id="dailyLogSection" class="section">
+        <div class="card">
+          <h2>ASO Daily Log</h2>
 
-            <label>Log Date</label>
-            <input type="date" id="logDate" />
-
-            <label>Shift</label>
-            <select id="logShift">
-              <option>A Shift</option>
-              <option>B Shift</option>
-              <option>C Shift</option>
-            </select>
-
-            <label>Shift Start Time</label>
-            <input type="time" id="logStartTime" />
-
-            <label>Weather Condition</label>
-            <select id="logWeather">
-              <option>Fine</option>
-              <option>Cloudy</option>
-              <option>Scattered Cloud</option>
-              <option>Broken Cloud</option>
-              <option>Rain</option>
-              <option>Heavy Rain</option>
-              <option>Storm</option>
-              <option>Windy</option>
-              <option>Fog / Reduced Visibility</option>
-            </select>
-
-            <label>Inspection Area</label>
-            <input type="text" id="logArea" placeholder="Runway / taxiway / apron / terminal / perimeter" />
-
-            <label>Inspection Findings</label>
-            <textarea id="logFindings" placeholder="Complete inspection findings"></textarea>
-
-            <label>Action Taken</label>
-            <textarea id="logActionTaken" placeholder="What action was taken during the shift"></textarea>
-
-            <label>Handover Notes</label>
-            <textarea id="logHandoverNotes" placeholder="Notes for next shift"></textarea>
-
-            <div class="actions">
-              <button class="btn-primary" id="submitDailyLogBtn">Submit Daily Log</button>
+          <div class="row">
+            <div>
+              <label>Date</label>
+              <input id="logDate" type="date" />
+            </div>
+            <div>
+              <label>Officer Name</label>
+              <input id="logOfficerName" type="text" />
+            </div>
+            <div>
+              <label>Role</label>
+              <input id="logOfficerRole" type="text" />
             </div>
           </div>
 
-          <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">All Daily Logs</h2>
-              <span class="pill" id="allDailyLogsPill">0 Items</span>
-            </div>
-
-            <div class="filters-logs">
-              <input type="date" id="filterLogDate" />
-              <select id="filterLogShift">
-                <option value="">All Shifts</option>
+          <div class="row">
+            <div>
+              <label>Shift</label>
+              <select id="logShift">
                 <option>A Shift</option>
                 <option>B Shift</option>
                 <option>C Shift</option>
               </select>
-              <select id="filterLogWeather">
-                <option value="">All Weather</option>
+            </div>
+            <div>
+              <label>Shift Start Time</label>
+              <input id="logStartTime" type="time" />
+            </div>
+            <div>
+              <label>Shift End Time</label>
+              <input id="logEndTime" type="time" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Weather Condition</label>
+              <select id="logWeather">
                 <option>Fine</option>
                 <option>Cloudy</option>
-                <option>Scattered Cloud</option>
-                <option>Broken Cloud</option>
-                <option>Rain</option>
-                <option>Heavy Rain</option>
-                <option>Storm</option>
+                <option>Rainy</option>
+                <option>Stormy</option>
                 <option>Windy</option>
-                <option>Fog / Reduced Visibility</option>
+                <option>Foggy</option>
               </select>
-              <input type="text" id="filterLogOfficer" placeholder="Search officer name" />
-              <input type="text" id="filterLogSearch" placeholder="Search findings / area / handover" />
             </div>
-
-            <div class="actions" style="margin-top:0;">
-              <button class="btn-muted" id="applyLogFiltersBtn">Apply Filters</button>
-              <button class="btn-warning" id="clearLogFiltersBtn">Clear Filters</button>
+            <div>
+              <label>Airport</label>
+              <input id="logAirport" type="text" />
             </div>
-
-            <div id="allDailyLogsList" style="margin-top:14px;"></div>
           </div>
+
+          <label>Complete Inspection Findings</label>
+          <textarea id="logFindings" placeholder="Enter complete inspection findings..."></textarea>
+
+          <label>Action Taken</label>
+          <textarea id="logActions" placeholder="Enter action taken..."></textarea>
+
+          <label>Remarks</label>
+          <textarea id="logRemarks" placeholder="Extra remarks..."></textarea>
+
+          <div class="row">
+            <button class="btn-green btn-inline" onclick="saveDailyLog()">Save Daily Log</button>
+            <button class="btn-blue btn-inline" onclick="exportDailyLogPDF()">Export Current Log PDF</button>
+            <button class="btn-amber btn-inline" onclick="loadMyLogs()">Refresh My Logs</button>
+          </div>
+
+          <div id="dailyLogList" style="margin-top:16px;"></div>
         </div>
       </div>
 
-      <div id="monthlySummaryTab" class="tab-panel">
-        <div class="grid grid-2">
-          <div class="card">
-            <h2>Monthly Summary Controls</h2>
+      <!-- INCIDENT -->
+      <div id="incidentSection" class="section">
+        <div class="card">
+          <h2>Incident Report</h2>
 
-            <div class="filters-monthly">
-              <div>
-                <label>Select Month</label>
-                <input type="month" id="monthlySummaryMonth" />
-              </div>
-              <div>
-                <label>Officer Filter</label>
-                <input type="text" id="monthlyOfficerFilter" placeholder="Optional officer name filter" />
-              </div>
-              <div>
-                <label>Action</label>
-                <div class="actions" style="margin-top:0;">
-                  <button class="btn-primary" id="loadMonthlySummaryBtn">Load Summary</button>
-                  <button class="btn-success" id="exportMonthlyPdfBtn">Export Monthly PDF</button>
-                </div>
-              </div>
+          <div class="row">
+            <div>
+              <label>Date</label>
+              <input id="incidentDate" type="date" />
             </div>
-
-            <div class="small">
-              This monthly summary is based on the <strong>Daily Log</strong> records for the selected month and airport.
+            <div>
+              <label>Time</label>
+              <input id="incidentTime" type="time" />
+            </div>
+            <div>
+              <label>Location</label>
+              <input id="incidentLocation" type="text" placeholder="Incident location" />
             </div>
           </div>
 
-          <div class="card">
-            <h2>Monthly KPI Summary</h2>
-            <div class="grid grid-4">
-              <div class="kpi">
-                <div class="num" id="monthlyTotalLogs">0</div>
-                <div class="lbl">Total Logs</div>
-              </div>
-              <div class="kpi">
-                <div class="num" id="monthlyOfficerCount">0</div>
-                <div class="lbl">Officers</div>
-              </div>
-              <div class="kpi">
-                <div class="num" id="monthlyShiftCount">0</div>
-                <div class="lbl">Shift Types Used</div>
-              </div>
-              <div class="kpi">
-                <div class="num" id="monthlyWeatherCount">0</div>
-                <div class="lbl">Weather Types</div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <label>Incident Type</label>
+          <input id="incidentType" type="text" placeholder="Runway incursion, FOD, security issue, etc." />
 
-        <div class="grid grid-3" style="margin-top:16px;">
-          <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">Logs by Officer</h2>
-              <span class="pill" id="monthlyOfficerPill">0 Items</span>
-            </div>
-            <div id="monthlyOfficerChart" class="chart-wrap"></div>
-          </div>
+          <label>Description</label>
+          <textarea id="incidentDescription"></textarea>
 
-          <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">Logs by Shift</h2>
-              <span class="pill" id="monthlyShiftPill">0 Items</span>
-            </div>
-            <div id="monthlyShiftChart" class="chart-wrap"></div>
-          </div>
+          <label>Immediate Action Taken</label>
+          <textarea id="incidentAction"></textarea>
 
-          <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">Logs by Weather</h2>
-              <span class="pill" id="monthlyWeatherPill">0 Items</span>
-            </div>
-            <div id="monthlyWeatherChart" class="chart-wrap"></div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:16px;">
-          <div class="section-title">
-            <h2 style="margin-bottom:0;">Monthly Daily Logs</h2>
-            <span class="pill" id="monthlyLogsPill">0 Items</span>
-          </div>
-          <div id="monthlyLogsList"></div>
-        </div>
-
-        <div class="card" style="margin-top:16px;">
-          <div class="section-title">
-            <h2 style="margin-bottom:0;">Monthly Summary Table</h2>
-            <span class="pill">Management View</span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Officer</th>
-                  <th>Role</th>
-                  <th>Shift</th>
-                  <th>Start Time</th>
-                  <th>Weather</th>
-                  <th>Area</th>
-                  <th>Findings</th>
-                </tr>
-              </thead>
-              <tbody id="monthlySummaryTableBody"></tbody>
-            </table>
-          </div>
+          <button class="btn-green btn-inline" onclick="saveIncident()">Save Incident</button>
+          <div id="incidentList" style="margin-top:16px;"></div>
         </div>
       </div>
 
-      <div id="reportsTab" class="tab-panel">
-        <div class="grid grid-2">
-          <div class="card">
-            <h2>Submit Report</h2>
+      <!-- WILDLIFE -->
+      <div id="wildlifeSection" class="section">
+        <div class="card">
+          <h2>Wildlife / Bird Strike Report</h2>
 
-            <label>Report Type</label>
-            <select id="reportType">
-              <option>Safety Inspection</option>
-              <option>Wildlife Hazard</option>
-              <option>Bird Strike</option>
-              <option>FOD</option>
-              <option>Runway Inspection</option>
-              <option>Lighting Inspection</option>
-              <option>Emergency</option>
-              <option>Other</option>
-            </select>
-
-            <label>Title</label>
-            <input type="text" id="reportTitle" placeholder="Report title" />
-
-            <label>Shift</label>
-            <select id="reportShift">
-              <option>A Shift</option>
-              <option>B Shift</option>
-              <option>C Shift</option>
-            </select>
-
-            <label>Start Time</label>
-            <input type="time" id="reportStartTime" />
-
-            <label>Severity</label>
-            <select id="reportSeverity">
-              <option>Low</option>
-              <option selected>Medium</option>
-              <option>High</option>
-              <option>Critical</option>
-            </select>
-
-            <label>Location</label>
-            <input type="text" id="reportLocation" placeholder="Runway / taxiway / apron / terminal area" />
-
-            <label>GPS</label>
-            <input type="text" id="reportGps" placeholder="Auto or manual GPS" />
-
-            <label>Details / Findings</label>
-            <textarea id="reportDetails" placeholder="Complete inspection findings or incident details"></textarea>
-
-            <label>Photo (optional)</label>
-            <input type="file" id="reportPhoto" accept="image/*" />
-
-            <div class="actions">
-              <button class="btn-accent" id="getGpsBtn">Get GPS</button>
-              <button class="btn-primary" id="submitReportBtn">Submit Report</button>
+          <div class="row">
+            <div>
+              <label>Date</label>
+              <input id="wildDate" type="date" />
+            </div>
+            <div>
+              <label>Time</label>
+              <input id="wildTime" type="time" />
+            </div>
+            <div>
+              <label>Location</label>
+              <input id="wildLocation" type="text" />
             </div>
           </div>
 
-          <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">All Reports</h2>
-              <span class="pill" id="allReportsPill">0 Items</span>
+          <div class="row">
+            <div>
+              <label>Species / Animal</label>
+              <input id="wildSpecies" type="text" />
             </div>
-
-            <div class="filters">
-              <select id="filterType">
-                <option value="">All Types</option>
-                <option>Safety Inspection</option>
-                <option>Wildlife Hazard</option>
+            <div>
+              <label>Report Type</label>
+              <select id="wildType">
+                <option>Wildlife Sighting</option>
                 <option>Bird Strike</option>
-                <option>FOD</option>
-                <option>Runway Inspection</option>
-                <option>Lighting Inspection</option>
-                <option>Emergency</option>
-                <option>Other</option>
+                <option>Animal Hazard</option>
+              </select>
+            </div>
+          </div>
+
+          <label>Description</label>
+          <textarea id="wildDescription"></textarea>
+
+          <label>Action Taken</label>
+          <textarea id="wildAction"></textarea>
+
+          <button class="btn-green btn-inline" onclick="saveWildlife()">Save Wildlife Report</button>
+          <div id="wildlifeList" style="margin-top:16px;"></div>
+        </div>
+      </div>
+
+      <!-- MONTHLY -->
+      <div id="monthlySection" class="section">
+        <div class="card">
+          <h2>Monthly Summary</h2>
+
+          <div class="row">
+            <div>
+              <label>Month</label>
+              <input id="summaryMonth" type="month" />
+            </div>
+            <div style="display:flex; align-items:end;">
+              <button class="btn-blue btn-inline" onclick="generateMonthlySummary()">Generate Summary</button>
+            </div>
+          </div>
+
+          <div id="monthlySummaryOutput" style="margin-top:16px;"></div>
+        </div>
+      </div>
+
+      <!-- EMERGENCY -->
+      <div id="emergencySection" class="section">
+        <div class="card">
+          <h2>Emergency Contacts</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Contact</th>
+                <th>Phone</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Airport Rescue Fire Fighter (RFF)</td>
+                <td>RFF Duty Officer</td>
+                <td>To be updated by Admin</td>
+              </tr>
+              <tr>
+                <td>Air Traffic Control (ATC)</td>
+                <td>ATC Contact</td>
+                <td>To be updated by Admin</td>
+              </tr>
+              <tr>
+                <td>Airport Safety Office</td>
+                <td>Duty ASO</td>
+                <td>To be updated by Admin</td>
+              </tr>
+              <tr>
+                <td>Police</td>
+                <td>Airport Police</td>
+                <td>To be updated by Admin</td>
+              </tr>
+              <tr>
+                <td>Medical</td>
+                <td>Emergency Medical</td>
+                <td>To be updated by Admin</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div id="adminSection" class="section">
+        <div class="card">
+          <h2>Admin Panel V15</h2>
+          <p class="small">
+            Only approved admin roles can access this section.
+          </p>
+
+          <div class="grid-2">
+            <div class="card" style="padding:14px;">
+              <h3>Create User from Admin Panel</h3>
+
+              <label>Full Name</label>
+              <input id="adminFullName" type="text" />
+
+              <label>Email</label>
+              <input id="adminEmail" type="email" />
+
+              <label>Password</label>
+              <input id="adminPassword" type="text" placeholder="Temporary password" />
+
+              <label>Role</label>
+              <select id="adminRole">
+                <option>Airport Operations Manager (AOM)</option>
+                <option>Senior Airport Safety Officer (SASO)</option>
+                <option>Airport Safety Officer (ASO)</option>
+                <option>Team Leader Grounds Staff</option>
+                <option>Grounds Staff</option>
+                <option>Chief Operations Officer</option>
+                <option>Wild Life Manager</option>
+                <option>Wildlife Officer</option>
+                <option>Airport Rescue Fire Fighter (RFF)</option>
+                <option>ATC</option>
               </select>
 
-              <select id="filterSeverity">
-                <option value="">All Severity</option>
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
-                <option>Critical</option>
-              </select>
+              <label>Primary Airport</label>
+              <input id="adminAirport" type="text" value="PMIA" />
 
-              <select id="filterStatus">
-                <option value="">All Status</option>
-                <option>Open</option>
-                <option>Investigating</option>
-                <option>Closed</option>
-              </select>
+              <label>Phone</label>
+              <input id="adminPhone" type="text" />
 
-              <input type="text" id="filterSearch" placeholder="Search title / details / location" />
+              <button class="btn-green btn-inline" onclick="adminCreateUser()">Create User</button>
             </div>
 
-            <div class="actions" style="margin-top:0;">
-              <button class="btn-muted" id="applyFiltersBtn">Apply Filters</button>
-              <button class="btn-warning" id="clearFiltersBtn">Clear Filters</button>
+            <div class="card" style="padding:14px;">
+              <h3>Admin Controls</h3>
+              <button class="btn-blue btn-inline" onclick="loadAllUsers()">Load All Users</button>
+              <button class="btn-amber btn-inline" onclick="loadAllLogs()">Load All Daily Logs</button>
+              <button class="btn-amber btn-inline" onclick="loadAllIncidents()">Load All Incidents</button>
+              <button class="btn-amber btn-inline" onclick="loadAllWildlife()">Load All Wildlife Reports</button>
             </div>
+          </div>
 
-            <div id="allReportsList" style="margin-top:14px;"></div>
+          <div class="card" style="margin-top:16px; padding:14px;">
+            <h3>All Users</h3>
+            <div id="allUsersList">No users loaded.</div>
+          </div>
+
+          <div class="card" style="margin-top:16px; padding:14px;">
+            <h3>All Daily Logs</h3>
+            <div id="allLogsList">No daily logs loaded.</div>
+          </div>
+
+          <div class="card" style="margin-top:16px; padding:14px;">
+            <h3>All Incidents</h3>
+            <div id="allIncidentsList">No incidents loaded.</div>
+          </div>
+
+          <div class="card" style="margin-top:16px; padding:14px;">
+            <h3>All Wildlife Reports</h3>
+            <div id="allWildlifeList">No wildlife reports loaded.</div>
           </div>
         </div>
-      </div>
-
-      <div id="profileTab" class="tab-panel">
-        <div class="grid grid-2">
-          <div class="card">
-            <h2>Profile</h2>
-            <img id="profilePhotoView" class="profile-photo hidden" alt="Profile" />
-            <div id="profileInfoBox" class="small"></div>
-          </div>
-
-          <div class="card">
-            <h2>Emergency Contacts</h2>
-
-            <label>Name</label>
-            <input type="text" id="contactName" placeholder="Contact name" />
-
-            <label>Role</label>
-            <input type="text" id="contactRole" placeholder="Contact role" />
-
-            <label>Phone</label>
-            <input type="text" id="contactPhone" placeholder="Phone number" />
-
-            <div class="actions">
-              <button class="btn-primary" id="addContactBtn">Add Contact</button>
-            </div>
-
-            <div id="contactsList" style="margin-top:14px;"></div>
-          </div>
-        </div>
-      </div>
-
-      <div id="wildlifeTab" class="tab-panel">
-        <div class="grid grid-2">
-          <div class="card">
-            <h2>Wildlife Quick Search</h2>
-            <label>Search species / hazard</label>
-            <input type="text" id="wildlifeSearch" placeholder="Eg. bird species, dogs, pigs, bats" />
-            <div class="actions">
-              <button class="btn-primary" id="wildlifeSearchBtn">Open Search</button>
-              <button class="btn-accent" id="wildlifeImagesBtn">Open Images</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>Wildlife Note</h2>
-            <div class="small">
-              This tab is still a quick-search utility. The next proper upgrade is a real wildlife log and bird strike register.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="emergencyTab" class="tab-panel">
-        <div class="grid grid-2">
-          <div class="card">
-            <h2>Send Emergency Alert</h2>
-            <div class="small" style="margin-bottom:10px;">
-              Only AOM / SASO / Chief Operations Officer can send or resolve emergency alerts.
-            </div>
-
-            <label>Emergency Message</label>
-            <textarea id="emergencyMessage" placeholder="Describe the emergency"></textarea>
-
-            <div class="actions">
-              <button class="btn-danger" id="sendEmergencyAlertBtn">Send Emergency Alert</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="section-title">
-              <h2 style="margin-bottom:0;">Recent Emergency Alerts</h2>
-              <span class="pill">Latest 10</span>
-            </div>
-            <div id="alertList"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <div class="popup-overlay" id="emergencyPopupOverlay">
-    <div class="popup">
-      <h2>Emergency Alert</h2>
-      <div id="emergencyPopupMessage" style="font-size:18px;font-weight:700;margin-bottom:10px;">-</div>
-      <div id="emergencyPopupMeta" class="meta">-</div>
-      <div class="actions">
-        <button class="btn-accent" id="acknowledgeAlertBtn">Acknowledge</button>
-        <button class="btn-warning hidden" id="resolveAlertBtn">Resolve</button>
-        <button class="btn-muted" id="closePopupBtn">Close</button>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc,
-      updateDoc,
-      collection,
-      addDoc,
-      getDocs,
-      query,
-      where,
-      orderBy,
-      serverTimestamp,
-      onSnapshot,
-      arrayUnion
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    import {
-      getStorage,
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
+  <script>
+    // =========================
+    // FIREBASE CONFIG
+    // REPLACE WITH YOUR REAL CONFIG
+    // =========================
     const firebaseConfig = {
-      apiKey: "AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc",
-      authDomain: "nac-aso-system.firebaseapp.com",
-      projectId: "nac-aso-system",
-      storageBucket: "nac-aso-system.firebasestorage.app",
-      messagingSenderId: "852433876255",
-      appId: "1:852433876255:web:c59a0a757ee4f7466dac2a",
-      measurementId: "G-2NK1RYJTS9"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
 
     let currentUserData = null;
-    let currentGps = "";
-    let allReports = [];
-    let allAlerts = [];
-    let allDailyLogs = [];
-    let monthlyFilteredLogs = [];
-    let emergencyUnsubscribe = null;
-    let currentEmergencyAudio = null;
-    let activePopupAlertId = null;
 
-    const defaultContacts = [
-      { name: "Airport Rescue Fire Fighter (RFF)", role: "RFF", phone: "Emergency Line" },
-      { name: "Airport Operations Manager", role: "AOM", phone: "Add number" },
-      { name: "Senior Airport Safety Officer", role: "SASO", phone: "Add number" },
-      { name: "ATC Contact", role: "Air Traffic Control", phone: "Add number" },
-      { name: "Medical Response", role: "Medical", phone: "Add number" }
-    ];
-
-    const statusBox = document.getElementById("statusBox");
-    const authSection = document.getElementById("authSection");
-    const appSection = document.getElementById("appSection");
-
-    const today = new Date();
-    document.getElementById("logDate").value = today.toISOString().split("T")[0];
-    document.getElementById("monthlySummaryMonth").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
-
-    function showStatus(message, type = "ok") {
-      statusBox.className = `status ${type}`;
-      statusBox.textContent = message;
+    function setStatus(message, type = "ok") {
+      const box = document.getElementById("statusBox");
+      box.textContent = message;
+      if (type === "error") {
+        box.style.background = "#3a1111";
+        box.style.borderColor = "#8b2323";
+        box.style.color = "#ffd2d2";
+      } else {
+        box.style.background = "#093729";
+        box.style.borderColor = "#1f7a59";
+        box.style.color = "#d7fff0";
+      }
     }
 
-    function clearStatus() {
-      statusBox.className = "status";
-      statusBox.textContent = "";
+    function showSection(sectionId, btn) {
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(sectionId).classList.add("active");
+      document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
     }
 
-    function sanitizeFileName(name = "file") {
-      return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    function isAdminRole(role) {
+      return [
+        "Airport Operations Manager (AOM)",
+        "Senior Airport Safety Officer (SASO)",
+        "Chief Operations Officer"
+      ].includes(role);
     }
 
-    function safeText(value) {
-      return String(value ?? "")
+    document.getElementById("showLoginPassword").addEventListener("change", function () {
+      document.getElementById("loginPassword").type = this.checked ? "text" : "password";
+    });
+
+    document.getElementById("showRegPassword").addEventListener("change", function () {
+      document.getElementById("regPassword").type = this.checked ? "text" : "password";
+    });
+
+    async function registerUser() {
+      try {
+        const fullName = document.getElementById("regFullName").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const password = document.getElementById("regPassword").value.trim();
+        const role = document.getElementById("regRole").value;
+        const airport = document.getElementById("regAirport").value.trim();
+        const phone = document.getElementById("regPhone").value.trim();
+
+        if (!fullName || !email || !password || !role || !airport) {
+          setStatus("Please fill all required registration fields.", "error");
+          return;
+        }
+
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+
+        await db.collection("users").doc(userCredential.user.uid).set({
+          fullName,
+          email,
+          role,
+          airport,
+          phone,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setStatus("Account created successfully. You can now use the system.");
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function loginUser() {
+      try {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value.trim();
+
+        if (!email || !password) {
+          setStatus("Enter email and password.", "error");
+          return;
+        }
+
+        await auth.signInWithEmailAndPassword(email, password);
+        setStatus("Login successful.");
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function logoutUser() {
+      await auth.signOut();
+      setStatus("Logged out.");
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        document.getElementById("authArea").classList.add("hidden");
+        document.getElementById("appArea").classList.remove("hidden");
+
+        const userDoc = await db.collection("users").doc(user.uid).get();
+
+        if (userDoc.exists) {
+          currentUserData = { uid: user.uid, ...userDoc.data() };
+        } else {
+          currentUserData = {
+            uid: user.uid,
+            fullName: "Unknown User",
+            email: user.email,
+            role: "Airport Safety Officer (ASO)",
+            airport: "PMIA"
+          };
+        }
+
+        document.getElementById("userNameDisplay").textContent = currentUserData.fullName || "User";
+        document.getElementById("userRoleDisplay").textContent = currentUserData.role || "";
+        document.getElementById("userAirportDisplay").textContent = currentUserData.airport || "";
+        document.getElementById("userEmailDisplay").textContent = currentUserData.email || user.email;
+
+        document.getElementById("logOfficerName").value = currentUserData.fullName || "";
+        document.getElementById("logOfficerRole").value = currentUserData.role || "";
+        document.getElementById("logAirport").value = currentUserData.airport || "PMIA";
+
+        const adminTab = document.getElementById("tabAdmin");
+        if (isAdminRole(currentUserData.role)) {
+          adminTab.classList.remove("hidden");
+        } else {
+          adminTab.classList.add("hidden");
+          if (document.getElementById("adminSection").classList.contains("active")) {
+            showSection("dashboardSection", document.getElementById("tabDashboard"));
+          }
+        }
+
+        await refreshDashboard();
+        await loadMyLogs();
+        await loadMyIncidents();
+        await loadMyWildlife();
+      } else {
+        currentUserData = null;
+        document.getElementById("authArea").classList.remove("hidden");
+        document.getElementById("appArea").classList.add("hidden");
+      }
+    });
+
+    async function saveDailyLog() {
+      try {
+        if (!currentUserData) return;
+
+        const data = {
+          uid: currentUserData.uid,
+          officerName: document.getElementById("logOfficerName").value.trim(),
+          officerRole: document.getElementById("logOfficerRole").value.trim(),
+          airport: document.getElementById("logAirport").value.trim(),
+          date: document.getElementById("logDate").value,
+          shift: document.getElementById("logShift").value,
+          startTime: document.getElementById("logStartTime").value,
+          endTime: document.getElementById("logEndTime").value,
+          weather: document.getElementById("logWeather").value,
+          findings: document.getElementById("logFindings").value.trim(),
+          actions: document.getElementById("logActions").value.trim(),
+          remarks: document.getElementById("logRemarks").value.trim(),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (!data.date || !data.officerName || !data.startTime || !data.endTime || !data.findings) {
+          setStatus("Fill all required daily log fields.", "error");
+          return;
+        }
+
+        await db.collection("dailyLogs").add(data);
+        setStatus("Daily log saved successfully.");
+        await loadMyLogs();
+        await refreshDashboard();
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function loadMyLogs() {
+      try {
+        if (!currentUserData) return;
+
+        const snap = await db.collection("dailyLogs")
+          .where("uid", "==", currentUserData.uid)
+          .orderBy("date", "desc")
+          .get();
+
+        let html = "<table><thead><tr><th>Date</th><th>Shift</th><th>Weather</th><th>Findings</th><th>Actions</th><th>Remarks</th></tr></thead><tbody>";
+
+        if (snap.empty) {
+          html += `<tr><td colspan="6">No daily logs found.</td></tr>`;
+        } else {
+          snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+              <tr>
+                <td>${d.date || ""}</td>
+                <td>${d.shift || ""}<br><span class="small">${d.startTime || ""} - ${d.endTime || ""}</span></td>
+                <td>${d.weather || ""}</td>
+                <td>${escapeHtml(d.findings || "")}</td>
+                <td>${escapeHtml(d.actions || "")}</td>
+                <td>${escapeHtml(d.remarks || "")}</td>
+              </tr>
+            `;
+          });
+        }
+
+        html += "</tbody></table>";
+        document.getElementById("dailyLogList").innerHTML = html;
+      } catch (error) {
+        if (String(error.message).includes("index")) {
+          document.getElementById("dailyLogList").innerHTML = `<div class="danger">Firestore index may be required for dailyLogs query.</div>`;
+        } else {
+          setStatus(error.message, "error");
+        }
+      }
+    }
+
+    async function saveIncident() {
+      try {
+        if (!currentUserData) return;
+
+        const data = {
+          uid: currentUserData.uid,
+          officerName: currentUserData.fullName,
+          airport: currentUserData.airport,
+          date: document.getElementById("incidentDate").value,
+          time: document.getElementById("incidentTime").value,
+          location: document.getElementById("incidentLocation").value.trim(),
+          incidentType: document.getElementById("incidentType").value.trim(),
+          description: document.getElementById("incidentDescription").value.trim(),
+          actionTaken: document.getElementById("incidentAction").value.trim(),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (!data.date || !data.time || !data.location || !data.incidentType || !data.description) {
+          setStatus("Fill all required incident fields.", "error");
+          return;
+        }
+
+        await db.collection("incidents").add(data);
+        setStatus("Incident report saved.");
+        await loadMyIncidents();
+        await refreshDashboard();
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function loadMyIncidents() {
+      try {
+        if (!currentUserData) return;
+
+        const snap = await db.collection("incidents")
+          .where("uid", "==", currentUserData.uid)
+          .orderBy("date", "desc")
+          .get();
+
+        let html = "<table><thead><tr><th>Date</th><th>Type</th><th>Location</th><th>Description</th><th>Action</th></tr></thead><tbody>";
+
+        if (snap.empty) {
+          html += `<tr><td colspan="5">No incident reports found.</td></tr>`;
+        } else {
+          snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+              <tr>
+                <td>${d.date || ""} ${d.time || ""}</td>
+                <td>${escapeHtml(d.incidentType || "")}</td>
+                <td>${escapeHtml(d.location || "")}</td>
+                <td>${escapeHtml(d.description || "")}</td>
+                <td>${escapeHtml(d.actionTaken || "")}</td>
+              </tr>
+            `;
+          });
+        }
+
+        html += "</tbody></table>";
+        document.getElementById("incidentList").innerHTML = html;
+      } catch (error) {
+        if (String(error.message).includes("index")) {
+          document.getElementById("incidentList").innerHTML = `<div class="danger">Firestore index may be required for incidents query.</div>`;
+        } else {
+          setStatus(error.message, "error");
+        }
+      }
+    }
+
+    async function saveWildlife() {
+      try {
+        if (!currentUserData) return;
+
+        const data = {
+          uid: currentUserData.uid,
+          officerName: currentUserData.fullName,
+          airport: currentUserData.airport,
+          date: document.getElementById("wildDate").value,
+          time: document.getElementById("wildTime").value,
+          location: document.getElementById("wildLocation").value.trim(),
+          species: document.getElementById("wildSpecies").value.trim(),
+          reportType: document.getElementById("wildType").value,
+          description: document.getElementById("wildDescription").value.trim(),
+          actionTaken: document.getElementById("wildAction").value.trim(),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (!data.date || !data.time || !data.location || !data.species || !data.description) {
+          setStatus("Fill all required wildlife fields.", "error");
+          return;
+        }
+
+        await db.collection("wildlifeReports").add(data);
+        setStatus("Wildlife report saved.");
+        await loadMyWildlife();
+        await refreshDashboard();
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function loadMyWildlife() {
+      try {
+        if (!currentUserData) return;
+
+        const snap = await db.collection("wildlifeReports")
+          .where("uid", "==", currentUserData.uid)
+          .orderBy("date", "desc")
+          .get();
+
+        let html = "<table><thead><tr><th>Date</th><th>Type</th><th>Species</th><th>Location</th><th>Description</th><th>Action</th></tr></thead><tbody>";
+
+        if (snap.empty) {
+          html += `<tr><td colspan="6">No wildlife reports found.</td></tr>`;
+        } else {
+          snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+              <tr>
+                <td>${d.date || ""} ${d.time || ""}</td>
+                <td>${escapeHtml(d.reportType || "")}</td>
+                <td>${escapeHtml(d.species || "")}</td>
+                <td>${escapeHtml(d.location || "")}</td>
+                <td>${escapeHtml(d.description || "")}</td>
+                <td>${escapeHtml(d.actionTaken || "")}</td>
+              </tr>
+            `;
+          });
+        }
+
+        html += "</tbody></table>";
+        document.getElementById("wildlifeList").innerHTML = html;
+      } catch (error) {
+        if (String(error.message).includes("index")) {
+          document.getElementById("wildlifeList").innerHTML = `<div class="danger">Firestore index may be required for wildlifeReports query.</div>`;
+        } else {
+          setStatus(error.message, "error");
+        }
+      }
+    }
+
+    async function generateMonthlySummary() {
+      try {
+        if (!currentUserData) return;
+
+        const monthValue = document.getElementById("summaryMonth").value;
+        if (!monthValue) {
+          setStatus("Select a month first.", "error");
+          return;
+        }
+
+        const logsSnap = await db.collection("dailyLogs")
+          .where("uid", "==", currentUserData.uid)
+          .get();
+
+        const incidentsSnap = await db.collection("incidents")
+          .where("uid", "==", currentUserData.uid)
+          .get();
+
+        const wildSnap = await db.collection("wildlifeReports")
+          .where("uid", "==", currentUserData.uid)
+          .get();
+
+        const monthLogs = [];
+        const monthIncidents = [];
+        const monthWild = [];
+
+        logsSnap.forEach(doc => {
+          const d = doc.data();
+          if ((d.date || "").startsWith(monthValue)) monthLogs.push(d);
+        });
+
+        incidentsSnap.forEach(doc => {
+          const d = doc.data();
+          if ((d.date || "").startsWith(monthValue)) monthIncidents.push(d);
+        });
+
+        wildSnap.forEach(doc => {
+          const d = doc.data();
+          if ((d.date || "").startsWith(monthValue)) monthWild.push(d);
+        });
+
+        let html = `
+          <div class="card" style="padding:14px;">
+            <h3>Summary for ${monthValue}</h3>
+            <p><strong>Officer:</strong> ${escapeHtml(currentUserData.fullName)}</p>
+            <p><strong>Airport:</strong> ${escapeHtml(currentUserData.airport)}</p>
+            <p><strong>Total Daily Logs:</strong> ${monthLogs.length}</p>
+            <p><strong>Total Incidents:</strong> ${monthIncidents.length}</p>
+            <p><strong>Total Wildlife Reports:</strong> ${monthWild.length}</p>
+          </div>
+        `;
+
+        if (monthLogs.length) {
+          html += `<div class="card" style="margin-top:12px; padding:14px;"><h3>Daily Log Highlights</h3><ul>`;
+          monthLogs.slice(0, 10).forEach(item => {
+            html += `<li><strong>${item.date}</strong> - ${escapeHtml(item.findings || "")}</li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if (monthIncidents.length) {
+          html += `<div class="card" style="margin-top:12px; padding:14px;"><h3>Incident Highlights</h3><ul>`;
+          monthIncidents.slice(0, 10).forEach(item => {
+            html += `<li><strong>${item.date}</strong> - ${escapeHtml(item.incidentType || "")}: ${escapeHtml(item.description || "")}</li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if (monthWild.length) {
+          html += `<div class="card" style="margin-top:12px; padding:14px;"><h3>Wildlife Highlights</h3><ul>`;
+          monthWild.slice(0, 10).forEach(item => {
+            html += `<li><strong>${item.date}</strong> - ${escapeHtml(item.reportType || "")}: ${escapeHtml(item.species || "")}</li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if (!monthLogs.length && !monthIncidents.length && !monthWild.length) {
+          html += `<div class="card" style="margin-top:12px; padding:14px;">No records found for this month.</div>`;
+        }
+
+        document.getElementById("monthlySummaryOutput").innerHTML = html;
+        setStatus("Monthly summary generated.");
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function refreshDashboard() {
+      try {
+        if (!currentUserData) return;
+
+        const [logsSnap, incidentsSnap, wildSnap] = await Promise.all([
+          db.collection("dailyLogs").where("uid", "==", currentUserData.uid).get(),
+          db.collection("incidents").where("uid", "==", currentUserData.uid).get(),
+          db.collection("wildlifeReports").where("uid", "==", currentUserData.uid).get()
+        ]);
+
+        document.getElementById("metricLogs").textContent = logsSnap.size;
+        document.getElementById("metricIncidents").textContent = incidentsSnap.size;
+        document.getElementById("metricWildlife").textContent = wildSnap.size;
+
+        let recentText = "";
+        logsSnap.docs.slice(0, 3).forEach(doc => {
+          const d = doc.data();
+          recentText += `<div>Daily Log: ${d.date || ""} - ${escapeHtml((d.findings || "").slice(0, 80))}</div>`;
+        });
+
+        if (!recentText) recentText = "No recent records yet.";
+        document.getElementById("recentActivity").innerHTML = recentText;
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function exportDailyLogPDF() {
+      try {
+        const date = document.getElementById("logDate").value;
+        const officerName = document.getElementById("logOfficerName").value.trim();
+        const role = document.getElementById("logOfficerRole").value.trim();
+        const airport = document.getElementById("logAirport").value.trim();
+        const shift = document.getElementById("logShift").value;
+        const start = document.getElementById("logStartTime").value;
+        const end = document.getElementById("logEndTime").value;
+        const weather = document.getElementById("logWeather").value;
+        const findings = document.getElementById("logFindings").value.trim();
+        const actions = document.getElementById("logActions").value.trim();
+        const remarks = document.getElementById("logRemarks").value.trim();
+
+        if (!date || !officerName || !findings) {
+          setStatus("Fill the current log first before exporting PDF.", "error");
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(16);
+        doc.text("NAC ASO System - Daily Log Report", 14, 18);
+
+        doc.setFontSize(11);
+        doc.text(`Officer: ${officerName}`, 14, 30);
+        doc.text(`Role: ${role}`, 14, 38);
+        doc.text(`Airport: ${airport}`, 14, 46);
+        doc.text(`Date: ${date}`, 14, 54);
+        doc.text(`Shift: ${shift}`, 14, 62);
+        doc.text(`Time: ${start} - ${end}`, 14, 70);
+        doc.text(`Weather: ${weather}`, 14, 78);
+
+        const findingsLines = doc.splitTextToSize(`Complete Inspection Findings: ${findings}`, 180);
+        const actionLines = doc.splitTextToSize(`Action Taken: ${actions}`, 180);
+        const remarksLines = doc.splitTextToSize(`Remarks: ${remarks}`, 180);
+
+        doc.text(findingsLines, 14, 92);
+        doc.text(actionLines, 14, 120);
+        doc.text(remarksLines, 14, 148);
+
+        doc.save(`NAC_Daily_Log_${date}_${officerName.replace(/\s+/g, "_")}.pdf`);
+        setStatus("PDF exported successfully.");
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function adminCreateUser() {
+      if (!currentUserData || !isAdminRole(currentUserData.role)) {
+        setStatus("Access denied. Admin only.", "error");
+        return;
+      }
+
+      setStatus("Admin user creation through Firebase Auth cannot safely create another Auth user from plain frontend only. Use Firebase Admin SDK / Cloud Function for full admin creation.", "error");
+    }
+
+    async function loadAllUsers() {
+      try {
+        if (!currentUserData || !isAdminRole(currentUserData.role)) {
+          setStatus("Access denied. Admin only.", "error");
+          return;
+        }
+
+        const snap = await db.collection("users").get();
+        let html = "<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Airport</th><th>Phone</th></tr></thead><tbody>";
+
+        if (snap.empty) {
+          html += `<tr><td colspan="5">No users found.</td></tr>`;
+        } else {
+          snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+              <tr>
+                <td>${escapeHtml(d.fullName || "")}</td>
+                <td>${escapeHtml(d.email || "")}</td>
+                <td>${escapeHtml(d.role || "")}</td>
+                <td>${escapeHtml(d.airport || "")}</td>
+                <td>${escapeHtml(d.phone || "")}</td>
+              </tr>
+            `;
+          });
+        }
+
+        html += "</tbody></table>";
+        document.getElementById("allUsersList").innerHTML = html;
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function loadAllLogs() {
+      try {
+        if (!currentUserData || !isAdminRole(currentUserData.role)) {
+          setStatus("Access denied. Admin only.", "error");
+          return;
+        }
+
+        const snap = await db.collection("dailyLogs").orderBy("date", "desc").get();
+        let html = "<table><thead><tr><th>Date</th><th>Officer</th><th>Airport</th><th>Shift</th><th>Findings</th></tr></thead><tbody>";
+
+        if (snap.empty) {
+          html += `<tr><td colspan="5">No daily logs found.</td></tr>`;
+        } else {
+          snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+              <tr>
+                <td>${d.date || ""}</td>
+                <td>${escapeHtml(d.officerName || "")}</td>
+                <td>${escapeHtml(d.airport || "")}</td>
+                <td>${escapeHtml(d.shift || "")}</td>
+                <td>${escapeHtml(d.findings || "")}</td>
+              </tr>
+            `;
+          });
+        }
+
+        html += "</tbody></table>";
+        document.getElementById("allLogsList").innerHTML = html;
+      } catch (error) {
+        if (String(error.message).includes("index")) {
+          document.getElementById("allLogsList").innerHTML = `<div class="danger">Firestore index may be required for dailyLogs orderBy query.</div>`;
+        } else {
+          setStatus(error.message, "error");
+        }
+      }
+    }
+
+    async function loadAllIncidents() {
+      try {
+        if (!currentUserData || !isAdminRole(currentUserData.role)) {
+          setStatus("Access denied. Admin only.", "error");
+          return;
+        }
+
+        const snap = await db.collection("incidents").orderBy("date", "desc").get();
+        let html = "<table><thead><tr><th>Date</th><th>Officer</th><th>Type</th><th>Location</th><th>Description</th></tr></thead><tbody>";
+
+        if (snap.empty) {
+          html += `<tr><td colspan="5">No incidents found.</td></tr>`;
+        } else {
+          snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+              <tr>
+                <td>${d.date || ""} ${d.time || ""}</td>
+                <td>${escapeHtml(d.officerName || "")}</td>
+                <td>${escapeHtml(d.incidentType || "")}</td>
+                <td>${escapeHtml(d.location || "")}</td>
+                <td>${escapeHtml(d.description || "")}</td>
+              </tr>
+            `;
+          });
+        }
+
+        html += "</tbody></table>";
+        document.getElementById("allIncidentsList").innerHTML = html;
+      } catch (error) {
+        if (String(error.message).includes("index")) {
+          document.getElementById("allIncidentsList").innerHTML = `<div class="danger">Firestore index may be required for incidents orderBy query.</div>`;
+        } else {
+          setStatus(error.message, "error");
+        }
+      }
+    }
+
+    async function loadAllWildlife() {
+      try {
+        if (!currentUserData || !isAdminRole(currentUserData.role)) {
+          setStatus("Access denied. Admin only.", "error");
+          return;
+        }
+
+        const snap = await db.collection("wildlifeReports").orderBy("date", "desc").get();
+        let html = "<table><thead><tr><th>Date</th><th>Officer</th><th>Type</th><th>Species</th><th>Location</th></tr></thead><tbody>";
+
+        if (snap.empty) {
+          html += `<tr><td colspan="5">No wildlife reports found.</td></tr>`;
+        } else {
+          snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+              <tr>
+                <td>${d.date || ""} ${d.time || ""}</td>
+                <td>${escapeHtml(d.officerName || "")}</td>
+                <td>${escapeHtml(d.reportType || "")}</td>
+                <td>${escapeHtml(d.species || "")}</td>
+                <td>${escapeHtml(d.location || "")}</td>
+              </tr>
+            `;
+          });
+        }
+
+        html += "</tbody></table>";
+        document.getElementById("allWildlifeList").innerHTML = html;
+      } catch (error) {
+        if (String(error.message).includes("index")) {
+          document.getElementById("allWildlifeList").innerHTML = `<div class="danger">Firestore index may be required for wildlifeReports orderBy query.</div>`;
+        } else {
+          setStatus(error.message, "error");
+        }
+      }
+    }
+
+    function escapeHtml(text) {
+      return String(text)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -938,1306 +1331,17 @@
         .replace(/'/g, "&#039;");
     }
 
-    function formatDate(dateValue) {
-      if (!dateValue) return "-";
-      try {
-        const d = new Date(dateValue);
-        if (Number.isNaN(d.getTime())) return "-";
-        return d.toLocaleString();
-      } catch {
-        return "-";
-      }
-    }
+    // default dates
+    window.addEventListener("load", () => {
+      const today = new Date().toISOString().split("T")[0];
+      const nowMonth = new Date().toISOString().slice(0, 7);
 
-    function fromFirestoreDate(value) {
-      if (!value) return null;
-      if (value?.seconds) return new Date(value.seconds * 1000);
-      return new Date(value);
-    }
-
-    function todayDateKey() {
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
-    }
-
-    function currentMonthKey() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    }
-
-    function countBy(list, selector) {
-      const obj = {};
-      list.forEach(item => {
-        const key = selector(item) || "Unknown";
-        obj[key] = (obj[key] || 0) + 1;
-      });
-      return obj;
-    }
-
-    async function uploadFileIfAny(file, path) {
-      if (!file) return "";
-      const storageRef = ref(storage, path);
-      await uploadBytes(storageRef, file);
-      return await getDownloadURL(storageRef);
-    }
-
-    function canSendEmergency(role = "") {
-      return [
-        "Airport Operations Manager (AOM)",
-        "Senior Airport Safety Officer (SASO)",
-        "Chief Operations Officer"
-      ].includes(role);
-    }
-
-    function canManageReports(role = "") {
-      return [
-        "Airport Operations Manager (AOM)",
-        "Senior Airport Safety Officer (SASO)",
-        "Chief Operations Officer"
-      ].includes(role);
-    }
-
-    function statusBadgeClass(status = "") {
-      const s = status.toLowerCase();
-      if (s === "closed") return "closed";
-      return "open";
-    }
-
-    function severityBadgeClass(severity = "") {
-      const s = severity.toLowerCase();
-      if (s === "low") return "low";
-      if (s === "high" || s === "critical") return "high";
-      return "medium";
-    }
-
-    function updateTopPills() {
-      document.getElementById("userInfoPill").textContent = currentUserData?.name || "Not logged in";
-      document.getElementById("roleInfoPill").textContent = currentUserData?.role || "-";
-      document.getElementById("airportInfoPill").textContent = currentUserData?.airport || "-";
-    }
-
-    async function ensureUserNameCorrect() {
-      if (!auth.currentUser || !currentUserData) return;
-      if ((currentUserData.name || "").trim() === "pkametan0502") {
-        await updateDoc(doc(db, "users", auth.currentUser.uid), { name: "Casper Kametan" });
-        currentUserData.name = "Casper Kametan";
-      }
-    }
-
-    async function fixMyEmergencyContacts() {
-      if (!auth.currentUser) return;
-
-      const contactsRef = collection(db, "users", auth.currentUser.uid, "contacts");
-      const snap = await getDocs(contactsRef);
-
-      let hasRFF = false;
-      let hasATC = false;
-
-      for (const docSnap of snap.docs) {
-        const data = docSnap.data();
-
-        if (data.name === "Airport Fire Service" || data.role === "Fire") {
-          await updateDoc(doc(db, "users", auth.currentUser.uid, "contacts", docSnap.id), {
-            name: "Airport Rescue Fire Fighter (RFF)",
-            role: "RFF",
-            phone: data.phone || "Emergency Line"
-          });
-          hasRFF = true;
-          continue;
-        }
-
-        if (data.name === "Airport Rescue Fire Fighter (RFF)" || data.role === "RFF") hasRFF = true;
-        if (data.name === "ATC Contact" || data.role === "Air Traffic Control") hasATC = true;
-      }
-
-      if (!hasRFF) {
-        await addDoc(contactsRef, {
-          name: "Airport Rescue Fire Fighter (RFF)",
-          role: "RFF",
-          phone: "Emergency Line",
-          createdAt: serverTimestamp()
-        });
-      }
-
-      if (!hasATC) {
-        await addDoc(contactsRef, {
-          name: "ATC Contact",
-          role: "Air Traffic Control",
-          phone: "Add number",
-          createdAt: serverTimestamp()
-        });
-      }
-    }
-
-    function renderBarChart(targetId, countsObj, pillId = null) {
-      const box = document.getElementById(targetId);
-      box.innerHTML = "";
-
-      const entries = Object.entries(countsObj).sort((a, b) => b[1] - a[1]);
-      if (pillId) document.getElementById(pillId).textContent = `${entries.length} Items`;
-
-      if (entries.length === 0) {
-        box.innerHTML = '<div class="small">No data.</div>';
-        return;
-      }
-
-      const max = Math.max(...entries.map(x => x[1]), 1);
-
-      entries.forEach(([label, count]) => {
-        const row = document.createElement("div");
-        row.className = "bar-row";
-        row.innerHTML = `
-          <div>${safeText(label)}</div>
-          <div class="bar"><span style="width:${(count / max) * 100}%"></span></div>
-          <div>${count}</div>
-        `;
-        box.appendChild(row);
-      });
-    }
-
-    function exportSingleDailyLogPdf(log) {
-      const { jsPDF } = window.jspdf;
-      const docPdf = new jsPDF();
-
-      docPdf.setFontSize(16);
-      docPdf.text("NAC ASO System - Daily Log Report", 14, 18);
-
-      docPdf.setFontSize(11);
-      docPdf.text(`Airport: ${log.airport || "-"}`, 14, 28);
-      docPdf.text(`Officer: ${log.userName || "-"}`, 14, 35);
-      docPdf.text(`Role: ${log.userRole || "-"}`, 14, 42);
-      docPdf.text(`Log Date: ${log.logDate || "-"}`, 14, 49);
-      docPdf.text(`Shift: ${log.shift || "-"}`, 14, 56);
-      docPdf.text(`Shift Start Time: ${log.startTime || "-"}`, 14, 63);
-      docPdf.text(`Weather: ${log.weather || "-"}`, 14, 70);
-      docPdf.text(`Area: ${log.area || "-"}`, 14, 77);
-
-      docPdf.autoTable({
-        startY: 85,
-        head: [["Section", "Details"]],
-        body: [
-          ["Inspection Findings", log.findings || "-"],
-          ["Action Taken", log.actionTaken || "-"],
-          ["Handover Notes", log.handoverNotes || "-"],
-          ["Submitted", formatDate(fromFirestoreDate(log.createdAt))]
-        ],
-        styles: { fontSize: 10, cellPadding: 3 },
-        headStyles: { fillColor: [37, 99, 235] }
+      ["logDate", "incidentDate", "wildDate"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = today;
       });
 
-      const fileName = `daily-log-${(log.userName || "officer").replace(/\s+/g, "-")}-${log.logDate || "date"}.pdf`;
-      docPdf.save(fileName);
-    }
-
-    function exportMonthlySummaryPdf() {
-      const { jsPDF } = window.jspdf;
-      const docPdf = new jsPDF("l", "mm", "a4");
-
-      const month = document.getElementById("monthlySummaryMonth").value || currentMonthKey();
-      const officerFilter = document.getElementById("monthlyOfficerFilter").value.trim() || "All";
-
-      const officerCounts = countBy(monthlyFilteredLogs, x => x.userName || "Unknown");
-      const shiftCounts = countBy(monthlyFilteredLogs, x => x.shift || "Unknown");
-      const weatherCounts = countBy(monthlyFilteredLogs, x => x.weather || "Unknown");
-
-      docPdf.setFontSize(16);
-      docPdf.text("NAC ASO System - Monthly Daily Log Summary", 14, 16);
-      docPdf.setFontSize(10);
-      docPdf.text(`Airport: ${currentUserData?.airport || "-"}`, 14, 24);
-      docPdf.text(`Month: ${month}`, 14, 30);
-      docPdf.text(`Officer Filter: ${officerFilter}`, 14, 36);
-      docPdf.text(`Generated By: ${currentUserData?.name || "-"}`, 14, 42);
-      docPdf.text(`Generated At: ${new Date().toLocaleString()}`, 14, 48);
-
-      docPdf.autoTable({
-        startY: 55,
-        head: [["Metric", "Value"]],
-        body: [
-          ["Total Logs", String(monthlyFilteredLogs.length)],
-          ["Officers", String(Object.keys(officerCounts).length)],
-          ["Shift Types Used", String(Object.keys(shiftCounts).length)],
-          ["Weather Types Used", String(Object.keys(weatherCounts).length)]
-        ],
-        theme: "grid",
-        styles: { fontSize: 10 },
-        headStyles: { fillColor: [37, 99, 235] }
-      });
-
-      let currentY = docPdf.lastAutoTable.finalY + 8;
-
-      docPdf.autoTable({
-        startY: currentY,
-        head: [["Officer", "Logs"]],
-        body: Object.entries(officerCounts).sort((a, b) => b[1] - a[1]),
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [22, 163, 74] }
-      });
-
-      currentY = docPdf.lastAutoTable.finalY + 8;
-
-      docPdf.autoTable({
-        startY: currentY,
-        head: [["Shift", "Logs"]],
-        body: Object.entries(shiftCounts).sort((a, b) => b[1] - a[1]),
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [245, 158, 11] }
-      });
-
-      currentY = docPdf.lastAutoTable.finalY + 8;
-
-      docPdf.autoTable({
-        startY: currentY,
-        head: [["Weather", "Logs"]],
-        body: Object.entries(weatherCounts).sort((a, b) => b[1] - a[1]),
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [239, 68, 68] }
-      });
-
-      docPdf.addPage();
-
-      docPdf.setFontSize(14);
-      docPdf.text("Monthly Daily Log Details", 14, 16);
-
-      docPdf.autoTable({
-        startY: 22,
-        head: [["Date", "Officer", "Role", "Shift", "Start", "Weather", "Area", "Findings"]],
-        body: monthlyFilteredLogs.map(log => [
-          log.logDate || "-",
-          log.userName || "-",
-          log.userRole || "-",
-          log.shift || "-",
-          log.startTime || "-",
-          log.weather || "-",
-          log.area || "-",
-          (log.findings || "-").slice(0, 90)
-        ]),
-        styles: { fontSize: 8, cellPadding: 2 },
-        headStyles: { fillColor: [37, 99, 235] }
-      });
-
-      docPdf.save(`monthly-daily-log-summary-${month}.pdf`);
-    }
-
-    function filterLogsForMonth() {
-      const month = document.getElementById("monthlySummaryMonth").value || currentMonthKey();
-      const officerFilter = document.getElementById("monthlyOfficerFilter").value.trim().toLowerCase();
-
-      let filtered = allDailyLogs.filter(log => (log.logDate || "").startsWith(month));
-
-      if (officerFilter) {
-        filtered = filtered.filter(log => (log.userName || "").toLowerCase().includes(officerFilter));
-      }
-
-      monthlyFilteredLogs = filtered.sort((a, b) => {
-        const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
-        const bd = fromFirestoreDate(b.createdAt)?.getTime() || 0;
-        return bd - ad;
-      });
-    }
-
-    function renderMonthlySummary() {
-      filterLogsForMonth();
-
-      const officerCounts = countBy(monthlyFilteredLogs, x => x.userName || "Unknown");
-      const shiftCounts = countBy(monthlyFilteredLogs, x => x.shift || "Unknown");
-      const weatherCounts = countBy(monthlyFilteredLogs, x => x.weather || "Unknown");
-
-      document.getElementById("monthlyTotalLogs").textContent = monthlyFilteredLogs.length;
-      document.getElementById("monthlyOfficerCount").textContent = Object.keys(officerCounts).length;
-      document.getElementById("monthlyShiftCount").textContent = Object.keys(shiftCounts).length;
-      document.getElementById("monthlyWeatherCount").textContent = Object.keys(weatherCounts).length;
-
-      renderBarChart("monthlyOfficerChart", officerCounts, "monthlyOfficerPill");
-      renderBarChart("monthlyShiftChart", shiftCounts, "monthlyShiftPill");
-      renderBarChart("monthlyWeatherChart", weatherCounts, "monthlyWeatherPill");
-
-      renderDailyLogs(monthlyFilteredLogs, "monthlyLogsList", "monthlyLogsPill", true);
-
-      const tbody = document.getElementById("monthlySummaryTableBody");
-      tbody.innerHTML = "";
-
-      if (monthlyFilteredLogs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="small">No daily logs for selected month.</td></tr>`;
-        return;
-      }
-
-      monthlyFilteredLogs.forEach(log => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${safeText(log.logDate || "-")}</td>
-          <td>${safeText(log.userName || "-")}</td>
-          <td>${safeText(log.userRole || "-")}</td>
-          <td>${safeText(log.shift || "-")}</td>
-          <td>${safeText(log.startTime || "-")}</td>
-          <td>${safeText(log.weather || "-")}</td>
-          <td>${safeText(log.area || "-")}</td>
-          <td>${safeText(log.findings || "-")}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById(btn.dataset.tab).classList.add("active");
-
-        if (btn.dataset.tab === "monthlySummaryTab") {
-          renderMonthlySummary();
-        }
-      });
-    });
-
-    document.getElementById("showLoginPassword").addEventListener("change", e => {
-      document.getElementById("loginPassword").type = e.target.checked ? "text" : "password";
-    });
-
-    document.getElementById("showSignupPassword").addEventListener("change", e => {
-      document.getElementById("signupPassword").type = e.target.checked ? "text" : "password";
-    });
-
-    document.getElementById("loadMonthlySummaryBtn").addEventListener("click", () => {
-      renderMonthlySummary();
-      showStatus("Monthly summary loaded.");
-    });
-
-    document.getElementById("exportMonthlyPdfBtn").addEventListener("click", () => {
-      renderMonthlySummary();
-      exportMonthlySummaryPdf();
-    });
-
-    document.getElementById("signupBtn").addEventListener("click", async () => {
-      clearStatus();
-
-      const name = document.getElementById("signupName").value.trim();
-      const email = document.getElementById("signupEmail").value.trim();
-      const password = document.getElementById("signupPassword").value;
-      const role = document.getElementById("signupRole").value;
-      const airport = document.getElementById("signupAirport").value.trim() || "PMIA";
-      const phone = document.getElementById("signupPhone").value.trim();
-      const photo = document.getElementById("signupPhoto").files[0];
-
-      if (!name || !email || !password) {
-        showStatus("Please complete name, email and password.", "warn");
-        return;
-      }
-
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = cred.user.uid;
-
-        let photoURL = "";
-        if (photo) {
-          photoURL = await uploadFileIfAny(
-            photo,
-            `users/${uid}/profile/${Date.now()}_${sanitizeFileName(photo.name)}`
-          );
-        }
-
-        await setDoc(doc(db, "users", uid), {
-          uid,
-          name,
-          email,
-          role,
-          airport,
-          phone,
-          photoURL,
-          backgroundType: "default",
-          backgroundURL: "",
-          createdAt: serverTimestamp()
-        });
-
-        const contactSnap = await getDocs(collection(db, "users", uid, "contacts"));
-        if (contactSnap.empty) {
-          for (const c of defaultContacts) {
-            await addDoc(collection(db, "users", uid, "contacts"), c);
-          }
-        }
-
-        showStatus("Account created successfully.");
-      } catch (err) {
-        console.error(err);
-        showStatus(err.message || "Signup failed.", "error");
-      }
-    });
-
-    document.getElementById("loginBtn").addEventListener("click", async () => {
-      clearStatus();
-
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
-      if (!email || !password) {
-        showStatus("Enter email and password.", "warn");
-        return;
-      }
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        showStatus("Login successful.");
-      } catch (err) {
-        console.error(err);
-        showStatus(err.message || "Login failed.", "error");
-      }
-    });
-
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      try {
-        if (emergencyUnsubscribe) emergencyUnsubscribe();
-        stopEmergencySound();
-        await signOut(auth);
-        showStatus("Logged out.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not log out.", "error");
-      }
-    });
-
-    onAuthStateChanged(auth, async user => {
-      if (!user) {
-        currentUserData = null;
-        allReports = [];
-        allAlerts = [];
-        allDailyLogs = [];
-        monthlyFilteredLogs = [];
-        authSection.classList.remove("hidden");
-        appSection.classList.add("hidden");
-        updateTopPills();
-        return;
-      }
-
-      try {
-        const userSnap = await getDoc(doc(db, "users", user.uid));
-        if (!userSnap.exists()) {
-          showStatus("User profile not found.", "error");
-          return;
-        }
-
-        currentUserData = userSnap.data();
-
-        await ensureUserNameCorrect();
-
-        authSection.classList.add("hidden");
-        appSection.classList.remove("hidden");
-        updateTopPills();
-
-        await fixMyEmergencyContacts();
-        await loadUserProfile();
-        await loadContacts(user.uid);
-        await loadReports();
-        await loadDailyLogs();
-        await loadAlerts();
-        renderMonthlySummary();
-        startEmergencyListener();
-
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not load user data.", "error");
-      }
-    });
-
-    async function loadUserProfile() {
-      const freshUserSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if (freshUserSnap.exists()) {
-        currentUserData = freshUserSnap.data();
-      }
-
-      const photoEl = document.getElementById("profilePhotoView");
-      if (currentUserData?.photoURL) {
-        photoEl.src = currentUserData.photoURL;
-        photoEl.classList.remove("hidden");
-      } else {
-        photoEl.classList.add("hidden");
-      }
-
-      updateTopPills();
-
-      document.getElementById("profileInfoBox").innerHTML = `
-        <strong>Name:</strong> ${safeText(currentUserData?.name || "-")}<br>
-        <strong>Email:</strong> ${safeText(currentUserData?.email || "-")}<br>
-        <strong>Role:</strong> ${safeText(currentUserData?.role || "-")}<br>
-        <strong>Airport:</strong> ${safeText(currentUserData?.airport || "-")}<br>
-        <strong>Phone:</strong> ${safeText(currentUserData?.phone || "-")}
-      `;
-    }
-
-    async function loadContacts(uid) {
-      const box = document.getElementById("contactsList");
-      box.innerHTML = "";
-
-      const snap = await getDocs(collection(db, "users", uid, "contacts"));
-      if (snap.empty) {
-        box.innerHTML = '<div class="small">No contacts added yet.</div>';
-        return;
-      }
-
-      const contacts = snap.docs.map(d => d.data());
-      contacts.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-
-      for (const c of contacts) {
-        const div = document.createElement("div");
-        div.className = "contact-item";
-        div.innerHTML = `
-          <strong>${safeText(c.name || "-")}</strong><br>
-          <span>${safeText(c.role || "-")}</span><br>
-          <span class="small">${safeText(c.phone || "-")}</span>
-        `;
-        box.appendChild(div);
-      }
-    }
-
-    document.getElementById("addContactBtn").addEventListener("click", async () => {
-      if (!auth.currentUser) return;
-
-      const name = document.getElementById("contactName").value.trim();
-      const role = document.getElementById("contactRole").value.trim();
-      const phone = document.getElementById("contactPhone").value.trim();
-
-      if (!name || !phone) {
-        showStatus("Enter contact name and phone.", "warn");
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, "users", auth.currentUser.uid, "contacts"), {
-          name, role, phone, createdAt: serverTimestamp()
-        });
-
-        document.getElementById("contactName").value = "";
-        document.getElementById("contactRole").value = "";
-        document.getElementById("contactPhone").value = "";
-
-        await loadContacts(auth.currentUser.uid);
-        showStatus("Contact added.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not add contact.", "error");
-      }
-    });
-
-    document.getElementById("getGpsBtn").addEventListener("click", () => {
-      if (!navigator.geolocation) {
-        showStatus("Geolocation not supported.", "warn");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          currentGps = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
-          document.getElementById("reportGps").value = currentGps;
-          showStatus("GPS captured.");
-        },
-        err => {
-          console.error(err);
-          showStatus("Could not get GPS.", "error");
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    });
-
-    document.getElementById("submitReportBtn").addEventListener("click", async () => {
-      if (!auth.currentUser || !currentUserData) return;
-
-      const type = document.getElementById("reportType").value;
-      const title = document.getElementById("reportTitle").value.trim();
-      const shift = document.getElementById("reportShift").value;
-      const startTime = document.getElementById("reportStartTime").value;
-      const severity = document.getElementById("reportSeverity").value;
-      const location = document.getElementById("reportLocation").value.trim();
-      const gps = document.getElementById("reportGps").value.trim();
-      const details = document.getElementById("reportDetails").value.trim();
-      const photo = document.getElementById("reportPhoto").files[0];
-
-      if (!title || !details) {
-        showStatus("Enter report title and details.", "warn");
-        return;
-      }
-
-      try {
-        let photoURL = "";
-        if (photo) {
-          photoURL = await uploadFileIfAny(
-            photo,
-            `reports/${auth.currentUser.uid}/${Date.now()}_${sanitizeFileName(photo.name)}`
-          );
-        }
-
-        await addDoc(collection(db, "reports"), {
-          title,
-          type,
-          shift,
-          startTime,
-          severity,
-          location,
-          gps,
-          details,
-          photoURL,
-          airport: currentUserData.airport || "PMIA",
-          userId: auth.currentUser.uid,
-          userName: currentUserData.name || "",
-          userRole: currentUserData.role || "",
-          createdBy: auth.currentUser.uid,
-          createdAt: serverTimestamp(),
-          status: "Open",
-          assignedTo: null,
-          closedAt: null,
-          closedBy: null
-        });
-
-        document.getElementById("reportTitle").value = "";
-        document.getElementById("reportStartTime").value = "";
-        document.getElementById("reportLocation").value = "";
-        document.getElementById("reportGps").value = "";
-        document.getElementById("reportDetails").value = "";
-        document.getElementById("reportPhoto").value = "";
-
-        await loadReports();
-        showStatus("Report submitted.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not submit report.", "error");
-      }
-    });
-
-    document.getElementById("submitDailyLogBtn").addEventListener("click", async () => {
-      if (!auth.currentUser || !currentUserData) return;
-
-      const logDate = document.getElementById("logDate").value;
-      const shift = document.getElementById("logShift").value;
-      const startTime = document.getElementById("logStartTime").value;
-      const weather = document.getElementById("logWeather").value;
-      const area = document.getElementById("logArea").value.trim();
-      const findings = document.getElementById("logFindings").value.trim();
-      const actionTaken = document.getElementById("logActionTaken").value.trim();
-      const handoverNotes = document.getElementById("logHandoverNotes").value.trim();
-
-      if (!logDate || !startTime || !findings) {
-        showStatus("Enter log date, start time and inspection findings.", "warn");
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, "daily_logs"), {
-          logDate,
-          shift,
-          startTime,
-          weather,
-          area,
-          findings,
-          actionTaken,
-          handoverNotes,
-          airport: currentUserData.airport || "PMIA",
-          userId: auth.currentUser.uid,
-          userName: currentUserData.name || "",
-          userRole: currentUserData.role || "",
-          createdAt: serverTimestamp()
-        });
-
-        document.getElementById("logDate").value = new Date().toISOString().split("T")[0];
-        document.getElementById("logShift").value = "A Shift";
-        document.getElementById("logStartTime").value = "";
-        document.getElementById("logWeather").value = "Fine";
-        document.getElementById("logArea").value = "";
-        document.getElementById("logFindings").value = "";
-        document.getElementById("logActionTaken").value = "";
-        document.getElementById("logHandoverNotes").value = "";
-
-        await loadDailyLogs();
-        renderMonthlySummary();
-        showStatus("Daily log submitted.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not submit daily log.", "error");
-      }
-    });
-
-    async function loadReports() {
-      const reportsRef = collection(db, "reports");
-      let snap;
-
-      try {
-        try {
-          const q = query(
-            reportsRef,
-            where("airport", "==", currentUserData.airport || "PMIA"),
-            orderBy("createdAt", "desc")
-          );
-          snap = await getDocs(q);
-        } catch {
-          const q = query(
-            reportsRef,
-            where("airport", "==", currentUserData.airport || "PMIA")
-          );
-          snap = await getDocs(q);
-        }
-
-        allReports = [];
-        snap.forEach(docSnap => allReports.push({ id: docSnap.id, ...docSnap.data() }));
-
-        allReports.sort((a, b) => {
-          const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
-          const bd = fromFirestoreDate(b.createdAt)?.getTime() || 0;
-          return bd - ad;
-        });
-
-        renderKpis();
-        renderCharts(allReports);
-        renderReports(allReports.slice(0, 5), "recentReportsList", "recentReportsPill");
-        applyReportFilters();
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not load reports.", "error");
-      }
-    }
-
-    async function loadDailyLogs() {
-      const logsRef = collection(db, "daily_logs");
-      let snap;
-
-      try {
-        try {
-          const q = query(
-            logsRef,
-            where("airport", "==", currentUserData.airport || "PMIA"),
-            orderBy("createdAt", "desc")
-          );
-          snap = await getDocs(q);
-        } catch {
-          const q = query(
-            logsRef,
-            where("airport", "==", currentUserData.airport || "PMIA")
-          );
-          snap = await getDocs(q);
-        }
-
-        allDailyLogs = [];
-        snap.forEach(docSnap => allDailyLogs.push({ id: docSnap.id, ...docSnap.data() }));
-
-        allDailyLogs.sort((a, b) => {
-          const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
-          const bd = fromFirestoreDate(b.createdAt)?.getTime() || 0;
-          return bd - ad;
-        });
-
-        renderKpis();
-        renderDailyLogs(allDailyLogs.slice(0, 5), "recentDailyLogsList", "recentDailyLogsPill", true);
-        applyDailyLogFilters();
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not load daily logs.", "error");
-      }
-    }
-
-    function renderReports(list, targetId, pillId = null) {
-      const box = document.getElementById(targetId);
-      box.innerHTML = "";
-
-      if (pillId) {
-        document.getElementById(pillId).textContent = `${list.length} Items`;
-      }
-
-      if (list.length === 0) {
-        box.innerHTML = '<div class="small">No reports found.</div>';
-        return;
-      }
-
-      list.forEach(r => {
-        const isManager = canManageReports(currentUserData?.role || "");
-        const isClosed = (r.status || "").toLowerCase() === "closed";
-
-        const div = document.createElement("div");
-        div.className = "report-item";
-        div.innerHTML = `
-          <strong>${safeText(r.title || r.type || "Untitled Report")}</strong><br>
-          <span class="badge">${safeText(r.type || "-")}</span>
-          <span class="badge ${severityBadgeClass(r.severity || "")}">${safeText(r.severity || "-")}</span>
-          <span class="badge">${safeText(r.shift || "-")}</span>
-          <span class="badge ${statusBadgeClass(r.status || "")}">${safeText(r.status || "Open")}</span>
-
-          <div style="margin-top:8px;">${safeText(r.details || "-")}</div>
-
-          <div class="report-meta">
-            By: ${safeText(r.userName || "-")} (${safeText(r.userRole || "-")})<br>
-            Airport: ${safeText(r.airport || "-")}<br>
-            Location: ${safeText(r.location || "-")}<br>
-            Start Time: ${safeText(r.startTime || "-")}<br>
-            GPS: ${safeText(r.gps || "-")}<br>
-            Assigned To: ${safeText(r.assignedTo || "-")}<br>
-            Submitted: ${formatDate(fromFirestoreDate(r.createdAt))}<br>
-            Closed At: ${formatDate(fromFirestoreDate(r.closedAt))}<br>
-            Closed By: ${safeText(r.closedBy || "-")}
-          </div>
-
-          ${r.photoURL ? `<img class="thumb" src="${safeText(r.photoURL)}" alt="Report Photo" />` : ""}
-
-          <div class="actions">
-            ${
-              isManager
-                ? `
-                  <button class="btn-warning action-investigate" data-id="${r.id}">Set Investigating</button>
-                  ${!isClosed ? `<button class="btn-accent action-close" data-id="${r.id}">Close Report</button>` : ""}
-                `
-                : ""
-            }
-          </div>
-        `;
-
-        box.appendChild(div);
-      });
-
-      box.querySelectorAll(".action-investigate").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          await updateReportStatus(btn.dataset.id, "Investigating");
-        });
-      });
-
-      box.querySelectorAll(".action-close").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          await updateReportStatus(btn.dataset.id, "Closed");
-        });
-      });
-    }
-
-    function renderDailyLogs(list, targetId, pillId = null, showPdfButton = false) {
-      const box = document.getElementById(targetId);
-      box.innerHTML = "";
-
-      if (pillId) {
-        document.getElementById(pillId).textContent = `${list.length} Items`;
-      }
-
-      if (list.length === 0) {
-        box.innerHTML = '<div class="small">No daily logs found.</div>';
-        return;
-      }
-
-      list.forEach(log => {
-        const div = document.createElement("div");
-        div.className = "log-item";
-        div.innerHTML = `
-          <strong>${safeText(log.userName || "-")}</strong><br>
-          <span class="badge">${safeText(log.shift || "-")}</span>
-          <span class="badge">${safeText(log.weather || "-")}</span>
-          <span class="badge">${safeText(log.logDate || "-")}</span>
-
-          <div style="margin-top:8px;"><strong>Findings:</strong> ${safeText(log.findings || "-")}</div>
-          <div class="report-meta">
-            Role: ${safeText(log.userRole || "-")}<br>
-            Airport: ${safeText(log.airport || "-")}<br>
-            Area: ${safeText(log.area || "-")}<br>
-            Start Time: ${safeText(log.startTime || "-")}<br>
-            Action Taken: ${safeText(log.actionTaken || "-")}<br>
-            Handover Notes: ${safeText(log.handoverNotes || "-")}<br>
-            Submitted: ${formatDate(fromFirestoreDate(log.createdAt))}
-          </div>
-
-          ${
-            showPdfButton
-              ? `<div class="actions">
-                   <button class="btn-success export-log-pdf-btn" data-id="${log.id}">Export PDF</button>
-                 </div>`
-              : ""
-          }
-        `;
-        box.appendChild(div);
-      });
-
-      if (showPdfButton) {
-        box.querySelectorAll(".export-log-pdf-btn").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const log = allDailyLogs.find(x => x.id === btn.dataset.id) || monthlyFilteredLogs.find(x => x.id === btn.dataset.id);
-            if (log) exportSingleDailyLogPdf(log);
-          });
-        });
-      }
-    }
-
-    async function updateReportStatus(reportId, status) {
-      if (!canManageReports(currentUserData?.role || "")) {
-        showStatus("You are not authorized to manage reports.", "error");
-        return;
-      }
-
-      try {
-        const payload = { status };
-
-        if (status === "Closed") {
-          payload.closedAt = new Date();
-          payload.closedBy = currentUserData?.name || auth.currentUser?.uid || "";
-        }
-
-        await updateDoc(doc(db, "reports", reportId), payload);
-        await loadReports();
-        showStatus(`Report status updated to ${status}.`);
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not update report.", "error");
-      }
-    }
-
-    function renderKpis() {
-      const today = todayDateKey();
-
-      const total = allReports.length;
-      const todayCount = allReports.filter(r => {
-        const d = fromFirestoreDate(r.createdAt);
-        if (!d) return false;
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${y}-${m}-${day}` === today;
-      }).length;
-
-      const wildlife = allReports.filter(r => (r.type || "").toLowerCase().includes("wildlife")).length;
-      const openReports = allReports.filter(r => (r.status || "Open") !== "Closed").length;
-      const todayLogs = allDailyLogs.filter(l => (l.logDate || "") === today).length;
-
-      document.getElementById("kpiTotal").textContent = total;
-      document.getElementById("kpiToday").textContent = todayCount;
-      document.getElementById("kpiWildlife").textContent = wildlife;
-      document.getElementById("kpiOpen").textContent = openReports;
-      document.getElementById("kpiDailyLogs").textContent = todayLogs;
-    }
-
-    function renderCharts(reports) {
-      const typeCounts = countBy(reports, r => r.type || "Other");
-      const severityCounts = countBy(reports, r => r.severity || "Unknown");
-      renderBarChart("typeChart", typeCounts);
-      renderBarChart("severityChart", severityCounts);
-    }
-
-    function applyReportFilters() {
-      const type = document.getElementById("filterType").value;
-      const severity = document.getElementById("filterSeverity").value;
-      const status = document.getElementById("filterStatus").value;
-      const search = document.getElementById("filterSearch").value.trim().toLowerCase();
-
-      let filtered = [...allReports];
-
-      if (type) filtered = filtered.filter(r => (r.type || "") === type);
-      if (severity) filtered = filtered.filter(r => (r.severity || "") === severity);
-      if (status) filtered = filtered.filter(r => (r.status || "Open") === status);
-
-      if (search) {
-        filtered = filtered.filter(r => {
-          const hay = `${r.title || ""} ${r.details || ""} ${r.location || ""}`.toLowerCase();
-          return hay.includes(search);
-        });
-      }
-
-      renderReports(filtered, "allReportsList", "allReportsPill");
-    }
-
-    function applyDailyLogFilters() {
-      const logDate = document.getElementById("filterLogDate").value;
-      const shift = document.getElementById("filterLogShift").value;
-      const weather = document.getElementById("filterLogWeather").value;
-      const officer = document.getElementById("filterLogOfficer").value.trim().toLowerCase();
-      const search = document.getElementById("filterLogSearch").value.trim().toLowerCase();
-
-      let filtered = [...allDailyLogs];
-
-      if (logDate) filtered = filtered.filter(l => (l.logDate || "") === logDate);
-      if (shift) filtered = filtered.filter(l => (l.shift || "") === shift);
-      if (weather) filtered = filtered.filter(l => (l.weather || "") === weather);
-      if (officer) filtered = filtered.filter(l => (l.userName || "").toLowerCase().includes(officer));
-
-      if (search) {
-        filtered = filtered.filter(l => {
-          const hay = `${l.findings || ""} ${l.area || ""} ${l.actionTaken || ""} ${l.handoverNotes || ""}`.toLowerCase();
-          return hay.includes(search);
-        });
-      }
-
-      renderDailyLogs(filtered, "allDailyLogsList", "allDailyLogsPill", true);
-    }
-
-    document.getElementById("applyFiltersBtn").addEventListener("click", applyReportFilters);
-    document.getElementById("clearFiltersBtn").addEventListener("click", () => {
-      document.getElementById("filterType").value = "";
-      document.getElementById("filterSeverity").value = "";
-      document.getElementById("filterStatus").value = "";
-      document.getElementById("filterSearch").value = "";
-      applyReportFilters();
-    });
-
-    document.getElementById("applyLogFiltersBtn").addEventListener("click", applyDailyLogFilters);
-    document.getElementById("clearLogFiltersBtn").addEventListener("click", () => {
-      document.getElementById("filterLogDate").value = "";
-      document.getElementById("filterLogShift").value = "";
-      document.getElementById("filterLogWeather").value = "";
-      document.getElementById("filterLogOfficer").value = "";
-      document.getElementById("filterLogSearch").value = "";
-      applyDailyLogFilters();
-    });
-
-    document.getElementById("wildlifeSearchBtn").addEventListener("click", () => {
-      const q = document.getElementById("wildlifeSearch").value.trim();
-      if (!q) {
-        showStatus("Enter wildlife search text.", "warn");
-        return;
-      }
-      window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, "_blank");
-    });
-
-    document.getElementById("wildlifeImagesBtn").addEventListener("click", () => {
-      const q = document.getElementById("wildlifeSearch").value.trim();
-      if (!q) {
-        showStatus("Enter wildlife search text.", "warn");
-        return;
-      }
-      window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}`, "_blank");
-    });
-
-    document.getElementById("sendEmergencyAlertBtn").addEventListener("click", async () => {
-      if (!auth.currentUser || !currentUserData) return;
-
-      if (!canSendEmergency(currentUserData.role || "")) {
-        showStatus("You are not authorized to send emergency alerts.", "error");
-        return;
-      }
-
-      const message = document.getElementById("emergencyMessage").value.trim();
-      if (!message) {
-        showStatus("Enter emergency message.", "warn");
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, "emergency_alerts"), {
-          message,
-          airport: currentUserData.airport || "PMIA",
-          createdBy: currentUserData.name || auth.currentUser.uid,
-          role: currentUserData.role || "",
-          createdAt: serverTimestamp(),
-          acknowledgedBy: [],
-          resolved: false,
-          resolvedBy: null,
-          resolvedAt: null
-        });
-
-        document.getElementById("emergencyMessage").value = "";
-        await loadAlerts();
-        showStatus("Emergency alert sent.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not send emergency alert.", "error");
-      }
-    });
-
-    async function loadAlerts() {
-      const box = document.getElementById("alertList");
-      box.innerHTML = "";
-
-      try {
-        let snap;
-        try {
-          snap = await getDocs(query(
-            collection(db, "emergency_alerts"),
-            where("airport", "==", currentUserData.airport || "PMIA"),
-            orderBy("createdAt", "desc")
-          ));
-        } catch {
-          snap = await getDocs(query(
-            collection(db, "emergency_alerts"),
-            where("airport", "==", currentUserData.airport || "PMIA")
-          ));
-        }
-
-        allAlerts = [];
-        snap.forEach(docSnap => allAlerts.push({ id: docSnap.id, ...docSnap.data() }));
-
-        allAlerts.sort((a, b) => {
-          const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
-          const bd = fromFirestoreDate(b.createdAt)?.getTime() || 0;
-          return bd - ad;
-        });
-
-        if (allAlerts.length === 0) {
-          box.innerHTML = '<div class="small">No alerts yet.</div>';
-          return;
-        }
-
-        allAlerts.slice(0, 10).forEach(a => {
-          const ackCount = Array.isArray(a.acknowledgedBy) ? a.acknowledgedBy.length : 0;
-          const isResolved = !!a.resolved;
-          const div = document.createElement("div");
-          div.className = "alert-item";
-          div.innerHTML = `
-            <strong>${safeText(a.message || "Emergency alert")}</strong>
-            <div class="report-meta">
-              By: ${safeText(a.createdBy || "-")}<br>
-              Role: ${safeText(a.role || "-")}<br>
-              Airport: ${safeText(a.airport || "-")}<br>
-              Acknowledged: ${ackCount}<br>
-              Resolved: ${isResolved ? "Yes" : "No"}<br>
-              Resolved By: ${safeText(a.resolvedBy || "-")}<br>
-              Time: ${formatDate(fromFirestoreDate(a.createdAt))}
-            </div>
-            <div class="actions">
-              <button class="btn-accent ack-btn" data-id="${a.id}">Acknowledge</button>
-              ${
-                canSendEmergency(currentUserData?.role || "") && !isResolved
-                  ? `<button class="btn-warning resolve-btn" data-id="${a.id}">Resolve</button>`
-                  : ""
-              }
-            </div>
-          `;
-          box.appendChild(div);
-        });
-
-        box.querySelectorAll(".ack-btn").forEach(btn => {
-          btn.addEventListener("click", async () => {
-            await acknowledgeAlert(btn.dataset.id);
-          });
-        });
-
-        box.querySelectorAll(".resolve-btn").forEach(btn => {
-          btn.addEventListener("click", async () => {
-            await resolveAlert(btn.dataset.id);
-          });
-        });
-      } catch (err) {
-        console.error(err);
-        document.getElementById("alertList").innerHTML = '<div class="small">Could not load alerts.</div>';
-      }
-    }
-
-    async function acknowledgeAlert(alertId) {
-      if (!auth.currentUser) return;
-
-      try {
-        await updateDoc(doc(db, "emergency_alerts", alertId), {
-          acknowledgedBy: arrayUnion(auth.currentUser.uid)
-        });
-        await loadAlerts();
-        showStatus("Alert acknowledged.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not acknowledge alert.", "error");
-      }
-    }
-
-    async function resolveAlert(alertId) {
-      if (!canSendEmergency(currentUserData?.role || "")) {
-        showStatus("You are not authorized to resolve alerts.", "error");
-        return;
-      }
-
-      try {
-        await updateDoc(doc(db, "emergency_alerts", alertId), {
-          resolved: true,
-          resolvedBy: currentUserData?.name || auth.currentUser?.uid || "",
-          resolvedAt: new Date()
-        });
-        await loadAlerts();
-        closeEmergencyPopup();
-        showStatus("Alert resolved.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Could not resolve alert.", "error");
-      }
-    }
-
-    function startEmergencyListener() {
-      if (emergencyUnsubscribe) emergencyUnsubscribe();
-
-      let initialized = false;
-
-      emergencyUnsubscribe = onSnapshot(
-        query(collection(db, "emergency_alerts")),
-        snapshot => {
-          const docs = [];
-          snapshot.forEach(docSnap => docs.push({ id: docSnap.id, ...docSnap.data() }));
-
-          docs.sort((a, b) => {
-            const ad = fromFirestoreDate(a.createdAt)?.getTime() || 0;
-            const bd = fromFirestoreDate(b.createdAt)?.getTime() || 0;
-            return bd - ad;
-          });
-
-          if (!initialized) {
-            initialized = true;
-            return;
-          }
-
-          const latest = docs.find(a =>
-            (a.airport || "") === (currentUserData?.airport || "") && !a.resolved
-          );
-
-          if (!latest) return;
-
-          const ackList = Array.isArray(latest.acknowledgedBy) ? latest.acknowledgedBy : [];
-          const alreadyAcked = ackList.includes(auth.currentUser?.uid || "");
-
-          if (!alreadyAcked) {
-            showEmergencyPopup(latest);
-          }
-        },
-        err => console.error("Emergency listener error:", err)
-      );
-    }
-
-    function playEmergencySound() {
-      try {
-        stopEmergencySound();
-        currentEmergencyAudio = new Audio("data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTAAAAAA/////wAAAP///wAAAP///wAAAP///wAA");
-        currentEmergencyAudio.loop = true;
-        currentEmergencyAudio.play().catch(() => {});
-      } catch {}
-    }
-
-    function stopEmergencySound() {
-      if (currentEmergencyAudio) {
-        currentEmergencyAudio.pause();
-        currentEmergencyAudio.currentTime = 0;
-        currentEmergencyAudio = null;
-      }
-    }
-
-    function showEmergencyPopup(alert) {
-      activePopupAlertId = alert.id;
-      document.getElementById("emergencyPopupMessage").textContent = alert.message || "Emergency alert";
-      document.getElementById("emergencyPopupMeta").innerHTML = `
-        Airport: ${safeText(alert.airport || "-")}<br>
-        By: ${safeText(alert.createdBy || "-")}<br>
-        Role: ${safeText(alert.role || "-")}<br>
-        Time: ${formatDate(fromFirestoreDate(alert.createdAt))}
-      `;
-      document.getElementById("resolveAlertBtn").classList.toggle(
-        "hidden",
-        !canSendEmergency(currentUserData?.role || "")
-      );
-      document.getElementById("emergencyPopupOverlay").style.display = "flex";
-      playEmergencySound();
-
-      if (navigator.vibrate) {
-        navigator.vibrate([300, 150, 300, 150, 500]);
-      }
-    }
-
-    function closeEmergencyPopup() {
-      document.getElementById("emergencyPopupOverlay").style.display = "none";
-      activePopupAlertId = null;
-      stopEmergencySound();
-    }
-
-    document.getElementById("closePopupBtn").addEventListener("click", closeEmergencyPopup);
-
-    document.getElementById("acknowledgeAlertBtn").addEventListener("click", async () => {
-      if (!activePopupAlertId) return;
-      await acknowledgeAlert(activePopupAlertId);
-      closeEmergencyPopup();
-    });
-
-    document.getElementById("resolveAlertBtn").addEventListener("click", async () => {
-      if (!activePopupAlertId) return;
-      await resolveAlert(activePopupAlertId);
+      document.getElementById("summaryMonth").value = nowMonth;
     });
   </script>
 </body>
