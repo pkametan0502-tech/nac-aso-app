@@ -216,6 +216,7 @@
       margin-bottom: 12px;
       font-size: 14px;
       display: none;
+      white-space: pre-wrap;
     }
 
     .status.ok {
@@ -339,6 +340,7 @@
     <section id="authSection" class="grid grid-2">
       <div class="card">
         <h2>Login</h2>
+
         <label>Email</label>
         <input type="email" id="loginEmail" placeholder="Enter your email" />
 
@@ -356,6 +358,7 @@
 
       <div class="card">
         <h2>Create Account</h2>
+
         <label>Full Name</label>
         <input type="text" id="signupName" placeholder="Full name" />
 
@@ -373,7 +376,7 @@
         <select id="signupRole">
           <option>Airport Operations Manager (AOM)</option>
           <option>Senior Airport Safety Officer (SASO)</option>
-          <option>Airport Safety Officer (ASO)</option>
+          <option selected>Airport Safety Officer (ASO)</option>
           <option>Team Leader Grounds Staff</option>
           <option>Grounds Staff</option>
           <option>Chief Operations Officer</option>
@@ -604,7 +607,7 @@
       apiKey: "AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc",
       authDomain: "nac-aso-system.firebaseapp.com",
       projectId: "nac-aso-system",
-      storageBucket: "nac-aso-system.appspot.com",
+      storageBucket: "nac-aso-system.firebasestorage.app",
       messagingSenderId: "852433876255",
       appId: "1:852433876255:web:c59a0a757ee4f7466dac2a",
       measurementId: "G-2NK1RYJTS9"
@@ -777,6 +780,7 @@
     async function loadContacts(uid) {
       const contactsList = document.getElementById("contactsList");
       contactsList.innerHTML = "";
+
       const snap = await getDocs(collection(db, "users", uid, "contacts"));
 
       if (snap.empty) {
@@ -847,12 +851,16 @@
     }
 
     async function refreshDashboard(user) {
-      const reportsSnap = await getDocs(query(collection(db, "reports"), orderBy("createdAt", "desc")));
-      const reports = [];
-
-      reportsSnap.forEach(docSnap => {
-        reports.push({ id: docSnap.id, ...docSnap.data() });
-      });
+      let reports = [];
+      try {
+        const reportsSnap = await getDocs(query(collection(db, "reports"), orderBy("createdAt", "desc")));
+        reportsSnap.forEach(docSnap => {
+          reports.push({ id: docSnap.id, ...docSnap.data() });
+        });
+      } catch (err) {
+        console.error("Report load error:", err);
+        showStatus("Reports loaded partially. If charts stay empty, publish Firestore rules and reload.", "err");
+      }
 
       renderReports(reports);
       renderKpis(reports);
@@ -1036,6 +1044,7 @@
         await signInWithEmailAndPassword(auth, email, password);
         showStatus("Login successful.");
       } catch (error) {
+        console.error(error);
         showStatus(error.message, "err");
       }
     });
@@ -1083,6 +1092,7 @@
         await createDefaultContacts(uid);
         showStatus("Account created successfully.");
       } catch (error) {
+        console.error(error);
         showStatus(error.message, "err");
       }
     });
@@ -1092,6 +1102,7 @@
         await signOut(auth);
         showStatus("Logged out successfully.");
       } catch (error) {
+        console.error(error);
         showStatus(error.message, "err");
       }
     });
@@ -1130,44 +1141,66 @@
         await loadUserProfile(user);
         showStatus("Profile updated.");
       } catch (error) {
+        console.error(error);
         showStatus(error.message, "err");
       }
     });
 
     document.getElementById("bgDefaultBtn").addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      await updateDoc(doc(db, "users", user.uid), { backgroundType: "default", backgroundURL: "" });
-      await loadUserProfile(user);
-      showStatus("Default background applied.");
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        await updateDoc(doc(db, "users", user.uid), { backgroundType: "default", backgroundURL: "" });
+        await loadUserProfile(user);
+        showStatus("Default background applied.");
+      } catch (error) {
+        console.error(error);
+        showStatus(error.message, "err");
+      }
     });
 
     document.getElementById("bgBlueBtn").addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      await updateDoc(doc(db, "users", user.uid), { backgroundType: "blue", backgroundURL: "" });
-      await loadUserProfile(user);
-      showStatus("Blue background applied.");
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        await updateDoc(doc(db, "users", user.uid), { backgroundType: "blue", backgroundURL: "" });
+        await loadUserProfile(user);
+        showStatus("Blue background applied.");
+      } catch (error) {
+        console.error(error);
+        showStatus(error.message, "err");
+      }
     });
 
     document.getElementById("bgSkyBtn").addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      await updateDoc(doc(db, "users", user.uid), { backgroundType: "sky", backgroundURL: "" });
-      await loadUserProfile(user);
-      showStatus("Sky background applied.");
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        await updateDoc(doc(db, "users", user.uid), { backgroundType: "sky", backgroundURL: "" });
+        await loadUserProfile(user);
+        showStatus("Sky background applied.");
+      } catch (error) {
+        console.error(error);
+        showStatus(error.message, "err");
+      }
     });
 
     document.getElementById("bgDarkBtn").addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      await updateDoc(doc(db, "users", user.uid), { backgroundType: "dark", backgroundURL: "" });
-      await loadUserProfile(user);
-      showStatus("Dark background applied.");
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        await updateDoc(doc(db, "users", user.uid), { backgroundType: "dark", backgroundURL: "" });
+        await loadUserProfile(user);
+        showStatus("Dark background applied.");
+      } catch (error) {
+        console.error(error);
+        showStatus(error.message, "err");
+      }
     });
 
     document.getElementById("captureLocationBtn").addEventListener("click", () => {
       clearStatus();
+
       if (!navigator.geolocation) {
         showStatus("Geolocation not supported on this device.", "err");
         return;
@@ -1180,6 +1213,7 @@
           showStatus("GPS location captured.");
         },
         (error) => {
+          console.error(error);
           showStatus(error.message || "Failed to capture GPS.", "err");
         }
       );
@@ -1244,6 +1278,7 @@
         showStatus("Report submitted successfully.");
         await refreshDashboard(user);
       } catch (error) {
+        console.error(error);
         showStatus(error.message, "err");
       }
     });
@@ -1280,6 +1315,7 @@
         showStatus("Emergency contact added.");
         await loadContacts(user.uid);
       } catch (error) {
+        console.error(error);
         showStatus(error.message, "err");
       }
     });
@@ -1304,6 +1340,7 @@
 
         showStatus("Emergency alert notice created.");
       } catch (error) {
+        console.error(error);
         showStatus(error.message, "err");
       }
     });
@@ -1317,8 +1354,8 @@
           await ensureUserProfile(user);
           await loadUserProfile(user);
           await refreshDashboard(user);
-          searchWildlife("");
         } catch (error) {
+          console.error(error);
           showStatus(error.message, "err");
         }
       } else {
