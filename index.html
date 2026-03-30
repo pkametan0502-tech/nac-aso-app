@@ -1,705 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NAC ASO System V6</title>
-  <style>
-    :root {
-      --navy: #002b52;
-      --blue: #0d67a9;
-      --gold: #f4b400;
-      --bg: #eef3f8;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --danger: #c62828;
-      --success: #1b8f4d;
-      --border: #d8e1ea;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAC ASO System V7</title>
 
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .topbar {
-      background: linear-gradient(135deg, var(--navy), #00467d);
-      color: white;
-      padding: 18px 14px;
-      text-align: center;
-      border-bottom: 4px solid var(--gold);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .topbar h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    .topbar p {
-      margin: 6px 0 0;
-      font-size: 13px;
-      opacity: 0.95;
-    }
-
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 16px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border: 1px solid var(--border);
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .card h2, .card h3 {
-      margin-top: 0;
-      margin-bottom: 14px;
-      color: var(--navy);
-    }
-
-    .muted { color: var(--muted); }
-    .hidden { display: none !important; }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    label {
-      display: block;
-      font-weight: 700;
-      font-size: 13px;
-      margin-bottom: 6px;
-      color: #21364d;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid #cfd8e3;
-      border-radius: 10px;
-      padding: 11px 12px;
-      font-size: 14px;
-      background: white;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 110px;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: var(--blue);
-      color: white;
-    }
-
-    .btn-dark {
-      background: var(--navy);
-      color: white;
-    }
-
-    .btn-light {
-      background: #e8eef5;
-      color: var(--navy);
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    .full { width: 100%; }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .user-badge {
-      background: #e9f2fb;
-      color: var(--navy);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .stat {
-      background: linear-gradient(135deg, var(--blue), var(--navy));
-      color: white;
-      border-radius: 14px;
-      padding: 16px;
-      min-height: 110px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      box-shadow: 0 6px 16px rgba(0, 43, 82, 0.18);
-    }
-
-    .stat .value {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .stat .label {
-      font-size: 13px;
-      opacity: 0.95;
-    }
-
-    .status {
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      margin-bottom: 12px;
-      display: none;
-    }
-
-    .status.show { display: block; }
-    .status.success { background: #e8f7ee; color: #126c39; border: 1px solid #b9e6c9; }
-    .status.error { background: #fdecec; color: #a32020; border: 1px solid #f3b9b9; }
-
-    .report-list {
-      display: grid;
-      gap: 12px;
-      max-height: 700px;
-      overflow: auto;
-    }
-
-    .report-item {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      background: #fbfdff;
-    }
-
-    .report-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .report-title {
-      font-weight: 800;
-      color: var(--navy);
-    }
-
-    .tag {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-right: 6px;
-      margin-top: 6px;
-      background: #edf4fb;
-      color: var(--navy);
-    }
-
-    .tag.warn {
-      background: #fff0d8;
-      color: #8a5200;
-    }
-
-    .small {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .auth-wrap {
-      max-width: 520px;
-      margin: 30px auto;
-    }
-
-    .auth-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .auth-tabs button {
-      flex: 1;
-    }
-
-    .footer-note {
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 30px 10px;
-      border: 1px dashed #c7d3df;
-      border-radius: 12px;
-    }
-
-    @media (max-width: 980px) {
-      .grid, .stats, .row {
-        grid-template-columns: 1fr;
-      }
-
-      .container {
-        padding: 12px;
-      }
-    }
-  </style>
+<style>
+body { font-family: Arial; margin:0; background:#eef3f8; }
+.topbar {
+  background: linear-gradient(rgba(0,43,82,0.9), rgba(0,95,163,0.85)),
+  url('https://images.unsplash.com/photo-1504196606672-aef5c9cefc92');
+  background-size: cover;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+.container { padding:15px; }
+.card {
+  background:white;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:10px;
+}
+input, select, textarea { width:100%; padding:8px; margin:5px 0; }
+button { padding:10px; background:#005fa3; color:white; border:none; border-radius:5px; }
+.hidden { display:none; }
+</style>
 </head>
+
 <body>
-  <div class="topbar">
-    <h1>NAC ASO SYSTEM - PMIA</h1>
-    <p>Version 6 • Firebase Login • Firestore Database • Real Report Storage</p>
-  </div>
 
-  <div class="container">
-    <section id="authSection" class="auth-wrap">
-      <div class="card">
-        <h2>Secure Access</h2>
-        <p class="muted">Sign in or create an account to submit and view Airport Safety Officer reports.</p>
+<div class="topbar">
+<h2>NAC ASO SYSTEM - PMIA</h2>
+<p>Airport Safety Operations System</p>
+</div>
 
-        <div id="authStatus" class="status"></div>
+<div class="container">
 
-        <div class="auth-tabs">
-          <button class="btn btn-primary" id="showLoginBtn" type="button">Login</button>
-          <button class="btn btn-light" id="showSignupBtn" type="button">Create Account</button>
-        </div>
+<!-- LOGIN -->
+<div id="authSection" class="card">
+<h3>Login</h3>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="signup()">Create Account</button>
+</div>
 
-        <form id="loginForm">
-          <div style="margin-bottom: 12px;">
-            <label for="loginEmail">Email</label>
-            <input type="email" id="loginEmail" placeholder="Enter your email" required />
-          </div>
-          <div style="margin-bottom: 12px;">
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" placeholder="Enter password" required />
-          </div>
-          <button type="submit" class="btn btn-primary full">Login</button>
-        </form>
+<!-- APP -->
+<div id="appSection" class="hidden">
 
-        <form id="signupForm" class="hidden">
-          <div style="margin-bottom: 12px;">
-            <label for="signupName">Full Name</label>
-            <input type="text" id="signupName" placeholder="Enter full name" required />
-          </div>
-          <div style="margin-bottom: 12px;">
-            <label for="signupEmail">Email</label>
-            <input type="email" id="signupEmail" placeholder="Enter your email" required />
-          </div>
-          <div style="margin-bottom: 12px;">
-            <label for="signupPassword">Password</label>
-            <input type="password" id="signupPassword" placeholder="Minimum 6 characters" required />
-          </div>
-          <button type="submit" class="btn btn-dark full">Create Account</button>
-        </form>
+<div class="card">
+<button onclick="logout()">Logout</button>
+</div>
 
-        <p class="footer-note">Recommended: create one admin account first, then create ASO user accounts as needed.</p>
-      </div>
-    </section>
+<div class="card">
+<h3>ASO Live Log Entry</h3>
 
-    <section id="appSection" class="hidden">
-      <div class="card">
-        <div class="toolbar">
-          <div>
-            <h2 style="margin-bottom: 6px;">Operations Dashboard</h2>
-            <div class="small">Live sync from Firebase Firestore</div>
-          </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-            <div class="user-badge" id="currentUserLabel">Logged in</div>
-            <button class="btn btn-danger" id="logoutBtn" type="button">Logout</button>
-          </div>
-        </div>
-      </div>
+<input type="text" id="asoName" placeholder="ASO Name">
 
-      <div id="appStatus" class="status"></div>
+<select id="shift">
+<option>A Shift (0300–1100)</option>
+<option>B Shift (1200–2000)</option>
+<option>C Shift (0800–1700)</option>
+</select>
 
-      <div class="stats card">
-        <div class="stat">
-          <div class="value" id="totalReports">0</div>
-          <div class="label">Total Reports</div>
-        </div>
-        <div class="stat">
-          <div class="value" id="overtimeCases">0</div>
-          <div class="label">Overtime Cases</div>
-        </div>
-        <div class="stat">
-          <div class="value" id="todayReports">0</div>
-          <div class="label">Today Reports</div>
-        </div>
-        <div class="stat">
-          <div class="value" id="weatherCount">0</div>
-          <div class="label">Rain / Storm Reports</div>
-        </div>
-      </div>
+<select id="reportType">
+<option>Daily Patrol</option>
+<option>Bird Strike</option>
+<option>Incident</option>
+<option>Emergency</option>
+</select>
 
-      <div class="grid">
-        <div>
-          <div class="card">
-            <h3>ASO Daily Log Entry</h3>
-            <form id="reportForm">
-              <div class="row">
-                <div>
-                  <label for="asoName">ASO Name</label>
-                  <input type="text" id="asoName" placeholder="Enter ASO name" required />
-                </div>
-                <div>
-                  <label for="airport">Airport</label>
-                  <input type="text" id="airport" value="PMIA" required />
-                </div>
-              </div>
+<textarea id="details" placeholder="Enter log details"></textarea>
 
-              <div class="row">
-                <div>
-                  <label for="shift">Shift</label>
-                  <select id="shift" required>
-                    <option value="A Shift">A Shift (0300–1100)</option>
-                    <option value="B Shift">B Shift (1200–2000)</option>
-                    <option value="C Shift">C Shift (0800–1700)</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="weather">Weather</label>
-                  <select id="weather" required>
-                    <option value="Clear">Clear</option>
-                    <option value="Cloudy">Cloudy</option>
-                    <option value="Rain">Rain</option>
-                    <option value="Storm">Storm</option>
-                  </select>
-                </div>
-              </div>
+<input type="time" id="time">
 
-              <div class="row">
-                <div>
-                  <label for="startTime">Time Start</label>
-                  <input type="time" id="startTime" required />
-                </div>
-                <div>
-                  <label for="endTime">Time End</label>
-                  <input type="time" id="endTime" required />
-                </div>
-              </div>
+<!-- IMAGE -->
+<label>Photo (Optional)</label>
+<input type="file" id="photoInput" accept="image/*" capture="environment">
 
-              <div class="row">
-                <div>
-                  <label for="reportType">Report Type</label>
-                  <select id="reportType" required>
-                    <option value="Daily Patrol">Daily Patrol</option>
-                    <option value="Incident Report">Incident Report</option>
-                    <option value="Bird Strike">Bird Strike</option>
-                    <option value="Inspection">Inspection</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="overtimeReason">Overtime Reason</label>
-                  <input type="text" id="overtimeReason" placeholder="Optional" />
-                </div>
-              </div>
+<!-- LOCATION -->
+<button onclick="getLocation()">Capture Location</button>
+<p id="locationDisplay">No location</p>
+<input type="hidden" id="lat">
+<input type="hidden" id="lng">
 
-              <div style="margin-top: 12px;">
-                <label for="findings">Inspection Findings / Activity Details</label>
-                <textarea id="findings" placeholder="Enter complete inspection findings, observations, incident notes, or patrol details" required></textarea>
-              </div>
+<br><br>
+<button onclick="submitLog()">Submit Log</button>
+</div>
 
-              <div style="margin-top: 12px;">
-                <label for="actionsTaken">Actions Taken</label>
-                <textarea id="actionsTaken" placeholder="Enter actions taken, persons notified, follow-up requirements"></textarea>
-              </div>
+<div class="card">
+<h3>Logs</h3>
+<div id="logList"></div>
+</div>
 
-              <div style="margin-top: 14px; display:flex; gap:10px; flex-wrap:wrap;">
-                <button type="submit" class="btn btn-primary">Submit Report</button>
-                <button type="reset" class="btn btn-light">Clear Form</button>
-              </div>
-            </form>
-          </div>
-        </div>
+</div>
+</div>
 
-        <div>
-          <div class="card">
-            <h3>Submitted Reports</h3>
-            <div id="reportList" class="report-list">
-              <div class="empty">No reports yet.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut,
-      updateProfile
-    } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      query,
-      orderBy,
-      onSnapshot,
-      serverTimestamp
-    } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+const firebaseConfig = {
+apiKey: "AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc",
+authDomain: "nac-aso-system.firebaseapp.com",
+projectId: "nac-aso-system",
+storageBucket: "nac-aso-system.firebasestorage.app",
+messagingSenderId: "852433876255",
+appId: "1:852433876255:web:c59a0a757ee4f7466dac2a"
+};
 
-    const firebaseConfig = {
-      apiKey: 'AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc',
-      authDomain: 'nac-aso-system.firebaseapp.com',
-      projectId: 'nac-aso-system',
-      storageBucket: 'nac-aso-system.firebasestorage.app',
-      messagingSenderId: '852433876255',
-      appId: '1:852433876255:web:c59a0a757ee4f7466dac2a'
-    };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+window.login = async () => {
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+await signInWithEmailAndPassword(auth,email,password);
+};
 
-    const authSection = document.getElementById('authSection');
-    const appSection = document.getElementById('appSection');
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const showLoginBtn = document.getElementById('showLoginBtn');
-    const showSignupBtn = document.getElementById('showSignupBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const reportForm = document.getElementById('reportForm');
-    const reportList = document.getElementById('reportList');
-    const currentUserLabel = document.getElementById('currentUserLabel');
-    const authStatus = document.getElementById('authStatus');
-    const appStatus = document.getElementById('appStatus');
+window.signup = async () => {
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+await createUserWithEmailAndPassword(auth,email,password);
+};
 
-    let unsubscribeReports = null;
+window.logout = async () => {
+await signOut(auth);
+};
 
-    function showStatus(el, message, type = 'success') {
-      el.textContent = message;
-      el.className = `status show ${type}`;
-      setTimeout(() => {
-        el.className = 'status';
-        el.textContent = '';
-      }, 4000);
-    }
+onAuthStateChanged(auth,user=>{
+if(user){
+document.getElementById("authSection").classList.add("hidden");
+document.getElementById("appSection").classList.remove("hidden");
+loadLogs();
+}else{
+document.getElementById("authSection").classList.remove("hidden");
+document.getElementById("appSection").classList.add("hidden");
+}
+});
 
-    function switchAuth(mode) {
-      const loginMode = mode === 'login';
-      loginForm.classList.toggle('hidden', !loginMode);
-      signupForm.classList.toggle('hidden', loginMode);
-      showLoginBtn.className = loginMode ? 'btn btn-primary' : 'btn btn-light';
-      showSignupBtn.className = loginMode ? 'btn btn-light' : 'btn btn-primary';
-    }
+window.getLocation = () => {
+navigator.geolocation.getCurrentPosition(pos=>{
+const lat = pos.coords.latitude;
+const lng = pos.coords.longitude;
+document.getElementById("lat").value = lat;
+document.getElementById("lng").value = lng;
+document.getElementById("locationDisplay").innerText = `Lat:${lat}, Lng:${lng}`;
+});
+};
 
-    function toMinutes(time) {
-      if (!time || !time.includes(':')) return 0;
-      const [h, m] = time.split(':').map(Number);
-      return (h * 60) + m;
-    }
+window.submitLog = async () => {
 
-    function isOvertime(endTime) {
-      return toMinutes(endTime) > toMinutes('17:00');
-    }
+const file = document.getElementById("photoInput").files[0];
+let imageURL = file ? URL.createObjectURL(file) : "";
 
-    function formatDateTime(dateValue) {
-      if (!dateValue) return 'Date unavailable';
-      const date = new Date(dateValue);
-      return date.toLocaleString();
-    }
+await addDoc(collection(db,"logs"),{
+name: document.getElementById("asoName").value,
+shift: document.getElementById("shift").value,
+type: document.getElementById("reportType").value,
+details: document.getElementById("details").value,
+time: document.getElementById("time").value,
+imageURL,
+lat: document.getElementById("lat").value,
+lng: document.getElementById("lng").value,
+created: serverTimestamp()
+});
 
-    function renderReports(docs) {
-      if (!docs.length) {
-        reportList.innerHTML = '<div class="empty">No reports yet.</div>';
-        document.getElementById('totalReports').textContent = '0';
-        document.getElementById('overtimeCases').textContent = '0';
-        document.getElementById('todayReports').textContent = '0';
-        document.getElementById('weatherCount').textContent = '0';
-        return;
-      }
+alert("Saved");
+};
 
-      let overtimeCount = 0;
-      let todayCount = 0;
-      let rainStormCount = 0;
-      const todayStr = new Date().toDateString();
+function loadLogs(){
+onSnapshot(collection(db,"logs"),snap=>{
+let html="";
+snap.forEach(doc=>{
+const d = doc.data();
+html += `
+<div style="border-bottom:1px solid #ccc; padding:10px;">
+<b>${d.time}</b> - ${d.type}<br>
+${d.details}<br>
+${d.imageURL ? `<img src="${d.imageURL}" style="width:100%;">` : ""}
+${d.lat ? `<br>📍 ${d.lat}, ${d.lng}` : ""}
+</div>`;
+});
+document.getElementById("logList").innerHTML = html;
+});
+}
+</script>
 
-      reportList.innerHTML = docs.map((doc) => {
-        const data = doc.data();
-        const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : (data.createdAt || null);
-        const over = !!data.overtime;
-        if (over) overtimeCount++;
-        if (createdAt && new Date(createdAt).toDateString() === todayStr) todayCount++;
-        if (data.weather === 'Rain' || data.weather === 'Storm') rainStormCount++;
-
-        return `
-          <div class="report-item">
-            <div class="report-top">
-              <div>
-                <div class="report-title">${data.asoName || 'Unnamed ASO'} • ${data.reportType || 'Report'}</div>
-                <div class="small">${data.airport || 'PMIA'} • ${data.shift || '-'} • ${data.startTime || '--'} to ${data.endTime || '--'}</div>
-              </div>
-              <div class="small">${formatDateTime(createdAt)}</div>
-            </div>
-            <div>
-              <span class="tag">${data.weather || 'Weather N/A'}</span>
-              <span class="tag">${data.submittedByEmail || 'Unknown user'}</span>
-              ${over ? '<span class="tag warn">Overtime</span>' : ''}
-            </div>
-            <p><strong>Findings:</strong> ${data.findings || '-'}</p>
-            <p><strong>Actions:</strong> ${data.actionsTaken || '-'}</p>
-            ${data.overtimeReason ? `<p><strong>Overtime Reason:</strong> ${data.overtimeReason}</p>` : ''}
-          </div>
-        `;
-      }).join('');
-
-      document.getElementById('totalReports').textContent = String(docs.length);
-      document.getElementById('overtimeCases').textContent = String(overtimeCount);
-      document.getElementById('todayReports').textContent = String(todayCount);
-      document.getElementById('weatherCount').textContent = String(rainStormCount);
-    }
-
-    function startReportListener() {
-      if (unsubscribeReports) unsubscribeReports();
-      const q = query(collection(db, 'aso_reports'), orderBy('createdAt', 'desc'));
-      unsubscribeReports = onSnapshot(q, (snapshot) => {
-        renderReports(snapshot.docs);
-      }, (error) => {
-        console.error(error);
-        showStatus(appStatus, 'Unable to load reports. Check Firestore rules or indexes.', 'error');
-      });
-    }
-
-    showLoginBtn.addEventListener('click', () => switchAuth('login'));
-    showSignupBtn.addEventListener('click', () => switchAuth('signup'));
-
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fullName = document.getElementById('signupName').value.trim();
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value;
-
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        if (fullName) {
-          await updateProfile(cred.user, { displayName: fullName });
-        }
-        signupForm.reset();
-        showStatus(authStatus, 'Account created successfully. You are now logged in.', 'success');
-      } catch (error) {
-        console.error(error);
-        showStatus(authStatus, error.message, 'error');
-      }
-    });
-
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        loginForm.reset();
-        showStatus(authStatus, 'Login successful.', 'success');
-      } catch (error) {
-        console.error(error);
-        showStatus(authStatus, error.message, 'error');
-      }
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-    });
-
-    reportForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) {
-        showStatus(appStatus, 'You must be logged in to submit reports.', 'error');
-        return;
-      }
-
-      const payload = {
-        asoName: document.getElementById('asoName').value.trim(),
-        airport: document.getElementById('airport').value.trim(),
-        shift: document.getElementById('shift').value,
-        weather: document.getElementById('weather').value,
-        startTime: document.getElementById('startTime').value,
-        endTime: document.getElementById('endTime').value,
-        reportType: document.getElementById('reportType').value,
-        findings: document.getElementById('findings').value.trim(),
-        actionsTaken: document.getElementById('actionsTaken').value.trim(),
-        overtimeReason: document.getElementById('overtimeReason').value.trim(),
-        overtime: isOvertime(document.getElementById('endTime').value),
-        submittedByUid: user.uid,
-        submittedByEmail: user.email || '',
-        submittedByName: user.displayName || '',
-        createdAt: serverTimestamp()
-      };
-
-      try {
-        await addDoc(collection(db, 'aso_reports'), payload);
-        reportForm.reset();
-        document.getElementById('airport').value = 'PMIA';
-        showStatus(appStatus, 'Report submitted and saved to Firebase.', 'success');
-      } catch (error) {
-        console.error(error);
-        showStatus(appStatus, error.message, 'error');
-      }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        authSection.classList.add('hidden');
-        appSection.classList.remove('hidden');
-        const name = user.displayName || user.email || 'User';
-        currentUserLabel.textContent = `Logged in: ${name}`;
-        startReportListener();
-      } else {
-        authSection.classList.remove('hidden');
-        appSection.classList.add('hidden');
-        currentUserLabel.textContent = 'Logged out';
-        if (unsubscribeReports) unsubscribeReports();
-      }
-    });
-
-    switchAuth('login');
-  </script>
 </body>
 </html>
