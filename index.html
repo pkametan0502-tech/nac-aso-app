@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NAC ASO System V9</title>
+  <title>NAC ASO System V10</title>
   <style>
     * { box-sizing: border-box; }
 
     :root {
       --primary: #002b52;
-      --primary-2: #005fa3;
+      --primary2: #005fa3;
       --accent: #f4b400;
-      --danger: #c62828;
       --success: #2e7d32;
+      --danger: #c62828;
       --bg: #f3f6fb;
-      --card: #ffffff;
+      --card: rgba(255,255,255,0.96);
       --text: #1f2937;
       --muted: #6b7280;
-      --border: #dbe3ee;
-      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --border: #d9e2ec;
+      --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
     }
 
     body {
@@ -32,190 +32,41 @@
     }
 
     .topbar {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
       color: white;
-      padding: 18px 14px;
+      padding: 16px 14px;
       text-align: center;
       border-bottom: 4px solid var(--accent);
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 100;
     }
 
-    .topbar h1 { margin: 0; font-size: 26px; }
-    .topbar p { margin: 6px 0 0; font-size: 13px; opacity: 0.95; }
+    .topbar h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .topbar p {
+      margin: 5px 0 0;
+      font-size: 13px;
+      opacity: 0.95;
+    }
 
     .wrap {
-      max-width: 1400px;
+      max-width: 1450px;
       margin: 0 auto;
       padding: 16px;
     }
 
     .hidden { display: none !important; }
 
-    .grid { display: grid; gap: 16px; }
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-
-    .card {
-      background: rgba(255,255,255,0.96);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(6px);
-    }
-
-    .card h2, .card h3 { margin-top: 0; }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: bold;
-      margin: 10px 0 6px;
-    }
-
-    input, select, textarea, button {
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 10px;
-      border: 1px solid #cfd8e3;
-      font-size: 14px;
-      font-family: inherit;
-    }
-
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    button {
-      cursor: pointer;
-      font-weight: bold;
-      border: none;
-      transition: 0.2s ease;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color: white;
-    }
-
-    .btn-accent {
-      background: var(--accent);
-      color: #111827;
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    .btn-success {
-      background: var(--success);
-      color: white;
-    }
-
-    button:hover {
-      opacity: 0.94;
-      transform: translateY(-1px);
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .actions button { flex: 1 1 180px; }
-
-    .kpi {
-      text-align: center;
-      padding: 18px 12px;
-      border-radius: 14px;
-      background: linear-gradient(180deg, #ffffff, #f8fbff);
-      border: 1px solid var(--border);
-    }
-
-    .kpi .num {
-      font-size: 28px;
-      font-weight: bold;
-      color: var(--primary);
-      margin-bottom: 6px;
-    }
-
-    .kpi .lbl {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .user-badge {
-      display: inline-block;
-      background: #e8f1fb;
-      color: var(--primary);
-      border: 1px solid #c6dbf4;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-right: 6px;
-      margin-bottom: 6px;
-    }
-
-    .report-item, .contact-item, .wildlife-item {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
-      background: #fff;
-    }
-
-    .report-meta {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 8px;
-      line-height: 1.5;
-    }
-
-    .thumb {
-      width: 100%;
-      max-width: 180px;
-      border-radius: 10px;
-      margin-top: 10px;
-      border: 1px solid var(--border);
-      object-fit: cover;
-    }
-
-    .profile-box {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .avatar {
-      width: 92px;
-      height: 92px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid var(--accent);
-      background: #eef3fa;
-      display: block;
-    }
-
-    .small {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
     .status {
+      display: none;
       padding: 12px;
       border-radius: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       font-size: 14px;
-      display: none;
       white-space: pre-wrap;
     }
 
@@ -233,55 +84,178 @@
       border: 1px solid #ffcdd2;
     }
 
-    .chart-wrap {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      align-items: flex-end;
-      min-height: 220px;
-      padding-top: 20px;
+    .grid {
+      display: grid;
+      gap: 16px;
     }
 
-    .bar-col {
-      flex: 1 1 90px;
-      text-align: center;
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
     }
 
-    .bar {
+    .card h2, .card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 10px 0 6px;
+    }
+
+    input, select, textarea, button {
       width: 100%;
-      border-radius: 12px 12px 0 0;
-      min-height: 10px;
-      background: linear-gradient(180deg, #5fa8f0, #005fa3);
+      border-radius: 10px;
+      border: 1px solid #cdd6e1;
+      padding: 11px 12px;
+      font-size: 14px;
+      font-family: inherit;
     }
 
-    .bar-label {
-      font-size: 12px;
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: white;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #1f2937;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .actions button {
+      flex: 1 1 170px;
+    }
+
+    .password-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       margin-top: 8px;
+      font-size: 13px;
+      font-weight: normal;
+    }
+
+    .password-row input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    .kpi {
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 12px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+    }
+
+    .kpi .num {
+      font-size: 30px;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .kpi .lbl {
+      font-size: 13px;
       color: var(--muted);
     }
 
-    .bar-value {
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 6px;
-      color: var(--primary);
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
     .pill {
+      display: inline-block;
       background: #fef3c7;
       color: #92400e;
       font-size: 12px;
       padding: 5px 9px;
       border-radius: 999px;
       font-weight: bold;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e8f1fb;
+      color: var(--primary);
+      border: 1px solid #c6dbf4;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .profile-box {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent);
+      background: #eef3fa;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
     }
 
     .quick-bg {
@@ -300,43 +274,118 @@
       color: var(--primary);
     }
 
+    .report-item, .contact-item, .alert-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    .report-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      margin-top: 8px;
+    }
+
+    .thumb {
+      width: 100%;
+      max-width: 220px;
+      border-radius: 10px;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      width: auto;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: white;
+      border-color: transparent;
+    }
+
+    .tab-panel.hidden {
+      display: none;
+    }
+
+    .chart-wrap {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      min-height: 220px;
+      padding-top: 18px;
+    }
+
+    .bar-col {
+      flex: 1 1 90px;
+      text-align: center;
+    }
+
+    .bar {
+      width: 100%;
+      min-height: 10px;
+      border-radius: 12px 12px 0 0;
+      background: linear-gradient(180deg, #5fa8f0, #005fa3);
+    }
+
+    .bar-value {
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 6px;
+      color: var(--primary);
+    }
+
+    .bar-label {
+      font-size: 12px;
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
     .footer-note {
       text-align: center;
       color: var(--muted);
       font-size: 12px;
-      padding: 20px;
-    }
-
-    .password-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      font-size: 13px;
-      font-weight: normal;
-    }
-
-    .password-row input[type="checkbox"] {
-      width: auto;
-      margin: 0;
-      padding: 0;
+      padding: 18px;
     }
 
     @media (max-width: 980px) {
-      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-      .topbar h1 { font-size: 22px; }
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar h1 {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="topbar">
-    <h1>NAC ASO System V9</h1>
+    <h1>NAC ASO System V10</h1>
     <p>National Airports Corporation – Airport Safety, Wildlife, Incident & Emergency Reporting</p>
   </div>
 
   <div class="wrap">
     <div id="statusBox" class="status"></div>
 
+    <!-- AUTH -->
     <section id="authSection" class="grid grid-2">
       <div class="card">
         <h2>Login</h2>
@@ -399,176 +448,299 @@
       </div>
     </section>
 
+    <!-- APP -->
     <section id="appSection" class="hidden">
-      <div class="grid grid-4">
-        <div class="kpi">
-          <div class="num" id="kpiTotal">0</div>
-          <div class="lbl">Total Reports</div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="dashboardTab">Dashboard</button>
+        <button class="tab-btn" data-tab="reportsTab">Reports</button>
+        <button class="tab-btn" data-tab="profileTab">Profile</button>
+        <button class="tab-btn" data-tab="wildlifeTab">Wildlife</button>
+        <button class="tab-btn" data-tab="emergencyTab">Emergency</button>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div id="dashboardTab" class="tab-panel">
+        <div class="grid grid-4">
+          <div class="kpi">
+            <div class="num" id="kpiTotal">0</div>
+            <div class="lbl">Total Reports</div>
+          </div>
+          <div class="kpi">
+            <div class="num" id="kpiToday">0</div>
+            <div class="lbl">Today</div>
+          </div>
+          <div class="kpi">
+            <div class="num" id="kpiWildlife">0</div>
+            <div class="lbl">Wildlife Reports</div>
+          </div>
+          <div class="kpi">
+            <div class="num" id="kpiEmergency">0</div>
+            <div class="lbl">Emergency Reports</div>
+          </div>
         </div>
-        <div class="kpi">
-          <div class="num" id="kpiToday">0</div>
-          <div class="lbl">Today</div>
+
+        <div class="grid grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">Reports by Type</h2>
+              <span class="pill">Live</span>
+            </div>
+            <div id="typeChart" class="chart-wrap"></div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">Reports by Severity</h2>
+              <span class="pill">Live</span>
+            </div>
+            <div id="severityChart" class="chart-wrap"></div>
+          </div>
         </div>
-        <div class="kpi">
-          <div class="num" id="kpiWildlife">0</div>
-          <div class="lbl">Wildlife Reports</div>
-        </div>
-        <div class="kpi">
-          <div class="num" id="kpiEmergency">0</div>
-          <div class="lbl">Emergency Reports</div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="section-title">
+            <h2 style="margin-bottom:0;">Latest Reports</h2>
+            <span class="pill" id="recentCountPill">0 Items</span>
+          </div>
+          <div id="reportsListDashboard" style="margin-top:12px;"></div>
         </div>
       </div>
 
-      <div class="grid grid-3" style="margin-top:16px;">
-        <div class="card">
-          <div class="section-title">
-            <h2 style="margin-bottom:0;">My Profile</h2>
-            <span class="pill" id="profileRolePill">User</span>
-          </div>
+      <!-- REPORTS -->
+      <div id="reportsTab" class="tab-panel hidden">
+        <div class="grid grid-2">
+          <div class="card">
+            <h2>Submit Report</h2>
 
-          <div class="profile-box" style="margin-top:12px;">
-            <img id="profileAvatar" class="avatar" alt="Profile Photo" src="https://via.placeholder.com/100?text=User" />
-            <div>
-              <div style="font-size:20px;font-weight:bold;" id="profileName">-</div>
-              <div class="small" id="profileEmail">-</div>
-              <div style="margin-top:8px;">
-                <span class="user-badge" id="profileAirport">PMIA</span>
-                <span class="user-badge" id="profilePhone">No phone</span>
-              </div>
+            <label>Report Type</label>
+            <select id="reportType">
+              <option>Airside Inspection</option>
+              <option>Wildlife Patrol</option>
+              <option>Bird Strike</option>
+              <option>Incident</option>
+              <option>Emergency</option>
+            </select>
+
+            <label>Shift</label>
+            <select id="reportShift">
+              <option>A Shift (0300–1100)</option>
+              <option>B Shift (1100–2000)</option>
+              <option>C Shift (0800–1700)</option>
+            </select>
+
+            <label>Time Started</label>
+            <input type="time" id="reportStartTime" />
+
+            <label>Location / Area</label>
+            <input type="text" id="reportLocation" placeholder="Runway, taxiway, apron, terminal, perimeter, etc." />
+
+            <label>Title / Subject</label>
+            <input type="text" id="reportTitle" placeholder="Short title of report" />
+
+            <label>Inspection Findings / Details</label>
+            <textarea id="reportDetails" placeholder="Enter full inspection findings, wildlife details, incident details, actions taken and recommendations"></textarea>
+
+            <label>Severity</label>
+            <select id="reportSeverity">
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Critical</option>
+            </select>
+
+            <label>Attach Photo (optional)</label>
+            <input type="file" id="reportPhoto" accept="image/*" />
+
+            <label>Use Current GPS Location</label>
+            <div class="actions">
+              <button type="button" class="btn-primary" id="captureLocationBtn">Capture Location</button>
+            </div>
+            <input type="text" id="gpsOutput" readonly placeholder="Latitude, Longitude" />
+
+            <div class="actions">
+              <button class="btn-success" id="submitReportBtn">Submit Report</button>
             </div>
           </div>
 
-          <label style="margin-top:14px;">Update Phone</label>
-          <input type="text" id="profilePhoneInput" placeholder="Update phone number" />
+          <div class="card">
+            <h2>Find Reports</h2>
 
-          <label>Change Profile Photo (optional)</label>
-          <input type="file" id="profilePhotoInput" accept="image/*" />
+            <label>Search</label>
+            <input type="text" id="reportSearch" placeholder="Search title, type, location, user, severity..." />
 
-          <label>Custom Background Image (optional)</label>
-          <input type="file" id="bgImageInput" accept="image/*" />
+            <label>Filter by Type</label>
+            <select id="reportFilterType">
+              <option value="">All Types</option>
+              <option>Airside Inspection</option>
+              <option>Wildlife Patrol</option>
+              <option>Bird Strike</option>
+              <option>Incident</option>
+              <option>Emergency</option>
+            </select>
 
-          <div class="quick-bg">
-            <button id="bgDefaultBtn" type="button">Default</button>
-            <button id="bgBlueBtn" type="button">Blue Gradient</button>
-            <button id="bgSkyBtn" type="button">Sky Gradient</button>
-            <button id="bgDarkBtn" type="button">Dark Theme</button>
-          </div>
+            <label>Filter by Severity</label>
+            <select id="reportFilterSeverity">
+              <option value="">All Severity</option>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Critical</option>
+            </select>
 
-          <div class="actions">
-            <button class="btn-success" id="saveProfileBtn">Save Profile</button>
-            <button class="btn-danger" id="logoutBtn">Logout</button>
-          </div>
-        </div>
+            <div class="actions">
+              <button class="btn-primary" id="applyReportFilterBtn">Apply Filter</button>
+              <button class="btn-accent" id="clearReportFilterBtn">Clear Filter</button>
+            </div>
 
-        <div class="card">
-          <h2>Emergency Contacts</h2>
-          <div id="contactsList"></div>
-
-          <label>Add Contact Name</label>
-          <input type="text" id="contactName" placeholder="Contact name" />
-
-          <label>Contact Role</label>
-          <input type="text" id="contactRole" placeholder="Fire / AOM / SASO / Security / Medical" />
-
-          <label>Mobile Number</label>
-          <input type="text" id="contactPhone" placeholder="Phone number" />
-
-          <div class="actions">
-            <button class="btn-accent" id="addContactBtn">Add Contact</button>
-            <button class="btn-danger" id="sendEmergencyAlertBtn">Send Emergency Alert Notice</button>
+            <div id="reportStatsBox" class="small" style="margin-top:12px;"></div>
           </div>
         </div>
 
-        <div class="card">
-          <h2>Wildlife Quick Search</h2>
-          <label>Search Wildlife Name</label>
-          <input type="text" id="wildlifeSearch" placeholder="e.g. dog, bird, pig, bat, python" />
-          <div class="actions">
-            <button class="btn-primary" id="searchWildlifeBtn">Search</button>
-          </div>
-          <div id="wildlifeResults" style="margin-top:12px;"></div>
-        </div>
-      </div>
-
-      <div class="grid grid-2" style="margin-top:16px;">
-        <div class="card">
-          <h2>Submit Report</h2>
-
-          <label>Report Type</label>
-          <select id="reportType">
-            <option>Airside Inspection</option>
-            <option>Wildlife Patrol</option>
-            <option>Bird Strike</option>
-            <option>Incident</option>
-            <option>Emergency</option>
-          </select>
-
-          <label>Shift</label>
-          <select id="reportShift">
-            <option>A Shift (0300–1100)</option>
-            <option>B Shift (1100–2000)</option>
-            <option>C Shift (0800–1700)</option>
-          </select>
-
-          <label>Time Started</label>
-          <input type="time" id="reportStartTime" />
-
-          <label>Location / Area</label>
-          <input type="text" id="reportLocation" placeholder="Runway, taxiway, apron, terminal, perimeter, etc." />
-
-          <label>Title / Subject</label>
-          <input type="text" id="reportTitle" placeholder="Short title of report" />
-
-          <label>Inspection Findings / Details</label>
-          <textarea id="reportDetails" placeholder="Enter full inspection findings, wildlife details, incident details, actions taken and recommendations"></textarea>
-
-          <label>Severity</label>
-          <select id="reportSeverity">
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-            <option>Critical</option>
-          </select>
-
-          <label>Attach Photo (optional)</label>
-          <input type="file" id="reportPhoto" accept="image/*" />
-
-          <label>Use Current GPS Location</label>
-          <div class="actions">
-            <button class="btn-primary" id="captureLocationBtn" type="button">Capture Location</button>
-          </div>
-          <input type="text" id="gpsOutput" placeholder="Latitude, Longitude" readonly />
-
-          <div class="actions">
-            <button class="btn-success" id="submitReportBtn">Submit Report</button>
-          </div>
-        </div>
-
-        <div class="card">
+        <div class="card" style="margin-top:16px;">
           <div class="section-title">
-            <h2 style="margin-bottom:0;">Management Dashboard</h2>
-            <span class="pill">Live Summary</span>
+            <h2 style="margin-bottom:0;">All Reports</h2>
+            <span class="pill" id="allReportCountPill">0 Items</span>
           </div>
-
-          <h3 style="margin-top:18px;">Reports by Type</h3>
-          <div id="typeChart" class="chart-wrap"></div>
-
-          <h3 style="margin-top:18px;">Reports by Severity</h3>
-          <div id="severityChart" class="chart-wrap"></div>
+          <div id="reportsListFull" style="margin-top:12px;"></div>
         </div>
       </div>
 
-      <div class="card" style="margin-top:16px;">
-        <div class="section-title">
-          <h2 style="margin-bottom:0;">Recent Reports</h2>
-          <span class="pill" id="recentCountPill">0 Items</span>
+      <!-- PROFILE -->
+      <div id="profileTab" class="tab-panel hidden">
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="section-title">
+              <h2 style="margin-bottom:0;">My Profile</h2>
+              <span class="pill" id="profileRolePill">User</span>
+            </div>
+
+            <div class="profile-box" style="margin-top:12px;">
+              <img id="profileAvatar" class="avatar" alt="Profile Photo" src="https://via.placeholder.com/100?text=User" />
+              <div>
+                <div style="font-size:20px;font-weight:bold;" id="profileName">-</div>
+                <div class="small" id="profileEmail">-</div>
+                <div style="margin-top:8px;">
+                  <span class="badge" id="profileAirport">PMIA</span>
+                  <span class="badge" id="profilePhone">No phone</span>
+                </div>
+              </div>
+            </div>
+
+            <label style="margin-top:14px;">Update Phone</label>
+            <input type="text" id="profilePhoneInput" placeholder="Update phone number" />
+
+            <label>Change Profile Photo (optional)</label>
+            <input type="file" id="profilePhotoInput" accept="image/*" />
+
+            <label>Custom Background Image (optional)</label>
+            <input type="file" id="bgImageInput" accept="image/*" />
+
+            <div class="quick-bg">
+              <button id="bgDefaultBtn" type="button">Default</button>
+              <button id="bgBlueBtn" type="button">Blue Gradient</button>
+              <button id="bgSkyBtn" type="button">Sky Gradient</button>
+              <button id="bgDarkBtn" type="button">Dark Theme</button>
+            </div>
+
+            <div class="actions">
+              <button class="btn-success" id="saveProfileBtn">Save Profile</button>
+              <button class="btn-danger" id="logoutBtn">Logout</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>User Information</h2>
+            <div id="profileInfoBox" class="small"></div>
+          </div>
         </div>
-        <div id="reportsList" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- WILDLIFE -->
+      <div id="wildlifeTab" class="tab-panel hidden">
+        <div class="grid grid-2">
+          <div class="card">
+            <h2>Wildlife Quick Search</h2>
+            <label>Wildlife Name / Species</label>
+            <input type="text" id="wildlifeSearch" placeholder="e.g. dog, bird, pig, bat, python" />
+
+            <div class="actions">
+              <button class="btn-primary" id="searchWildlifeBtn">Search Details</button>
+              <button class="btn-accent" id="searchWildlifeImagesBtn">Search Images</button>
+            </div>
+
+            <div id="wildlifeResults" style="margin-top:12px;"></div>
+          </div>
+
+          <div class="card">
+            <h2>Wildlife Search Tips</h2>
+            <div class="small">
+              Use this search for:
+              <br><br>
+              • species information
+              <br>
+              • behavior
+              <br>
+              • images
+              <br>
+              • hazard to airport operations
+              <br>
+              • feeding patterns
+              <br>
+              • appearance and posture
+              <br><br>
+              Examples:
+              <br>
+              • bird strike hazard at airports
+              <br>
+              • fruit bat behavior
+              <br>
+              • feral pig airfield hazard
+              <br>
+              • python wildlife PNG
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMERGENCY -->
+      <div id="emergencyTab" class="tab-panel hidden">
+        <div class="grid grid-2">
+          <div class="card">
+            <h2>Emergency Contacts</h2>
+            <div id="contactsList"></div>
+
+            <label>Add Contact Name</label>
+            <input type="text" id="contactName" placeholder="Contact name" />
+
+            <label>Contact Role</label>
+            <input type="text" id="contactRole" placeholder="Fire / AOM / SASO / Security / Medical" />
+
+            <label>Mobile Number</label>
+            <input type="text" id="contactPhone" placeholder="Phone number" />
+
+            <div class="actions">
+              <button class="btn-accent" id="addContactBtn">Add Contact</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Emergency Alert</h2>
+            <label>Alert Message</label>
+            <textarea id="emergencyMessage" placeholder="Describe the emergency alert message"></textarea>
+
+            <div class="actions">
+              <button class="btn-danger" id="sendEmergencyAlertBtn">Create Emergency Alert</button>
+            </div>
+
+            <h3 style="margin-top:18px;">Recent Alerts</h3>
+            <div id="alertList"></div>
+          </div>
+        </div>
       </div>
     </section>
 
     <div class="footer-note">
-      NAC ASO System V9 – Built for airport safety, wildlife control, incident reporting and management monitoring
+      NAC ASO System V10 – Full operational web app build
     </div>
   </div>
 
@@ -620,65 +792,7 @@
 
     let currentUserData = null;
     let currentGps = "";
-
-    const wildlifeDatabase = [
-      {
-        name: "Bird",
-        species: "Common airfield birds",
-        behavior: "Often active near grassed areas, standing water, food waste and runway edges.",
-        characteristics: "Wings, feathered body, fast movement in flocks or singles.",
-        posture: "Standing, feeding, low flight, flock circling.",
-        appearance: "Small to medium size, varied color depending on species."
-      },
-      {
-        name: "Dog",
-        species: "Domestic / stray dog",
-        behavior: "Can wander through perimeter breaches, chase birds, cross runway or apron.",
-        characteristics: "Fast moving, four-legged, highly unpredictable.",
-        posture: "Running, sniffing, crouching, alert stance.",
-        appearance: "Variable color and size."
-      },
-      {
-        name: "Pig",
-        species: "Domestic / feral pig",
-        behavior: "Moves slowly but can suddenly rush, often attracted by waste or open ground.",
-        characteristics: "Heavy body, strong head, serious hazard if entering maneuvering area.",
-        posture: "Head low, rooting, walking in groups or alone.",
-        appearance: "Pink, black, brown or mixed."
-      },
-      {
-        name: "Bat",
-        species: "Fruit bat / flying fox",
-        behavior: "Active around dusk and night, often near trees and fruiting areas.",
-        characteristics: "Large wingspan, hanging posture when roosting.",
-        posture: "Flying, hanging, clustering.",
-        appearance: "Dark body, wing membrane, fox-like face in some species."
-      },
-      {
-        name: "Snake",
-        species: "Python / other snake species",
-        behavior: "May move along grass, drains or warm surfaces.",
-        characteristics: "Long body, no legs, slithering movement.",
-        posture: "Coiled, stretched, hidden in grass.",
-        appearance: "Patterned scales, brown/green/black depending on species."
-      },
-      {
-        name: "Python",
-        species: "Python",
-        behavior: "Usually found in grass, drains, warm edges and hidden areas.",
-        characteristics: "Large snake, slow but dangerous if threatened.",
-        posture: "Coiled, stretched, hiding.",
-        appearance: "Patterned scales, brown and dark markings."
-      },
-      {
-        name: "Cattle",
-        species: "Cow / cattle",
-        behavior: "Large slow-moving hazard if perimeter is compromised.",
-        characteristics: "Heavy body, group movement possible.",
-        posture: "Standing, grazing, walking.",
-        appearance: "Large body, horns possible, black/brown/white mixed colors."
-      }
-    ];
+    let allReports = [];
 
     const defaultContacts = [
       { name: "Airport Fire Service", role: "Fire", phone: "Emergency Line" },
@@ -687,9 +801,9 @@
       { name: "Medical Response", role: "Medical", phone: "Add number" }
     ];
 
+    const statusBox = document.getElementById("statusBox");
     const authSection = document.getElementById("authSection");
     const appSection = document.getElementById("appSection");
-    const statusBox = document.getElementById("statusBox");
 
     function showStatus(message, type = "ok") {
       statusBox.className = `status ${type}`;
@@ -731,6 +845,27 @@
       return await getDownloadURL(storageRef);
     }
 
+    function applyBackground(bgType, bgUrl = "") {
+      if (bgType === "image" && bgUrl) {
+        document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.70), rgba(255,255,255,0.78)), url('${bgUrl}')`;
+        return;
+      }
+      if (bgType === "blue") {
+        document.body.style.backgroundImage = "linear-gradient(135deg, #dceeff, #f3f8ff)";
+        return;
+      }
+      if (bgType === "sky") {
+        document.body.style.backgroundImage = "linear-gradient(135deg, #dff6ff, #eefcff, #f5fbff)";
+        return;
+      }
+      if (bgType === "dark") {
+        document.body.style.backgroundImage = "linear-gradient(135deg, #1f2937, #334155)";
+        return;
+      }
+      document.body.style.backgroundImage = "none";
+      document.body.style.backgroundColor = "#f3f6fb";
+    }
+
     async function ensureUserProfile(user, extra = {}) {
       const userRef = doc(db, "users", user.uid);
       const snap = await getDoc(userRef);
@@ -741,20 +876,14 @@
           user.displayName ||
           (user.email ? user.email.split("@")[0] : "User");
 
-        const fallbackEmail = extra.email || user.email || "";
-        const fallbackRole = extra.role || "Airport Safety Officer (ASO)";
-        const fallbackAirport = extra.airport || "PMIA";
-        const fallbackPhone = extra.phone || "";
-        const fallbackPhoto = extra.photoURL || "";
-
         await setDoc(userRef, {
           uid: user.uid,
           name: fallbackName,
-          email: fallbackEmail,
-          role: fallbackRole,
-          airport: fallbackAirport,
-          phone: fallbackPhone,
-          photoURL: fallbackPhoto,
+          email: extra.email || user.email || "",
+          role: extra.role || "Airport Safety Officer (ASO)",
+          airport: extra.airport || "PMIA",
+          phone: extra.phone || "",
+          photoURL: extra.photoURL || "",
           backgroundType: "default",
           backgroundURL: "",
           createdAt: serverTimestamp()
@@ -775,51 +904,6 @@
           createdAt: serverTimestamp()
         });
       }
-    }
-
-    async function loadContacts(uid) {
-      const contactsList = document.getElementById("contactsList");
-      contactsList.innerHTML = "";
-
-      const snap = await getDocs(collection(db, "users", uid, "contacts"));
-
-      if (snap.empty) {
-        contactsList.innerHTML = '<div class="small">No contacts added yet.</div>';
-        return;
-      }
-
-      snap.forEach(docSnap => {
-        const c = docSnap.data();
-        const item = document.createElement("div");
-        item.className = "contact-item";
-        item.innerHTML = `
-          <strong>${c.name || "-"}</strong><br>
-          <span>${c.role || "-"}</span><br>
-          <span class="small">${c.phone || "-"}</span>
-        `;
-        contactsList.appendChild(item);
-      });
-    }
-
-    function applyBackground(bgType, bgUrl = "") {
-      if (bgType === "image" && bgUrl) {
-        document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.70), rgba(255,255,255,0.78)), url('${bgUrl}')`;
-        return;
-      }
-      if (bgType === "blue") {
-        document.body.style.backgroundImage = "linear-gradient(135deg, #dceeff, #f3f8ff)";
-        return;
-      }
-      if (bgType === "sky") {
-        document.body.style.backgroundImage = "linear-gradient(135deg, #dff6ff, #eefcff, #f5fbff)";
-        return;
-      }
-      if (bgType === "dark") {
-        document.body.style.backgroundImage = "linear-gradient(135deg, #1f2937, #334155)";
-        return;
-      }
-      document.body.style.backgroundImage = "none";
-      document.body.style.backgroundColor = "#f3f6fb";
     }
 
     async function loadUserProfile(user) {
@@ -847,47 +931,95 @@
         ? currentUserData.photoURL
         : "https://via.placeholder.com/100?text=User";
 
+      document.getElementById("profileInfoBox").innerHTML = `
+        <strong>Name:</strong> ${currentUserData.name || "-"}<br>
+        <strong>Email:</strong> ${currentUserData.email || "-"}<br>
+        <strong>Role:</strong> ${currentUserData.role || "-"}<br>
+        <strong>Airport:</strong> ${currentUserData.airport || "-"}<br>
+        <strong>Phone:</strong> ${currentUserData.phone || "-"}
+      `;
+
       applyBackground(currentUserData.backgroundType || "default", currentUserData.backgroundURL || "");
     }
 
-    async function refreshDashboard(user) {
-      let reports = [];
-      try {
-        const reportsSnap = await getDocs(query(collection(db, "reports"), orderBy("createdAt", "desc")));
-        reportsSnap.forEach(docSnap => {
-          reports.push({ id: docSnap.id, ...docSnap.data() });
-        });
-      } catch (err) {
-        console.error("Report load error:", err);
-        showStatus("Reports loaded partially. If charts stay empty, publish Firestore rules and reload.", "err");
-      }
-
-      renderReports(reports);
-      renderKpis(reports);
-      renderCharts(reports);
-      await loadContacts(user.uid);
-    }
-
-    function renderReports(reports) {
-      const box = document.getElementById("reportsList");
-      const pill = document.getElementById("recentCountPill");
+    async function loadContacts(uid) {
+      const box = document.getElementById("contactsList");
       box.innerHTML = "";
-      pill.textContent = `${reports.length} Items`;
 
-      if (reports.length === 0) {
-        box.innerHTML = '<div class="small">No reports submitted yet.</div>';
+      const snap = await getDocs(collection(db, "users", uid, "contacts"));
+      if (snap.empty) {
+        box.innerHTML = '<div class="small">No contacts added yet.</div>';
         return;
       }
 
-      reports.slice(0, 30).forEach(r => {
-        const item = document.createElement("div");
-        item.className = "report-item";
+      snap.forEach(docSnap => {
+        const c = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "contact-item";
+        div.innerHTML = `
+          <strong>${c.name || "-"}</strong><br>
+          <span>${c.role || "-"}</span><br>
+          <span class="small">${c.phone || "-"}</span>
+        `;
+        box.appendChild(div);
+      });
+    }
 
-        item.innerHTML = `
+    async function loadAlerts() {
+      const box = document.getElementById("alertList");
+      box.innerHTML = "";
+
+      try {
+        const snap = await getDocs(query(collection(db, "emergency_alerts"), orderBy("createdAt", "desc")));
+        const alerts = [];
+        snap.forEach(docSnap => alerts.push(docSnap.data()));
+
+        if (alerts.length === 0) {
+          box.innerHTML = '<div class="small">No alerts yet.</div>';
+          return;
+        }
+
+        alerts.slice(0, 10).forEach(a => {
+          const div = document.createElement("div");
+          div.className = "alert-item";
+          div.innerHTML = `
+            <strong>${a.message || "Emergency alert"}</strong>
+            <div class="report-meta">
+              By: ${a.createdBy || "-"}<br>
+              Role: ${a.role || "-"}<br>
+              Airport: ${a.airport || "-"}<br>
+              Time: ${formatDate(a.createdAt?.seconds ? a.createdAt.seconds * 1000 : a.createdAt)}
+            </div>
+          `;
+          box.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+        box.innerHTML = '<div class="small">Could not load alerts.</div>';
+      }
+    }
+
+    function renderReports(list, targetId, pillId = null) {
+      const box = document.getElementById(targetId);
+      box.innerHTML = "";
+
+      if (pillId) {
+        document.getElementById(pillId).textContent = `${list.length} Items`;
+      }
+
+      if (list.length === 0) {
+        box.innerHTML = '<div class="small">No reports found.</div>';
+        return;
+      }
+
+      list.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "report-item";
+        div.innerHTML = `
           <strong>${r.title || r.type || "Untitled Report"}</strong><br>
-          <span class="user-badge">${r.type || "-"}</span>
-          <span class="user-badge">${r.severity || "-"}</span>
-          <span class="user-badge">${r.shift || "-"}</span>
+          <span class="badge">${r.type || "-"}</span>
+          <span class="badge">${r.severity || "-"}</span>
+          <span class="badge">${r.shift || "-"}</span>
           <div style="margin-top:8px;">${r.details || "-"}</div>
           <div class="report-meta">
             By: ${r.userName || "-"} (${r.userRole || "-"})<br>
@@ -899,7 +1031,7 @@
           </div>
           ${r.photoURL ? `<img class="thumb" src="${r.photoURL}" alt="Report Photo" />` : ""}
         `;
-        box.appendChild(item);
+        box.appendChild(div);
       });
     }
 
@@ -939,11 +1071,11 @@
       const maxVal = Math.max(...entries.map(([_, v]) => v), 1);
 
       entries.forEach(([label, value]) => {
-        const pct = Math.max(10, Math.round((value / maxVal) * 180));
+        const height = Math.max(10, Math.round((value / maxVal) * 180));
         const col = document.createElement("div");
         col.className = "bar-col";
         col.innerHTML = `
-          <div class="bar" style="height:${pct}px;"></div>
+          <div class="bar" style="height:${height}px;"></div>
           <div class="bar-value">${value}</div>
           <div class="bar-label">${label}</div>
         `;
@@ -966,47 +1098,127 @@
       renderBarChart("severityChart", severityMap);
     }
 
-    function searchWildlife(term) {
-      const q = (term || "").trim().toLowerCase();
-      const box = document.getElementById("wildlifeResults");
-      box.innerHTML = "";
-
-      if (!q) {
-        box.innerHTML = '<div class="small">Type a wildlife name to search.</div>';
-        return;
+    async function loadReports() {
+      allReports = [];
+      try {
+        const snap = await getDocs(query(collection(db, "reports"), orderBy("createdAt", "desc")));
+        snap.forEach(docSnap => {
+          allReports.push({ id: docSnap.id, ...docSnap.data() });
+        });
+      } catch (err) {
+        console.error(err);
+        showStatus("Could not fully load reports. Publish Firestore rules and reload.", "err");
       }
 
-      const results = wildlifeDatabase.filter(w =>
-        w.name.toLowerCase().includes(q) ||
-        w.species.toLowerCase().includes(q) ||
-        w.behavior.toLowerCase().includes(q) ||
-        w.characteristics.toLowerCase().includes(q) ||
-        w.posture.toLowerCase().includes(q) ||
-        w.appearance.toLowerCase().includes(q)
-      );
-
-      if (results.length === 0) {
-        box.innerHTML = '<div class="small">No wildlife match found. Try bird, dog, pig, bat, snake, python, cattle.</div>';
-        return;
-      }
-
-      results.forEach(w => {
-        const item = document.createElement("div");
-        item.className = "wildlife-item";
-        item.innerHTML = `
-          <strong>${w.name}</strong><br>
-          <div class="small" style="margin-top:6px;">
-            <strong>Species:</strong> ${w.species}<br>
-            <strong>Behavior:</strong> ${w.behavior}<br>
-            <strong>Characteristics:</strong> ${w.characteristics}<br>
-            <strong>Posture:</strong> ${w.posture}<br>
-            <strong>Appearance:</strong> ${w.appearance}
-          </div>
-        `;
-        box.appendChild(item);
-      });
+      renderKpis(allReports);
+      renderCharts(allReports);
+      renderReports(allReports.slice(0, 10), "reportsListDashboard", "recentCountPill");
+      renderReports(allReports, "reportsListFull", "allReportCountPill");
+      document.getElementById("reportStatsBox").textContent = `Showing ${allReports.length} report(s).`;
     }
 
+    function applyReportFilter() {
+      const search = document.getElementById("reportSearch").value.trim().toLowerCase();
+      const type = document.getElementById("reportFilterType").value;
+      const severity = document.getElementById("reportFilterSeverity").value;
+
+      const filtered = allReports.filter(r => {
+        const blob = [
+          r.title, r.type, r.location, r.userName, r.userRole, r.severity, r.details, r.airport
+        ].join(" ").toLowerCase();
+
+        const matchSearch = !search || blob.includes(search);
+        const matchType = !type || r.type === type;
+        const matchSeverity = !severity || r.severity === severity;
+
+        return matchSearch && matchType && matchSeverity;
+      });
+
+      renderReports(filtered, "reportsListFull", "allReportCountPill");
+      document.getElementById("reportStatsBox").textContent = `Showing ${filtered.length} of ${allReports.length} report(s).`;
+    }
+
+    function clearReportFilter() {
+      document.getElementById("reportSearch").value = "";
+      document.getElementById("reportFilterType").value = "";
+      document.getElementById("reportFilterSeverity").value = "";
+      renderReports(allReports, "reportsListFull", "allReportCountPill");
+      document.getElementById("reportStatsBox").textContent = `Showing ${allReports.length} report(s).`;
+    }
+
+    function getWildlifeSearchTerm() {
+      return document.getElementById("wildlifeSearch").value.trim();
+    }
+
+    function renderWildlifeHint(term) {
+      const box = document.getElementById("wildlifeResults");
+
+      if (!term) {
+        box.innerHTML = `
+          <div class="small">
+            Type a wildlife name, then use:
+            <br><br>
+            <strong>Search Details</strong> for Google search results
+            <br>
+            <strong>Search Images</strong> for wildlife photos
+          </div>
+        `;
+        return;
+      }
+
+      box.innerHTML = `
+        <div class="report-item">
+          <strong>Search ready:</strong> ${term}<br>
+          <div class="small" style="margin-top:6px;">
+            Click <strong>Search Details</strong> to open Google search results for detailed wildlife information.<br>
+            Click <strong>Search Images</strong> to open Google Images for wildlife photos.
+          </div>
+        </div>
+      `;
+    }
+
+    function openWildlifeGoogleSearch() {
+      const term = getWildlifeSearchTerm();
+      if (!term) {
+        showStatus("Enter a wildlife name first.", "err");
+        renderWildlifeHint("");
+        return;
+      }
+
+      const query = encodeURIComponent(term + " wildlife animal airport hazard behavior species characteristics");
+      window.open(`https://www.google.com/search?q=${query}`, "_blank");
+      renderWildlifeHint(term);
+      showStatus(`Opened Google search for "${term}".`);
+    }
+
+    function openWildlifeGoogleImages() {
+      const term = getWildlifeSearchTerm();
+      if (!term) {
+        showStatus("Enter a wildlife name first.", "err");
+        renderWildlifeHint("");
+        return;
+      }
+
+      const query = encodeURIComponent(term + " wildlife animal");
+      window.open(`https://www.google.com/search?tbm=isch&q=${query}`, "_blank");
+      renderWildlifeHint(term);
+      showStatus(`Opened Google image search for "${term}".`);
+    }
+
+    function setActiveTab(tabId) {
+      document.querySelectorAll(".tab-panel").forEach(el => el.classList.add("hidden"));
+      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+
+      document.getElementById(tabId).classList.remove("hidden");
+      document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add("active");
+    }
+
+    // Tabs
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+    });
+
+    // Password toggle
     document.getElementById("showLoginPassword").addEventListener("change", function () {
       document.getElementById("loginPassword").type = this.checked ? "text" : "password";
     });
@@ -1015,21 +1227,22 @@
       document.getElementById("signupPassword").type = this.checked ? "text" : "password";
     });
 
-    document.getElementById("searchWildlifeBtn").addEventListener("click", () => {
-      searchWildlife(document.getElementById("wildlifeSearch").value);
-    });
-
-    document.getElementById("wildlifeSearch").addEventListener("input", (e) => {
-      searchWildlife(e.target.value);
-    });
-
-    document.getElementById("wildlifeSearch").addEventListener("keydown", (e) => {
+    // Wildlife
+    document.getElementById("searchWildlifeBtn").addEventListener("click", openWildlifeGoogleSearch);
+    document.getElementById("searchWildlifeImagesBtn").addEventListener("click", openWildlifeGoogleImages);
+    document.getElementById("wildlifeSearch").addEventListener("input", e => renderWildlifeHint(e.target.value.trim()));
+    document.getElementById("wildlifeSearch").addEventListener("keydown", e => {
       if (e.key === "Enter") {
         e.preventDefault();
-        searchWildlife(e.target.value);
+        openWildlifeGoogleSearch();
       }
     });
 
+    // Reports filter
+    document.getElementById("applyReportFilterBtn").addEventListener("click", applyReportFilter);
+    document.getElementById("clearReportFilterBtn").addEventListener("click", clearReportFilter);
+
+    // Login
     document.getElementById("loginBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1049,6 +1262,7 @@
       }
     });
 
+    // Signup
     document.getElementById("signupBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1065,8 +1279,8 @@
           return;
         }
 
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = cred.user.uid;
 
         let photoURL = "";
         if (photoFile) {
@@ -1097,6 +1311,7 @@
       }
     });
 
+    // Logout
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       try {
         await signOut(auth);
@@ -1107,6 +1322,7 @@
       }
     });
 
+    // Save profile
     document.getElementById("saveProfileBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1146,6 +1362,7 @@
       }
     });
 
+    // Quick backgrounds
     document.getElementById("bgDefaultBtn").addEventListener("click", async () => {
       try {
         const user = auth.currentUser;
@@ -1198,6 +1415,7 @@
       }
     });
 
+    // GPS
     document.getElementById("captureLocationBtn").addEventListener("click", () => {
       clearStatus();
 
@@ -1207,18 +1425,19 @@
       }
 
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        position => {
           currentGps = `${position.coords.latitude}, ${position.coords.longitude}`;
           document.getElementById("gpsOutput").value = currentGps;
           showStatus("GPS location captured.");
         },
-        (error) => {
+        error => {
           console.error(error);
           showStatus(error.message || "Failed to capture GPS.", "err");
         }
       );
     });
 
+    // Submit report
     document.getElementById("submitReportBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1276,13 +1495,15 @@
         currentGps = "";
 
         showStatus("Report submitted successfully.");
-        await refreshDashboard(user);
+        await loadReports();
+        setActiveTab("dashboardTab");
       } catch (error) {
         console.error(error);
         showStatus(error.message, "err");
       }
     });
 
+    // Add contact
     document.getElementById("addContactBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1320,6 +1541,7 @@
       }
     });
 
+    // Create emergency alert
     document.getElementById("sendEmergencyAlertBtn").addEventListener("click", async () => {
       clearStatus();
       try {
@@ -1329,23 +1551,28 @@
           return;
         }
 
+        const message = document.getElementById("emergencyMessage").value.trim() ||
+          `Emergency alert issued by ${currentUserData?.name || user.email}`;
+
         await addDoc(collection(db, "emergency_alerts"), {
           createdAt: serverTimestamp(),
           createdBy: currentUserData?.name || user.email,
           role: currentUserData?.role || "",
           airport: currentUserData?.airport || "",
-          message: `Emergency alert issued by ${currentUserData?.name || user.email} at ${currentUserData?.airport || "airport"}.`,
+          message,
           status: "active"
         });
 
-        showStatus("Emergency alert notice created.");
+        document.getElementById("emergencyMessage").value = "";
+        showStatus("Emergency alert created.");
+        await loadAlerts();
       } catch (error) {
         console.error(error);
         showStatus(error.message, "err");
       }
     });
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async user => {
       if (user) {
         authSection.classList.add("hidden");
         appSection.classList.remove("hidden");
@@ -1353,7 +1580,11 @@
         try {
           await ensureUserProfile(user);
           await loadUserProfile(user);
-          await refreshDashboard(user);
+          await loadContacts(user.uid);
+          await loadReports();
+          await loadAlerts();
+          renderWildlifeHint("");
+          setActiveTab("dashboardTab");
         } catch (error) {
           console.error(error);
           showStatus(error.message, "err");
@@ -1362,6 +1593,7 @@
         authSection.classList.remove("hidden");
         appSection.classList.add("hidden");
         currentUserData = null;
+        allReports = [];
         applyBackground("default");
       }
     });
