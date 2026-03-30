@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAC ASO System V5</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f4f6f9;
+}
+
+.header {
+    background: #002b52;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.container {
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+button {
+    background: #005fa3;
+    color: white;
+    padding: 10px;
+    border: none;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.dashboard {
+    display: flex;
+    gap: 10px;
+}
+
+.box {
+    flex: 1;
+    background: #005fa3;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>NAC ASO SYSTEM - PMIA</h2>
+</div>
+
+<div class="container">
+
+<div class="card">
+<h3>ASO Daily Log Entry</h3>
+
+<label>ASO Name</label>
+<input type="text" id="name">
+
+<label>Shift</label>
+<select id="shift">
+<option>A Shift (0300–1100)</option>
+<option>B Shift (1100–2000)</option>
+<option>C Shift (0800–1700)</option>
+</select>
+
+<label>Time Start</label>
+<input type="time" id="start">
+
+<label>Time End</label>
+<input type="time" id="end">
+
+<label>Weather</label>
+<select id="weather">
+<option>Clear</option>
+<option>Rain</option>
+<option>Cloudy</option>
+<option>Storm</option>
+</select>
+
+<label>Inspection Findings</label>
+<textarea id="findings"></textarea>
+
+<button onclick="saveData()">Submit Report</button>
+</div>
+
+<div class="card">
+<h3>Dashboard</h3>
+
+<div class="dashboard">
+<div class="box">
+<h4 id="total">0</h4>
+<p>Total Reports</p>
+</div>
+
+<div class="box">
+<h4 id="overtime">0</h4>
+<p>Overtime Cases</p>
+</div>
+</div>
+
+</div>
+
+<div class="card">
+<h3>Submitted Reports</h3>
+<ul id="list"></ul>
+</div>
+
+</div>
+
+<script>
+let reports = [];
+
+function saveData() {
+    let name = document.getElementById("name").value;
+    let shift = document.getElementById("shift").value;
+    let start = document.getElementById("start").value;
+    let end = document.getElementById("end").value;
+    let findings = document.getElementById("findings").value;
+
+    if(name === "" || start === "" || end === "") {
+        alert("Fill all required fields");
+        return;
+    }
+
+    let overtime = (end > "17:00") ? true : false;
+
+    let report = {
+        name, shift, start, end, findings, overtime
+    };
+
+    reports.push(report);
+    displayReports();
+}
+
+function displayReports() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    let overtimeCount = 0;
+
+    reports.forEach(r => {
+        let li = document.createElement("li");
+        li.innerText = r.name + " | " + r.shift + " | " + r.start + "-" + r.end;
+        list.appendChild(li);
+
+        if(r.overtime) overtimeCount++;
+    });
+
+    document.getElementById("total").innerText = reports.length;
+    document.getElementById("overtime").innerText = overtimeCount;
+}
+</script>
+
+</body>
+</html>
