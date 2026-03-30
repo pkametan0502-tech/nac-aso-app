@@ -1,215 +1,1285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NAC ASO System</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NAC ASO System V9</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<style>
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #f3f6fb;
-}
+    :root {
+      --primary: #002b52;
+      --primary-2: #005fa3;
+      --accent: #f4b400;
+      --danger: #c62828;
+      --success: #2e7d32;
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #dbe3ee;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
 
-.container {
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
-}
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
 
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}
+    .topbar {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      padding: 18px 14px;
+      text-align: center;
+      border-bottom: 4px solid var(--accent);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
 
-input, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-}
+    .topbar h1 {
+      margin: 0;
+      font-size: 26px;
+    }
 
-button {
-  background: #002b52;
-  color: white;
-  border: none;
-}
+    .topbar p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      opacity: 0.95;
+    }
 
-.hidden {
-  display: none;
-}
-</style>
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .card h2, .card h3 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 10px 0 6px;
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid #cfd8e3;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #111827;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    button:hover {
+      opacity: 0.94;
+      transform: translateY(-1px);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .actions button {
+      flex: 1 1 180px;
+    }
+
+    .kpi {
+      text-align: center;
+      padding: 18px 12px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+      border: 1px solid var(--border);
+    }
+
+    .kpi .num {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .kpi .lbl {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .user-badge {
+      display: inline-block;
+      background: #e8f1fb;
+      color: var(--primary);
+      border: 1px solid #c6dbf4;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .report-item, .contact-item, .wildlife-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    .report-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .thumb {
+      width: 100%;
+      max-width: 180px;
+      border-radius: 10px;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .profile-box {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent);
+      background: #eef3fa;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .status.ok {
+      display: block;
+      background: #e8f5e9;
+      color: #1b5e20;
+      border: 1px solid #c8e6c9;
+    }
+
+    .status.err {
+      display: block;
+      background: #ffebee;
+      color: #b71c1c;
+      border: 1px solid #ffcdd2;
+    }
+
+    .chart-wrap {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      min-height: 220px;
+      padding-top: 20px;
+    }
+
+    .bar-col {
+      flex: 1 1 90px;
+      text-align: center;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 12px 12px 0 0;
+      min-height: 10px;
+      background: linear-gradient(180deg, #5fa8f0, #005fa3);
+    }
+
+    .bar-label {
+      font-size: 12px;
+      margin-top: 8px;
+      color: var(--muted);
+    }
+
+    .bar-value {
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 6px;
+      color: var(--primary);
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-weight: bold;
+    }
+
+    .quick-bg {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .quick-bg button {
+      width: auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef5ff;
+      border: 1px solid #c9def7;
+      color: var(--primary);
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 20px;
+    }
+
+    @media (max-width: 980px) {
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="topbar">
+    <h1>NAC ASO System V9</h1>
+    <p>National Airports Corporation – Airport Safety, Wildlife, Incident & Emergency Reporting</p>
+  </div>
 
-<div class="container">
+  <div class="wrap">
+    <div id="statusBox" class="status"></div>
 
-<h2>NAC ASO System</h2>
+    <!-- AUTH -->
+    <section id="authSection" class="grid grid-2">
+      <div class="card">
+        <h2>Login</h2>
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" />
 
-<!-- LOGIN -->
-<div id="authSection" class="card">
-  <h3>Login</h3>
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" />
 
-  <input type="email" id="loginEmail" placeholder="Email">
-  
-  <input type="password" id="loginPassword" placeholder="Password">
+        <div class="actions">
+          <button class="btn-primary" id="loginBtn">Login</button>
+        </div>
+      </div>
 
-  <label>
-    <input type="checkbox" id="showLoginPassword">
-    Show Password
-  </label>
+      <div class="card">
+        <h2>Create Account</h2>
+        <label>Full Name</label>
+        <input type="text" id="signupName" placeholder="Full name" />
 
-  <button id="loginBtn">Login</button>
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="Email" />
 
-  <hr>
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="Password" />
 
-  <h3>Signup</h3>
+        <label>Role</label>
+        <select id="signupRole">
+          <option>Airport Operations Manager (AOM)</option>
+          <option>Senior Airport Safety Officer (SASO)</option>
+          <option>Airport Safety Officer (ASO)</option>
+          <option>Team Leader Grounds Staff</option>
+          <option>Grounds Staff</option>
+          <option>Chief Operations Officer</option>
+          <option>Wild Life Manager</option>
+          <option>Wildlife Officer</option>
+        </select>
 
-  <input type="text" id="signupName" placeholder="Full Name">
-  <input type="email" id="signupEmail" placeholder="Email">
-  <input type="password" id="signupPassword" placeholder="Password">
+        <label>Primary Airport</label>
+        <input type="text" id="signupAirport" value="PMIA" />
 
-  <label>
-    <input type="checkbox" id="showSignupPassword">
-    Show Password
-  </label>
+        <label>Phone</label>
+        <input type="text" id="signupPhone" placeholder="Mobile / work number" />
 
-  <button id="signupBtn">Create Account</button>
-</div>
+        <label>Profile Photo (optional)</label>
+        <input type="file" id="signupPhoto" accept="image/*" />
 
-<!-- APP -->
-<div id="appSection" class="card hidden">
-  <h3>Dashboard</h3>
+        <div class="actions">
+          <button class="btn-accent" id="signupBtn">Create Account</button>
+        </div>
+      </div>
+    </section>
 
-  <button id="logoutBtn">Logout</button>
+    <!-- APP -->
+    <section id="appSection" class="hidden">
+      <div class="grid grid-4">
+        <div class="kpi">
+          <div class="num" id="kpiTotal">0</div>
+          <div class="lbl">Total Reports</div>
+        </div>
+        <div class="kpi">
+          <div class="num" id="kpiToday">0</div>
+          <div class="lbl">Today</div>
+        </div>
+        <div class="kpi">
+          <div class="num" id="kpiWildlife">0</div>
+          <div class="lbl">Wildlife Reports</div>
+        </div>
+        <div class="kpi">
+          <div class="num" id="kpiEmergency">0</div>
+          <div class="lbl">Emergency Reports</div>
+        </div>
+      </div>
 
-  <hr>
+      <div class="grid grid-3" style="margin-top:16px;">
+        <div class="card">
+          <div class="section-title">
+            <h2 style="margin-bottom:0;">My Profile</h2>
+            <span class="pill" id="profileRolePill">User</span>
+          </div>
 
-  <h4>Submit Report</h4>
+          <div class="profile-box" style="margin-top:12px;">
+            <img id="profileAvatar" class="avatar" src="" alt="Profile Photo" />
+            <div>
+              <div style="font-size:20px;font-weight:bold;" id="profileName">-</div>
+              <div class="small" id="profileEmail">-</div>
+              <div style="margin-top:8px;">
+                <span class="user-badge" id="profileAirport">PMIA</span>
+                <span class="user-badge" id="profilePhone">No phone</span>
+              </div>
+            </div>
+          </div>
 
-  <input type="text" id="reportTitle" placeholder="Report Title">
-  <textarea id="reportDetails" placeholder="Details"></textarea>
+          <label style="margin-top:14px;">Update Phone</label>
+          <input type="text" id="profilePhoneInput" placeholder="Update phone number" />
 
-  <button id="submitReportBtn">Submit Report</button>
+          <label>Change Profile Photo (optional)</label>
+          <input type="file" id="profilePhotoInput" accept="image/*" />
 
-  <hr>
+          <label>Custom Background Image (optional)</label>
+          <input type="file" id="bgImageInput" accept="image/*" />
 
-  <h4>Reports</h4>
-  <div id="reportsList"></div>
+          <div class="quick-bg">
+            <button id="bgDefaultBtn" type="button">Default</button>
+            <button id="bgBlueBtn" type="button">Blue Gradient</button>
+            <button id="bgSkyBtn" type="button">Sky Gradient</button>
+            <button id="bgDarkBtn" type="button">Dark Theme</button>
+          </div>
 
-</div>
+          <div class="actions">
+            <button class="btn-success" id="saveProfileBtn">Save Profile</button>
+            <button class="btn-danger" id="logoutBtn">Logout</button>
+          </div>
+        </div>
 
-</div>
+        <div class="card">
+          <h2>Emergency Contacts</h2>
+          <div id="contactsList"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+          <label>Add Contact Name</label>
+          <input type="text" id="contactName" placeholder="Contact name" />
 
-import { getFirestore, collection, addDoc, getDocs }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+          <label>Contact Role</label>
+          <input type="text" id="contactRole" placeholder="Fire / AOM / SASO / Security / Medical" />
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc",
-  authDomain: "nac-aso-system.firebaseapp.com",
-  projectId: "nac-aso-system",
-  storageBucket: "nac-aso-system.appspot.com",
-  messagingSenderId: "852433876255",
-  appId: "1:852433876255:web:c59a0a757ee4f7466dac2a"
-};
+          <label>Mobile Number</label>
+          <input type="text" id="contactPhone" placeholder="Phone number" />
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+          <div class="actions">
+            <button class="btn-accent" id="addContactBtn">Add Contact</button>
+            <button class="btn-danger" id="sendEmergencyAlertBtn">Send Emergency Alert Notice</button>
+          </div>
+        </div>
 
-const authSection = document.getElementById("authSection");
-const appSection = document.getElementById("appSection");
+        <div class="card">
+          <h2>Wildlife Quick Search</h2>
+          <label>Search Wildlife Name</label>
+          <input type="text" id="wildlifeSearch" placeholder="e.g. dog, bird, pig, bat, python" />
+          <div class="actions">
+            <button class="btn-primary" id="searchWildlifeBtn">Search</button>
+          </div>
+          <div id="wildlifeResults" style="margin-top:12px;"></div>
+        </div>
+      </div>
 
+      <div class="grid grid-2" style="margin-top:16px;">
+        <div class="card">
+          <h2>Submit Report</h2>
 
-// ✅ SHOW PASSWORD TOGGLE
-document.getElementById("showLoginPassword").addEventListener("change", function () {
-  document.getElementById("loginPassword").type = this.checked ? "text" : "password";
-});
+          <label>Report Type</label>
+          <select id="reportType">
+            <option>Airside Inspection</option>
+            <option>Wildlife Patrol</option>
+            <option>Bird Strike</option>
+            <option>Incident</option>
+            <option>Emergency</option>
+          </select>
 
-document.getElementById("showSignupPassword").addEventListener("change", function () {
-  document.getElementById("signupPassword").type = this.checked ? "text" : "password";
-});
+          <label>Shift</label>
+          <select id="reportShift">
+            <option>A Shift (0300–1100)</option>
+            <option>B Shift (1100–2000)</option>
+            <option>C Shift (0800–1700)</option>
+          </select>
 
+          <label>Time Started</label>
+          <input type="time" id="reportStartTime" />
 
-// LOGIN
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  const email = loginEmail.value;
-  const password = loginPassword.value;
+          <label>Location / Area</label>
+          <input type="text" id="reportLocation" placeholder="Runway, taxiway, apron, terminal, perimeter, etc." />
 
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    alert("Login success");
-  } catch (e) {
-    alert(e.message);
-  }
-});
+          <label>Title / Subject</label>
+          <input type="text" id="reportTitle" placeholder="Short title of report" />
 
-// SIGNUP
-document.getElementById("signupBtn").addEventListener("click", async () => {
-  try {
-    await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
-    alert("Account created");
-  } catch (e) {
-    alert(e.message);
-  }
-});
+          <label>Inspection Findings / Details</label>
+          <textarea id="reportDetails" placeholder="Enter full inspection findings, wildlife details, incident details, actions taken and recommendations"></textarea>
 
-// LOGOUT
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  await signOut(auth);
-});
+          <label>Severity</label>
+          <select id="reportSeverity">
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Critical</option>
+          </select>
 
-// AUTH STATE
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    authSection.classList.add("hidden");
-    appSection.classList.remove("hidden");
-    loadReports();
-  } else {
-    authSection.classList.remove("hidden");
-    appSection.classList.add("hidden");
-  }
-});
+          <label>Attach Photo (optional)</label>
+          <input type="file" id="reportPhoto" accept="image/*" />
 
-// SUBMIT REPORT
-document.getElementById("submitReportBtn").addEventListener("click", async () => {
-  await addDoc(collection(db, "reports"), {
-    title: reportTitle.value,
-    details: reportDetails.value,
-    time: new Date()
-  });
+          <label>Use Current GPS Location</label>
+          <div class="actions">
+            <button class="btn-primary" id="captureLocationBtn" type="button">Capture Location</button>
+          </div>
+          <input type="text" id="gpsOutput" placeholder="Latitude, Longitude" readonly />
 
-  reportTitle.value = "";
-  reportDetails.value = "";
+          <div class="actions">
+            <button class="btn-success" id="submitReportBtn">Submit Report</button>
+          </div>
+        </div>
 
-  loadReports();
-});
+        <div class="card">
+          <div class="section-title">
+            <h2 style="margin-bottom:0;">Management Dashboard</h2>
+            <span class="pill">Live Summary</span>
+          </div>
 
-// LOAD REPORTS
-async function loadReports() {
-  const list = document.getElementById("reportsList");
-  list.innerHTML = "";
+          <h3 style="margin-top:18px;">Reports by Type</h3>
+          <div id="typeChart" class="chart-wrap"></div>
 
-  const querySnapshot = await getDocs(collection(db, "reports"));
+          <h3 style="margin-top:18px;">Reports by Severity</h3>
+          <div id="severityChart" class="chart-wrap"></div>
+        </div>
+      </div>
 
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
+      <div class="card" style="margin-top:16px;">
+        <div class="section-title">
+          <h2 style="margin-bottom:0;">Recent Reports</h2>
+          <span class="pill" id="recentCountPill">0 Items</span>
+        </div>
+        <div id="reportsList" style="margin-top:12px;"></div>
+      </div>
+    </section>
 
-    const div = document.createElement("div");
-    div.innerHTML = `<b>${data.title}</b><br>${data.details}<hr>`;
-    list.appendChild(div);
-  });
-}
+    <div class="footer-note">
+      NAC ASO System V9 – Built for airport safety, wildlife control, incident reporting and management monitoring
+    </div>
+  </div>
 
-</script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      updateDoc,
+      collection,
+      addDoc,
+      getDocs,
+      query,
+      orderBy,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA24K2cPg0OR6DZRSxwJBy7TQKIoE7dGAc",
+      authDomain: "nac-aso-system.firebaseapp.com",
+      projectId: "nac-aso-system",
+      storageBucket: "nac-aso-system.appspot.com",
+      messagingSenderId: "852433876255",
+      appId: "1:852433876255:web:c59a0a757ee4f7466dac2a",
+      measurementId: "G-2NK1RYJTS9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentUserData = null;
+    let currentGps = "";
+
+    const wildlifeDatabase = [
+      {
+        name: "Bird",
+        species: "Common airfield birds",
+        behavior: "Often active near grassed areas, standing water, food waste and runway edges.",
+        characteristics: "Wings, feathered body, fast movement in flocks or singles.",
+        posture: "Standing, feeding, low flight, flock circling.",
+        appearance: "Small to medium size, varied color depending on species."
+      },
+      {
+        name: "Dog",
+        species: "Domestic / stray dog",
+        behavior: "Can wander through perimeter breaches, chase birds, cross runway or apron.",
+        characteristics: "Fast moving, four-legged, highly unpredictable.",
+        posture: "Running, sniffing, crouching, alert stance.",
+        appearance: "Variable color and size."
+      },
+      {
+        name: "Pig",
+        species: "Domestic / feral pig",
+        behavior: "Moves slowly but can suddenly rush, often attracted by waste or open ground.",
+        characteristics: "Heavy body, strong head, serious hazard if entering maneuvering area.",
+        posture: "Head low, rooting, walking in groups or alone.",
+        appearance: "Pink, black, brown or mixed."
+      },
+      {
+        name: "Bat",
+        species: "Fruit bat / flying fox",
+        behavior: "Active around dusk and night, often near trees and fruiting areas.",
+        characteristics: "Large wingspan, hanging posture when roosting.",
+        posture: "Flying, hanging, clustering.",
+        appearance: "Dark body, wing membrane, fox-like face in some species."
+      },
+      {
+        name: "Snake",
+        species: "Python / other snake species",
+        behavior: "May move along grass, drains or warm surfaces.",
+        characteristics: "Long body, no legs, slithering movement.",
+        posture: "Coiled, stretched, hidden in grass.",
+        appearance: "Patterned scales, brown/green/black depending on species."
+      },
+      {
+        name: "Cattle",
+        species: "Cow / cattle",
+        behavior: "Large slow-moving hazard if perimeter is compromised.",
+        characteristics: "Heavy body, group movement possible.",
+        posture: "Standing, grazing, walking.",
+        appearance: "Large body, horns possible, black/brown/white mixed colors."
+      }
+    ];
+
+    const defaultContacts = [
+      { name: "Airport Fire Service", role: "Fire", phone: "Emergency Line" },
+      { name: "Airport Operations Manager", role: "AOM", phone: "Add number" },
+      { name: "Senior Airport Safety Officer", role: "SASO", phone: "Add number" },
+      { name: "Medical Response", role: "Medical", phone: "Add number" }
+    ];
+
+    const authSection = document.getElementById("authSection");
+    const appSection = document.getElementById("appSection");
+    const statusBox = document.getElementById("statusBox");
+
+    function showStatus(message, type = "ok") {
+      statusBox.className = `status ${type}`;
+      statusBox.textContent = message;
+    }
+
+    function clearStatus() {
+      statusBox.className = "status";
+      statusBox.textContent = "";
+    }
+
+    function sanitizeFileName(name = "file") {
+      return name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+    }
+
+    function formatDate(dateValue) {
+      if (!dateValue) return "-";
+      try {
+        const d = new Date(dateValue);
+        if (isNaN(d.getTime())) return "-";
+        return d.toLocaleString();
+      } catch {
+        return "-";
+      }
+    }
+
+    function todayDateKey() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    async function uploadFileIfAny(file, path) {
+      if (!file) return "";
+      const storageRef = ref(storage, path);
+      await uploadBytes(storageRef, file);
+      return await getDownloadURL(storageRef);
+    }
+
+    async function createDefaultContacts(uid) {
+      const contactsRef = collection(db, "users", uid, "contacts");
+      const snap = await getDocs(contactsRef);
+      if (!snap.empty) return;
+
+      for (const c of defaultContacts) {
+        await addDoc(contactsRef, {
+          ...c,
+          createdAt: serverTimestamp()
+        });
+      }
+    }
+
+    async function loadContacts(uid) {
+      const contactsList = document.getElementById("contactsList");
+      contactsList.innerHTML = "";
+      const snap = await getDocs(collection(db, "users", uid, "contacts"));
+
+      if (snap.empty) {
+        contactsList.innerHTML = '<div class="small">No contacts added yet.</div>';
+        return;
+      }
+
+      snap.forEach(docSnap => {
+        const c = docSnap.data();
+        const item = document.createElement("div");
+        item.className = "contact-item";
+        item.innerHTML = `
+          <strong>${c.name || "-"}</strong><br>
+          <span>${c.role || "-"}</span><br>
+          <span class="small">${c.phone || "-"}</span>
+        `;
+        contactsList.appendChild(item);
+      });
+    }
+
+    function applyBackground(bgType, bgUrl = "") {
+      if (bgType === "image" && bgUrl) {
+        document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.70), rgba(255,255,255,0.78)), url('${bgUrl}')`;
+        return;
+      }
+
+      if (bgType === "blue") {
+        document.body.style.backgroundImage = "linear-gradient(135deg, #dceeff, #f3f8ff)";
+        return;
+      }
+
+      if (bgType === "sky") {
+        document.body.style.backgroundImage = "linear-gradient(135deg, #dff6ff, #eefcff, #f5fbff)";
+        return;
+      }
+
+      if (bgType === "dark") {
+        document.body.style.backgroundImage = "linear-gradient(135deg, #1f2937, #334155)";
+        return;
+      }
+
+      document.body.style.backgroundImage = "none";
+      document.body.style.backgroundColor = "#f3f6fb";
+    }
+
+    async function loadUserProfile(user) {
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (!snap.exists()) {
+        showStatus("User profile not found.", "err");
+        return;
+      }
+
+      currentUserData = snap.data();
+
+      document.getElementById("profileName").textContent = currentUserData.name || "-";
+      document.getElementById("profileEmail").textContent = currentUserData.email || "-";
+      document.getElementById("profileRolePill").textContent = currentUserData.role || "User";
+      document.getElementById("profileAirport").textContent = currentUserData.airport || "No Airport";
+      document.getElementById("profilePhone").textContent = currentUserData.phone || "No phone";
+      document.getElementById("profilePhoneInput").value = currentUserData.phone || "";
+
+      document.getElementById("profileAvatar").src =
+        currentUserData.photoURL ||
+        "https://via.placeholder.com/100?text=User";
+
+      applyBackground(currentUserData.backgroundType || "default", currentUserData.backgroundURL || "");
+    }
+
+    async function refreshDashboard(user) {
+      const reportsSnap = await getDocs(query(collection(db, "reports"), orderBy("createdAt", "desc")));
+      const reports = [];
+
+      reportsSnap.forEach(docSnap => {
+        reports.push({ id: docSnap.id, ...docSnap.data() });
+      });
+
+      renderReports(reports);
+      renderKpis(reports);
+      renderCharts(reports);
+      await loadContacts(user.uid);
+    }
+
+    function renderReports(reports) {
+      const box = document.getElementById("reportsList");
+      const pill = document.getElementById("recentCountPill");
+      box.innerHTML = "";
+      pill.textContent = `${reports.length} Items`;
+
+      if (reports.length === 0) {
+        box.innerHTML = '<div class="small">No reports submitted yet.</div>';
+        return;
+      }
+
+      reports.slice(0, 30).forEach(r => {
+        const item = document.createElement("div");
+        item.className = "report-item";
+
+        item.innerHTML = `
+          <strong>${r.title || r.type || "Untitled Report"}</strong><br>
+          <span class="user-badge">${r.type || "-"}</span>
+          <span class="user-badge">${r.severity || "-"}</span>
+          <span class="user-badge">${r.shift || "-"}</span>
+          <div style="margin-top:8px;">${r.details || "-"}</div>
+          <div class="report-meta">
+            By: ${r.userName || "-"} (${r.userRole || "-"})<br>
+            Airport: ${r.airport || "-"}<br>
+            Location: ${r.location || "-"}<br>
+            Start Time: ${r.startTime || "-"}<br>
+            GPS: ${r.gps || "-"}<br>
+            Submitted: ${formatDate(r.createdAt?.seconds ? r.createdAt.seconds * 1000 : r.createdAt)}
+          </div>
+          ${r.photoURL ? `<img class="thumb" src="${r.photoURL}" alt="Report Photo" />` : ""}
+        `;
+        box.appendChild(item);
+      });
+    }
+
+    function renderKpis(reports) {
+      const today = todayDateKey();
+
+      const total = reports.length;
+      const todayCount = reports.filter(r => {
+        const d = r.createdAt?.seconds
+          ? new Date(r.createdAt.seconds * 1000)
+          : new Date(r.createdAt || 0);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}` === today;
+      }).length;
+
+      const wildlife = reports.filter(r => (r.type || "").toLowerCase().includes("wildlife")).length;
+      const emergency = reports.filter(r => (r.type || "").toLowerCase().includes("emergency")).length;
+
+      document.getElementById("kpiTotal").textContent = total;
+      document.getElementById("kpiToday").textContent = todayCount;
+      document.getElementById("kpiWildlife").textContent = wildlife;
+      document.getElementById("kpiEmergency").textContent = emergency;
+    }
+
+    function renderBarChart(containerId, mapObj) {
+      const box = document.getElementById(containerId);
+      box.innerHTML = "";
+
+      const entries = Object.entries(mapObj);
+      if (entries.length === 0) {
+        box.innerHTML = '<div class="small">No data yet.</div>';
+        return;
+      }
+
+      const maxVal = Math.max(...entries.map(([_, v]) => v), 1);
+
+      entries.forEach(([label, value]) => {
+        const pct = Math.max(10, Math.round((value / maxVal) * 180));
+        const col = document.createElement("div");
+        col.className = "bar-col";
+        col.innerHTML = `
+          <div class="bar" style="height:${pct}px;"></div>
+          <div class="bar-value">${value}</div>
+          <div class="bar-label">${label}</div>
+        `;
+        box.appendChild(col);
+      });
+    }
+
+    function renderCharts(reports) {
+      const typeMap = {};
+      const severityMap = {};
+
+      reports.forEach(r => {
+        const type = r.type || "Unknown";
+        const sev = r.severity || "Unknown";
+        typeMap[type] = (typeMap[type] || 0) + 1;
+        severityMap[sev] = (severityMap[sev] || 0) + 1;
+      });
+
+      renderBarChart("typeChart", typeMap);
+      renderBarChart("severityChart", severityMap);
+    }
+
+    function searchWildlife(term) {
+      const q = term.trim().toLowerCase();
+      const results = wildlifeDatabase.filter(w =>
+        w.name.toLowerCase().includes(q) ||
+        w.species.toLowerCase().includes(q) ||
+        w.behavior.toLowerCase().includes(q) ||
+        w.characteristics.toLowerCase().includes(q) ||
+        w.appearance.toLowerCase().includes(q)
+      );
+
+      const box = document.getElementById("wildlifeResults");
+      box.innerHTML = "";
+
+      if (!q) {
+        box.innerHTML = '<div class="small">Type a wildlife name to search.</div>';
+        return;
+      }
+
+      if (results.length === 0) {
+        box.innerHTML = '<div class="small">No wildlife match found. Try bird, dog, pig, bat, snake, cattle.</div>';
+        return;
+      }
+
+      results.forEach(w => {
+        const item = document.createElement("div");
+        item.className = "wildlife-item";
+        item.innerHTML = `
+          <strong>${w.name}</strong><br>
+          <div class="small" style="margin-top:6px;">
+            <strong>Species:</strong> ${w.species}<br>
+            <strong>Behavior:</strong> ${w.behavior}<br>
+            <strong>Characteristics:</strong> ${w.characteristics}<br>
+            <strong>Posture:</strong> ${w.posture}<br>
+            <strong>Appearance:</strong> ${w.appearance}
+          </div>
+        `;
+        box.appendChild(item);
+      });
+    }
+
+    document.getElementById("searchWildlifeBtn").addEventListener("click", () => {
+      searchWildlife(document.getElementById("wildlifeSearch").value);
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      clearStatus();
+      try {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value.trim();
+
+        if (!email || !password) {
+          showStatus("Enter email and password.", "err");
+          return;
+        }
+
+        await signInWithEmailAndPassword(auth, email, password);
+        showStatus("Login successful.");
+      } catch (error) {
+        showStatus(error.message, "err");
+      }
+    });
+
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      clearStatus();
+      try {
+        const name = document.getElementById("signupName").value.trim();
+        const email = document.getElementById("signupEmail").value.trim();
+        const password = document.getElementById("signupPassword").value.trim();
+        const role = document.getElementById("signupRole").value;
+        const airport = document.getElementById("signupAirport").value.trim();
+        const phone = document.getElementById("signupPhone").value.trim();
+        const photoFile = document.getElementById("signupPhoto").files[0];
+
+        if (!name || !email || !password || !role || !airport) {
+          showStatus("Fill all required signup fields.", "err");
+          return;
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+
+        let photoURL = "";
+        if (photoFile) {
+          photoURL = await uploadFileIfAny(
+            photoFile,
+            `profile_photos/${uid}/${Date.now()}_${sanitizeFileName(photoFile.name)}`
+          );
+        }
+
+        await setDoc(doc(db, "users", uid), {
+          uid,
+          name,
+          email,
+          role,
+          airport,
+          phone,
+          photoURL,
+          backgroundType: "default",
+          backgroundURL: "",
+          createdAt: serverTimestamp()
+        });
+
+        await createDefaultContacts(uid);
+
+        showStatus("Account created successfully.");
+      } catch (error) {
+        showStatus(error.message, "err");
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        showStatus("Logged out successfully.");
+      } catch (error) {
+        showStatus(error.message, "err");
+      }
+    });
+
+    document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+      clearStatus();
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          showStatus("No logged in user.", "err");
+          return;
+        }
+
+        const phone = document.getElementById("profilePhoneInput").value.trim();
+        const photoFile = document.getElementById("profilePhotoInput").files[0];
+        const bgFile = document.getElementById("bgImageInput").files[0];
+
+        const updates = {
+          phone
+        };
+
+        if (photoFile) {
+          updates.photoURL = await uploadFileIfAny(
+            photoFile,
+            `profile_photos/${user.uid}/${Date.now()}_${sanitizeFileName(photoFile.name)}`
+          );
+        }
+
+        if (bgFile) {
+          updates.backgroundURL = await uploadFileIfAny(
+            bgFile,
+            `backgrounds/${user.uid}/${Date.now()}_${sanitizeFileName(bgFile.name)}`
+          );
+          updates.backgroundType = "image";
+        }
+
+        await updateDoc(doc(db, "users", user.uid), updates);
+        await loadUserProfile(user);
+        showStatus("Profile updated.");
+      } catch (error) {
+        showStatus(error.message, "err");
+      }
+    });
+
+    document.getElementById("bgDefaultBtn").addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      await updateDoc(doc(db, "users", user.uid), { backgroundType: "default", backgroundURL: "" });
+      await loadUserProfile(user);
+      showStatus("Default background applied.");
+    });
+
+    document.getElementById("bgBlueBtn").addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      await updateDoc(doc(db, "users", user.uid), { backgroundType: "blue", backgroundURL: "" });
+      await loadUserProfile(user);
+      showStatus("Blue background applied.");
+    });
+
+    document.getElementById("bgSkyBtn").addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      await updateDoc(doc(db, "users", user.uid), { backgroundType: "sky", backgroundURL: "" });
+      await loadUserProfile(user);
+      showStatus("Sky background applied.");
+    });
+
+    document.getElementById("bgDarkBtn").addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      await updateDoc(doc(db, "users", user.uid), { backgroundType: "dark", backgroundURL: "" });
+      await loadUserProfile(user);
+      showStatus("Dark background applied.");
+    });
+
+    document.getElementById("captureLocationBtn").addEventListener("click", () => {
+      clearStatus();
+      if (!navigator.geolocation) {
+        showStatus("Geolocation not supported on this device.", "err");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          currentGps = `${position.coords.latitude}, ${position.coords.longitude}`;
+          document.getElementById("gpsOutput").value = currentGps;
+          showStatus("GPS location captured.");
+        },
+        (error) => {
+          showStatus(error.message || "Failed to capture GPS.", "err");
+        }
+      );
+    });
+
+    document.getElementById("submitReportBtn").addEventListener("click", async () => {
+      clearStatus();
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          showStatus("You must login first.", "err");
+          return;
+        }
+
+        const type = document.getElementById("reportType").value;
+        const shift = document.getElementById("reportShift").value;
+        const startTime = document.getElementById("reportStartTime").value;
+        const location = document.getElementById("reportLocation").value.trim();
+        const title = document.getElementById("reportTitle").value.trim();
+        const details = document.getElementById("reportDetails").value.trim();
+        const severity = document.getElementById("reportSeverity").value;
+        const photoFile = document.getElementById("reportPhoto").files[0];
+
+        if (!type || !shift || !startTime || !location || !title || !details) {
+          showStatus("Fill all required report fields.", "err");
+          return;
+        }
+
+        let photoURL = "";
+        if (photoFile) {
+          photoURL = await uploadFileIfAny(
+            photoFile,
+            `report_photos/${user.uid}/${Date.now()}_${sanitizeFileName(photoFile.name)}`
+          );
+        }
+
+        await addDoc(collection(db, "reports"), {
+          userId: user.uid,
+          userName: currentUserData?.name || user.email,
+          userEmail: currentUserData?.email || user.email,
+          userRole: currentUserData?.role || "",
+          airport: currentUserData?.airport || "",
+          type,
+          shift,
+          startTime,
+          location,
+          title,
+          details,
+          severity,
+          gps: currentGps || document.getElementById("gpsOutput").value || "",
+          photoURL,
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById("reportLocation").value = "";
+        document.getElementById("reportTitle").value = "";
+        document.getElementById("reportDetails").value = "";
+        document.getElementById("reportPhoto").value = "";
+        document.getElementById("gpsOutput").value = "";
+        currentGps = "";
+
+        showStatus("Report submitted successfully.");
+        await refreshDashboard(user);
+      } catch (error) {
+        showStatus(error.message, "err");
+      }
+    });
+
+    document.getElementById("addContactBtn").addEventListener("click", async () => {
+      clearStatus();
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          showStatus("You must login first.", "err");
+          return;
+        }
+
+        const name = document.getElementById("contactName").value.trim();
+        const role = document.getElementById("contactRole").value.trim();
+        const phone = document.getElementById("contactPhone").value.trim();
+
+        if (!name || !role || !phone) {
+          showStatus("Fill all contact fields.", "err");
+          return;
+        }
+
+        await addDoc(collection(db, "users", user.uid, "contacts"), {
+          name,
+          role,
+          phone,
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById("contactName").value = "";
+        document.getElementById("contactRole").value = "";
+        document.getElementById("contactPhone").value = "";
+
+        showStatus("Emergency contact added.");
+        await loadContacts(user.uid);
+      } catch (error) {
+        showStatus(error.message, "err");
+      }
+    });
+
+    document.getElementById("sendEmergencyAlertBtn").addEventListener("click", async () => {
+      clearStatus();
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          showStatus("You must login first.", "err");
+          return;
+        }
+
+        await addDoc(collection(db, "emergency_alerts"), {
+          createdAt: serverTimestamp(),
+          createdBy: currentUserData?.name || user.email,
+          role: currentUserData?.role || "",
+          airport: currentUserData?.airport || "",
+          message: `Emergency alert issued by ${currentUserData?.name || user.email} at ${currentUserData?.airport || "airport"}.`,
+          status: "active"
+        });
+
+        showStatus("Emergency alert notice created.");
+      } catch (error) {
+        showStatus(error.message, "err");
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        authSection.classList.add("hidden");
+        appSection.classList.remove("hidden");
+
+        try {
+          await createDefaultContacts(user.uid);
+          await loadUserProfile(user);
+          await refreshDashboard(user);
+        } catch (error) {
+          showStatus(error.message, "err");
+        }
+      } else {
+        authSection.classList.remove("hidden");
+        appSection.classList.add("hidden");
+        currentUserData = null;
+        applyBackground("default");
+      }
+    });
+  </script>
 </body>
 </html>
