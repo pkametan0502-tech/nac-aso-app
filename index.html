@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NAC ASO System</title>
 
+  <!-- Firebase Compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -20,13 +21,17 @@
       --green:#10b981;
       --red:#dc2626;
     }
+
     *{box-sizing:border-box}
+
     body{
       margin:0;
       font-family:Arial,Helvetica,sans-serif;
       background:linear-gradient(135deg,#05152d,#031125 60%,#082042);
       color:var(--text);
+      min-height:100vh;
     }
+
     .topbar{
       padding:16px 20px;
       background:#020b1f;
@@ -34,27 +39,37 @@
       font-size:28px;
       font-weight:700;
     }
+
     .container{
       max-width:1200px;
       margin:0 auto;
       padding:20px;
     }
+
     .grid{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:20px;
     }
+
     .card{
       background:var(--card);
       border:1px solid var(--line);
       border-radius:14px;
       padding:20px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.25);
     }
+
+    h2,h3{
+      margin-top:0;
+    }
+
     label{
       display:block;
       font-weight:700;
       margin:10px 0 6px;
     }
+
     input,select,textarea{
       width:100%;
       padding:12px;
@@ -63,7 +78,13 @@
       background:#0b2143;
       color:var(--text);
       margin-bottom:12px;
+      outline:none;
     }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:#60a5fa;
+    }
+
     button{
       border:none;
       border-radius:10px;
@@ -73,9 +94,16 @@
       color:#fff;
       background:var(--blue);
     }
+
+    button:hover{
+      opacity:.95;
+    }
+
     .btn-green{background:var(--green)}
     .btn-red{background:var(--red)}
+
     .hidden{display:none !important}
+
     .message{
       margin-bottom:16px;
       padding:12px 14px;
@@ -83,25 +111,45 @@
       display:none;
       font-weight:700;
     }
+
     .message.show{display:block}
     .message.error{background:#7f1d1d}
     .message.success{background:#065f46}
+
     .stats{
       display:grid;
       grid-template-columns:repeat(4,1fr);
       gap:16px;
       margin-bottom:20px;
     }
+
     .stat{
       background:#0b2143;
       border:1px solid var(--line);
       border-radius:12px;
       padding:16px;
     }
-    .stat .label{color:var(--muted);font-size:13px;margin-bottom:8px}
-    .stat .value{font-size:24px;font-weight:800}
+
+    .stat .label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:8px;
+    }
+
+    .stat .value{
+      font-size:24px;
+      font-weight:800;
+    }
+
+    .small{
+      color:var(--muted);
+      font-size:13px;
+    }
+
     @media (max-width:900px){
-      .grid,.stats{grid-template-columns:1fr}
+      .grid,.stats{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
@@ -111,25 +159,35 @@
   <div class="container">
     <div id="messageBox" class="message"></div>
 
+    <!-- AUTH VIEW -->
     <div id="authView" class="grid">
       <div class="card">
         <h2>Login</h2>
-        <label>Email</label>
+        <p class="small">Sign in using your registered Firebase account.</p>
+
+        <label for="loginEmail">Email</label>
         <input id="loginEmail" type="email" placeholder="Email" />
-        <label>Password</label>
+
+        <label for="loginPassword">Password</label>
         <input id="loginPassword" type="password" placeholder="Password" />
+
         <button onclick="loginUser()">Login</button>
       </div>
 
       <div class="card">
         <h2>Create Account</h2>
-        <label>Full Name</label>
+        <p class="small">Create a new NAC ASO user account.</p>
+
+        <label for="registerName">Full Name</label>
         <input id="registerName" type="text" placeholder="Full name" />
-        <label>Email</label>
+
+        <label for="registerEmail">Email</label>
         <input id="registerEmail" type="email" placeholder="Email" />
-        <label>Password</label>
+
+        <label for="registerPassword">Password</label>
         <input id="registerPassword" type="password" placeholder="Password" />
-        <label>Role</label>
+
+        <label for="registerRole">Role</label>
         <select id="registerRole">
           <option>Airport Operations Manager (AOM)</option>
           <option>Senior Airport Safety Officer (SASO)</option>
@@ -140,29 +198,45 @@
           <option>Wild Life Manager</option>
           <option>Wildlife Officer</option>
         </select>
-        <label>Primary Airport</label>
+
+        <label for="registerAirport">Primary Airport</label>
         <input id="registerAirport" type="text" value="PMIA" />
+
         <button class="btn-green" onclick="registerUser()">Create Account</button>
       </div>
     </div>
 
+    <!-- APP VIEW -->
     <div id="appView" class="hidden">
       <div class="stats">
-        <div class="stat"><div class="label">User</div><div class="value" id="statUser">-</div></div>
-        <div class="stat"><div class="label">Role</div><div class="value" id="statRole">-</div></div>
-        <div class="stat"><div class="label">Airport</div><div class="value" id="statAirport">-</div></div>
-        <div class="stat"><div class="label">Status</div><div class="value">Online</div></div>
+        <div class="stat">
+          <div class="label">User</div>
+          <div class="value" id="statUser">-</div>
+        </div>
+        <div class="stat">
+          <div class="label">Role</div>
+          <div class="value" id="statRole">-</div>
+        </div>
+        <div class="stat">
+          <div class="label">Airport</div>
+          <div class="value" id="statAirport">-</div>
+        </div>
+        <div class="stat">
+          <div class="label">Status</div>
+          <div class="value">Online</div>
+        </div>
       </div>
 
       <div class="card">
         <h2>Dashboard</h2>
-        <p>Login is working. Report modules can be added next.</p>
+        <p>You are logged in successfully.</p>
         <button class="btn-red" onclick="logoutUser()">Logout</button>
       </div>
     </div>
   </div>
 
   <script>
+    // Exact Firebase config for your NAC ASO System project
     const firebaseConfig = {
       apiKey: "AIzaSyA24K2cPg00R6DZRSxwJBy7TQKIoE7dGAc",
       authDomain: "nac-aso-system.firebaseapp.com",
@@ -172,7 +246,10 @@
       appId: "1:852433876255:web:c59a0a757ee4f7466dac2a"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    // Prevent duplicate initialization
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
 
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -193,6 +270,7 @@
 
     async function registerUser() {
       clearMessage();
+
       const fullName = document.getElementById("registerName").value.trim();
       const email = document.getElementById("registerEmail").value.trim();
       const password = document.getElementById("registerPassword").value;
@@ -206,6 +284,7 @@
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, password);
+
         await db.collection("users").doc(cred.user.uid).set({
           fullName,
           email,
@@ -213,6 +292,7 @@
           airport,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+
         showMessage("success", "Account created successfully.");
       } catch (error) {
         showMessage("error", error.message);
@@ -221,6 +301,7 @@
 
     async function loginUser() {
       clearMessage();
+
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
 
@@ -237,26 +318,37 @@
     }
 
     async function logoutUser() {
-      await auth.signOut();
-      showMessage("success", "Logged out.");
+      try {
+        await auth.signOut();
+        showMessage("success", "Logged out.");
+      } catch (error) {
+        showMessage("error", error.message);
+      }
     }
 
     async function loadProfile(uid) {
-      const doc = await db.collection("users").doc(uid).get();
-      if (!doc.exists) {
-        document.getElementById("statUser").textContent = "No profile";
-        document.getElementById("statRole").textContent = "-";
-        document.getElementById("statAirport").textContent = "-";
-        return;
+      try {
+        const doc = await db.collection("users").doc(uid).get();
+
+        if (!doc.exists) {
+          document.getElementById("statUser").textContent = "No profile";
+          document.getElementById("statRole").textContent = "-";
+          document.getElementById("statAirport").textContent = "-";
+          return;
+        }
+
+        const data = doc.data();
+        document.getElementById("statUser").textContent = data.fullName || "-";
+        document.getElementById("statRole").textContent = data.role || "-";
+        document.getElementById("statAirport").textContent = data.airport || "-";
+      } catch (error) {
+        showMessage("error", "Profile load failed: " + error.message);
       }
-      const data = doc.data();
-      document.getElementById("statUser").textContent = data.fullName || "-";
-      document.getElementById("statRole").textContent = data.role || "-";
-      document.getElementById("statAirport").textContent = data.airport || "-";
     }
 
     auth.onAuthStateChanged(async (user) => {
       clearMessage();
+
       if (user) {
         authView.classList.add("hidden");
         appView.classList.remove("hidden");
@@ -267,7 +359,7 @@
       }
     });
 
-    console.log("Firebase config loaded:", firebaseConfig);
+    console.log("Firebase initialized correctly for NAC ASO System.");
   </script>
 </body>
 </html>
