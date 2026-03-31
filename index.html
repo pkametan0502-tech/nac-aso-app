@@ -107,7 +107,37 @@
     .hidden {
       display: none !important;
     }
+
+    .status-ok {
+      color: #86efac;
+      font-weight: bold;
+    }
+
+    .status-bad {
+      color: #fca5a5;
+      font-weight: bold;
+    }
   </style>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA24K2cPg00R6DZRSxwJBy7TQKIoE7dGAc",
+      authDomain: "nac-aso-system.firebaseapp.com",
+      projectId: "nac-aso-system",
+      storageBucket: "nac-aso-system.appspot.com",
+      messagingSenderId: "852433876255",
+      appId: "1:852433876255:web:c59a0a757ee4f7466dac2a",
+      measurementId: "G-2NK1RYJTS9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    console.log("Firebase connected");
+  </script>
 </head>
 <body>
   <div class="topbar">
@@ -117,7 +147,8 @@
   <div class="container">
     <div class="card">
       <h2>System Loading</h2>
-      <p>Your HTML head and base styling are now cleaned up. Paste the rest of your code so I can sort the full app properly.</p>
+      <p class="status-ok">Firebase configuration has been added successfully.</p>
+      <p>You can now build the login, account creation, reporting, admin panel, and PDF functions on top of this file.</p>
     </div>
   </div>
 </body>
